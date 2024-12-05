@@ -83,10 +83,11 @@ int main() {
 //      Definição das variáveis constantes
 //==============================================================================
 
-const Real XINIT = 0.0;           // Coordenada inicial da malha
-const Real LENGHT = 2.0;          // Comprimento da malha
-const int NUNNODES = 18;          // Número de nós
-const Real XCENTER = LENGHT / 2.0; // Coordenada do centro do domínio
+const Real  XINIT = 2.16;           // Coordenada inicial da malha
+const Real  LENGHT = 2.43;          // Comprimento da malha
+const int   NUNNODES = 29;          // Número de nós
+const Real  XCENTER = XINIT + LENGHT / 2.0; // Coordenada do centro do domínio
+const Real  DESVIOPADRAO = 4;       // Desvio padrao
 
 //==============================================================================
 //      Definição das variáveis para geração de números aleatórios
@@ -94,7 +95,7 @@ const Real XCENTER = LENGHT / 2.0; // Coordenada do centro do domínio
 
 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::default_random_engine generator(seed);
-std::uniform_real_distribution<Real> distribution(XINIT, XCENTER);
+std::normal_distribution<Real> distribution(XCENTER / 2, DESVIOPADRAO);
 
 //==============================================================================
 //      Definição das variáveis
@@ -110,8 +111,13 @@ xNo.back() = XINIT + LENGHT;        // Coordenada do último nó
 //==============================================================================
 
 // Lambda para gerar nós aleatórios até o centro do domínio
-auto Aleatorio = [&distribution, &generator]() {
-    return distribution(generator);
+auto Aleatorio = [&distribution, &generator, XINIT, XCENTER]() {
+    Real valor;
+    do {
+        valor = distribution(generator);
+    } while (!(valor > XINIT && valor <  XCENTER));
+    
+    return valor;
 };
 
 int halfNodes;
@@ -125,10 +131,9 @@ int halfNodes;
 std::generate_n(std::next(xNo.begin()), halfNodes, Aleatorio);
 
 // Gerar a parte simétrica dos nós em relação ao centro do domínio
-Real    dx;
+const Real    dx = xNo.back()  + XINIT;
 for (int i = 1; i <= halfNodes; ++i) {
-    dx = xNo[i] - XINIT;
-    xNo[xNo.size() - 1 - i] = xNo.back() - dx;
+    xNo[xNo.size() - 1 - i] =  dx - xNo[i];
 }
 
 // Se o número de nós for ímpar, o nó central é exatamente no centro do domínio
@@ -136,7 +141,7 @@ if (NUNNODES % 2 != 0) {
     xNo[halfNodes + 1] = XCENTER;
 }
 
-
+    std::sort(xNo.begin(), xNo.end());
 
 //==============================================================================
 //      Impressão da malha
