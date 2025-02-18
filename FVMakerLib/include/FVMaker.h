@@ -51,7 +51,7 @@
 // Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMaker/Misc/namespace.h>
+#include <FVMaker/Misc/type.h>
 
 FVMAKER_NAMESPACE_OPEN
 

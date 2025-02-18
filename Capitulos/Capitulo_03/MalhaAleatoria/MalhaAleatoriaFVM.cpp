@@ -49,11 +49,17 @@
 //      Includes da Biblioteca Padrão do C++
 //==============================================================================
 
+#include <algorithm>            // std::sort
+#include <ctime>                // std::time
+#include <iomanip>              // std::setw
+#include <iostream>             // std::cout
+#include <random>               // std::mt19937 e std::uniform_real_distribution
 //==============================================================================
 //      Includes do fvmmaker
 //==============================================================================
 
 #include <FVMaker.h>
+#include <FVMAKER/Misc/Misc.h>
 
 //==============================================================================
 //      typedef
@@ -63,8 +69,86 @@
 
 int main() {
 
+//==============================================================================
+//  dados constantes
+//==============================================================================
 
-//return EXIT_SUCCESS;
-  return 0;    
+const Real  lenght(1.0);            // Comprimento do dominio unidimensional
+const Real  xInit(0.0);             // Coordenada inicial do dominio
+const Real  desvio(0.5 * lenght);   // Desvio padrao
+const int   nVol(10);               // Numero de volumes da malha
+
+//==============================================================================
+//  Impressao dos dados de entrada
+//==============================================================================
+
+auto flags  = std::cout.flags();
+    std::cout << "Dados iniciais do MalhaAleatoriaFVM\n";
+    fvm::PrintLine(std::cout);
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << "Comprimento do dominio unidimencional " 
+              << std::setw(10) << lenght << "\n";
+    std::cout << "Coordenada inicial da malha           " 
+              << std::setw(10) << xInit << "\n";
+    std::cout << "Desvio Padrao                         " 
+              << std::setw(10) << desvio << "\n";
+    std::cout << "Numero de volumes finitos             " 
+              << std::setw(10) << nVol << "\n";
+    fvm::PrintLine(std::cout);
+
+//==============================================================================
+//  Calculo do valor médio
+//==============================================================================
+    
+    // Lambda que gera um valor aleatório entre min e max
+    auto ValorMedio = [](const Real& _min, const Real& _max) mutable {
+        static std::mt19937 gen(static_cast<unsigned int>(std::time(nullptr)));        
+        std::uniform_real_distribution<Real> dist(_min, _max);
+        return dist(gen);
+    };    
+    
+Real    media = ValorMedio(xInit, xInit + lenght);
+
+    std::cout << "Valor medio                           " 
+              << std::setw(10) << media << "\n";
+    
+
+//==============================================================================
+//  Geração das coordenadas dos centros dos volumes
+//==============================================================================
+    
+    auto NumerosAleatorios = [] (   const Real& _media
+                                ,   const Real& _desvio
+                                ,   const Real& _xmin
+                                ,   const Real& _xmax
+                                ,   const int&  _nVol
+                                ) -> VecReal {
+        static std::mt19937 gen(static_cast<unsigned int>(std::time(nullptr)));
+        static std::normal_distribution<Real> dist(_media, _desvio);
+
+        VecReal centro(_nVol);
+        Real x;
+        for (int i = 0; i < _nVol; ++i) {
+            do {
+                x = dist(gen);
+            // Garantia de que o valor escolhido está dentro do dominio
+            } while (x <= _xmin || x >= _xmax); 
+            centro[i] = x;
+        }
+        return centro;
+    };    
+    
+VecReal centro = NumerosAleatorios (media, desvio, xInit, xInit + lenght, nVol);    
+    
+    std::sort(std::begin(centro), std::end(centro)); // Ordenar as coordenadas - importante
+    std::cout << "\nCoordenadas dos centros geradas\n"; 
+    for (auto x : centro) {
+        
+        std::cout << std::setw(15) << x << "\n";
+    }
+
+    std::cout.flags(flags);
+    
+return EXIT_SUCCESS;
 
 }
