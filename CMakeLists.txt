@@ -31,6 +31,7 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto=auto")
 
 # Forçar o tipo de build para Release (opcional)
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)

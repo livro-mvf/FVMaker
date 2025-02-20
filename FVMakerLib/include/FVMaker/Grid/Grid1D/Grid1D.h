@@ -71,6 +71,8 @@ public:
     Grid1D& operator=(const Grid1D&) = delete;
     Grid1D& operator=(Grid1D&&) = delete;
     
+    friend std::ostream& operator<< <> (std::ostream&, const Grid1D<TypePattern>&);
+    
 //==============================================================================
 // Funções Virtuais
 //==============================================================================

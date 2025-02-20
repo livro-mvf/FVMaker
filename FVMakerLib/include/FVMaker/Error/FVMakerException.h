@@ -46,6 +46,7 @@
 
 // Enum com os códigos de erro
 enum class ErrorCode {
+    GridGenerationError,
     InvalidLenght,
     InvalidNumbersOfVolumes,
     MemoryAllocationError,

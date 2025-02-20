@@ -98,6 +98,7 @@ auto flags  = std::cout.flags();
 
 UniformGrid1D      ug1D(nVol, lenght, xInit);
 
+    std::cout << ug1D << "\n";
     
 return EXIT_SUCCESS;
 

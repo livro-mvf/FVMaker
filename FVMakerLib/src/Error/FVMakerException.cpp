@@ -14,6 +14,7 @@ FVMAKER_NAMESPACE_OPEN
         
 // Definição do catálogo de erros usando unordered_map
 const std::unordered_map<ErrorCode, std::string_view> errorCatalog{
+    { ErrorCode::GridGenerationError,       "Erro nao definido na geracao da malha." },
     { ErrorCode::InvalidNumbersOfVolumes,   "Numero de volumes da malha invalido." },
     { ErrorCode::InvalidLenght,             "Comprimento do dominio invalido." },
     { ErrorCode::MemoryAllocationError,     "Erro ao alocar memória (std::bad_alloc)." },

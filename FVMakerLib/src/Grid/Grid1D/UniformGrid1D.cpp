@@ -12,15 +12,16 @@ UniformGrid1D :: UniformGrid1D (    const int&          _nVol
                                 ,   const Real&         _xIni
                                 ) : Grid1D<CellCentered>(_nVol, _lenght, _xIni)
 {
-    if (!GeraMalha()) {
+    try {
+        if (!GeraMalha())  throw fvm::FVMakerException(ErrorCode::GridGenerationError);
+    } catch (const fvm::FVMakerException& e) {
         std::cerr << "\n\n";
         PrintLine(std::cerr);
-        std::cerr << "Problemas na geracao da malha\n";
+        std::cerr << "Exceção capturada: " << e.what() << "\n";
         PrintLine(std::cerr);
         std::cerr << "\n\n";
         exit(EXIT_FAILURE);
     }
-    
 }
         
 std::unique_ptr<Grid1D<CellCentered>> UniformGrid1D::Clone() const {
