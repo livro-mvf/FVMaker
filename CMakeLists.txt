@@ -41,7 +41,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
         -O3
         -march=native
         -flto
-        -fno-exceptions
         -fno-rtti
         -fconstexpr-depth=8192
         -fconstexpr-ops-limit=4294967295
@@ -57,34 +56,36 @@ elseif(MSVC)
     )
 endif()
 
-# ------------------------------------------------------------------------------
-# Definição de caminhos para a biblioteca
-set(FVMAKER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/FVMakerLib/include)
-set(FVMAKER_SRC_DIR     ${CMAKE_SOURCE_DIR}/FVMakerLib/src)
-set(FVMAKER_LIB_DIR     ${CMAKE_SOURCE_DIR}/FVMakerLib/lib)
+# ============================= Correção do Link com TBB =============================
+# Procurar e linkar o Intel TBB explicitamente para evitar erros de link
+find_package(TBB REQUIRED COMPONENTS tbb)
+if(TBB_FOUND)
+    message(STATUS "Intel TBB encontrado e será linkado.")
+else()
+    message(FATAL_ERROR "Intel TBB não encontrado. Certifique-se de que libtbb-dev está instalado.")
+endif()
 
-# Buscar todos os .cpp da biblioteca (recursivamente)
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${FVMAKER_SRC_DIR}/**/*.cpp")
+# Criar a biblioteca estática FVMaker e linkar com TBB
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/FVMakerLib/src/**/*.cpp")
 
 if(NOT SOURCES)
-    message(FATAL_ERROR "Nenhum arquivo fonte (.cpp) encontrado na pasta ${FVMAKER_SRC_DIR}")
+    message(FATAL_ERROR "Nenhum arquivo fonte (.cpp) encontrado na pasta ${CMAKE_SOURCE_DIR}/FVMakerLib/src")
 else()
     message(STATUS "Arquivos fonte da biblioteca encontrados: ${SOURCES}")
 endif()
 
-# Criar a biblioteca estática FVMaker
 add_library(FVMaker STATIC ${SOURCES})
-target_include_directories(FVMaker PUBLIC ${FVMAKER_INCLUDE_DIR})
 
-# Definir diretórios de saída da biblioteca
+target_include_directories(FVMaker PUBLIC ${CMAKE_SOURCE_DIR}/FVMakerLib/include)
+target_link_libraries(FVMaker PRIVATE TBB::tbb)
+
 set_target_properties(FVMaker PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${FVMAKER_LIB_DIR}
-    LIBRARY_OUTPUT_DIRECTORY ${FVMAKER_LIB_DIR}
-    RUNTIME_OUTPUT_DIRECTORY ${FVMAKER_LIB_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/FVMakerLib/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/FVMakerLib/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/FVMakerLib/lib
 )
 
-# ------------------------------------------------------------------------------
-# Opções para testes, exemplos e documentação
+# ============================= Opções de build =============================
 option(BUILD_TESTS "Compilar e executar os testes" OFF)
 option(BUILD_EXAMPLES "Compilar e executar os exemplos" ON)
 option(BUILD_DOCUMENTATION "Gerar documentação com Doxygen e Sphinx" OFF)
@@ -93,19 +94,15 @@ if(BUILD_TESTS AND BUILD_EXAMPLES)
     message(FATAL_ERROR "Não é permitido habilitar BUILD_TESTS e BUILD_EXAMPLES simultaneamente.")
 endif()
 
-# Compilar testes se ativado
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(Tests)
 endif()
 
-# Compilar exemplos se ativado
 if(BUILD_EXAMPLES)
-    # Adiciona o diretório com os exemplos
     add_subdirectory(Capitulos)
 endif()
 
-# Geração de documentação (opcional)
 if(BUILD_DOCUMENTATION)
     # Configuração da documentação (Doxygen/Sphinx) se necessário...
 endif()

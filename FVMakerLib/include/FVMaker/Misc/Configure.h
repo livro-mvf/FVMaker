@@ -34,8 +34,7 @@
  * junto com este programa. Se não, veja <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIGURE_GVOR_H
-#define CONFIGURE_GVOR_H
+#pragma once
 
 #include <FVMaker/Misc/Type.h>
 
@@ -56,11 +55,3 @@ FVMAKER_NAMESPACE_OPEN
 
     constexpr Real Pi() {return acos(-1.0L);};
 FVMAKER_NAMESPACE_CLOSE 
-
-#endif // CONFIGURE_GVOR_H
-
-
-
-
-
-

@@ -1,11 +1,9 @@
 #pragma once
-
 //==============================================================================
-// Nome        : GridPattern.h
+// Nome        : FaceCentered.h
 // Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Definição da classe GridPattern, que fornece a interface
-//               para padrões de malha na biblioteca FVMaker.
+// Versão      : 1.0
+// Descrição   : Classe FaceCentered, um padrão de malha que herda de GridPattern.
 //
 // Este programa é software livre: você pode redistribuí-lo e/ou
 // modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
@@ -23,90 +21,82 @@
 //==============================================================================
 // Includes da biblioteca padrão do C++
 //==============================================================================
-#include <string_view>
+#include <string>
 
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
-#include <FVMaker/Misc/type.h>
-#include <FVMaker/Misc/namespace.h>
+#include <FVMaker/Grid/GridPattern/GridPattern.h>
 
 GRID_NAMESPACE_OPEN
 
 /**
- * @brief Classe base para padrões de malha.
+ * @brief Padrão de malha FaceCentered.
  *
- * Esta classe define a interface que todos os padrões de malha devem
- * implementar. Ela permite que o código que a utiliza trabalhe de forma
- * genérica com diferentes padrões, chamando métodos comuns a todos eles.
- *
- * Cada padrão concreto, como FaceCentered ou CellCentered, deve herdar
- * de GridPattern e implementar os métodos aqui definidos.
+ * Implementa a lógica específica para um padrão de malha
+ * centrado nas faces.
  */
-class GridPattern {
-
+class FaceCentered : public GridPattern {
+    
 //==============================================================================
 // Construtores/Destrutora
 //==============================================================================
+
     
 public:
     
-    GridPattern() noexcept = default;
-    GridPattern(const GridPattern&) noexcept = default;
-    virtual ~GridPattern() noexcept = default;
-
-    GridPattern(GridPattern&&) = delete;
-
+    FaceCentered() noexcept = default;
+    FaceCentered(const FaceCentered&) noexcept = default;
+    ~FaceCentered() noexcept override = default;
+    FaceCentered(FaceCentered&&) = delete;
     
+            
 //==============================================================================
 // Sobrecarga de operadores
 //==============================================================================
 
 public:
-        
-    GridPattern& operator=(const GridPattern&) = delete;
-    GridPattern& operator=(GridPattern&&) = delete;
-
+    
+    FaceCentered& operator=(const FaceCentered&) = delete;
+    FaceCentered& operator=(FaceCentered&&) = delete;
+    
 //==============================================================================
 // Funções puramente virtuais
 //==============================================================================
 
 public:
-
-    [[nodiscard]] virtual std::shared_ptr<GridPattern> Clone() const = 0;
+    
+    [[nodiscard]] std::shared_ptr<GridPattern> Clone() const override;
     
     /**
      * @brief Retorna o tipo do padrão de malha.
      *
-     * Exemplo: "FaceCentered", "CellCentered".
+     * @return "FaceCentered".
      */
-      [[nodiscard]] virtual std::string TipoPadraoMalha() const = 0;
+    std::string TipoPadraoMalha() const override;
 
     /**
      * @brief Avalia as coordenadas principais da malha.
      *
-     * Implementa a lógica para avaliar as coordenadas principais da malha
-     * de acordo com o padrão.
+     * Implementa a lógica para avaliar as coordenadas principais
+     * de acordo com o padrão face-centrado.
      *
-     * @param dadosMalha Ponteiro genérico para os dados da malha.
+     * @param dadosMalha Ponteiro para os dados da malha.
      * @return true se bem-sucedido, false caso contrário.
      */
-      [[nodiscard]] virtual bool AvaliarCoordenadaPrincipal() const = 0;
+    bool AvaliarCoordenadaPrincipal() const override ;
 
     /**
      * @brief Avalia coordenadas adicionais da malha.
      *
-     * Implementa a lógica para avaliar coordenadas adicionais da malha
-     * de acordo com o padrão.
+     * Implementa a lógica para avaliar coordenadas adicionais
+     * de acordo com o padrão face-centrado.
      *
-     * @param dadosMalha Ponteiro genérico para os dados da malha.
+     * @param dadosMalha Ponteiro para os dados da malha.
      * @return true se bem-sucedido, false caso contrário.
      */
-      [[nodiscard]] virtual bool AvaliarCoordenadaAdicional() const = 0;
-      
+    bool AvaliarCoordenadaAdicional() const override;
 };
-
-using ConstUniqueGridPattern = std::unique_ptr<const GridPattern>;
 
 GRID_NAMESPACE_CLOSE
 

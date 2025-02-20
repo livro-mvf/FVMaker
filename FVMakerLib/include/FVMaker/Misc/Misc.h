@@ -22,8 +22,7 @@
 //
 //==============================================================================
 
-#ifndef __MISC_GVOR_H__
-#define __MISC_GVOR_H__
+#pragma once
 
 //==============================================================================
 // Includes da GridVoronoi++
@@ -64,6 +63,3 @@ constexpr unsigned int str2int(const char* _str, const int& _h = 0)
 }
 
 FVMAKER_NAMESPACE_CLOSE
-        
-#endif
-

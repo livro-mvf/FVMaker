@@ -70,7 +70,7 @@ std::string getCurrentWorkingDirectory() {
 }
 
 // Função para obter o caminho completo do arquivo
-std::string getFullPath(const std::string& filename) {
+std::string getFullPath (   const std::string& filename) {
     std::string cwd = getCurrentWorkingDirectory();
     if (!cwd.empty()) {
         return cwd + "/" + filename;
@@ -79,7 +79,9 @@ std::string getFullPath(const std::string& filename) {
     }
 }
 
-std::string RenameFile(const std::string& _filename, const std::string& _newFiletype) {
+std::string RenameFile  (   const std::string& _filename
+                        ,   const std::string& _newFiletype
+                        ) {
    // Encontra a posição do último ponto no nome do arquivo
     size_t lastDot = _filename.find_last_of(".");
     
