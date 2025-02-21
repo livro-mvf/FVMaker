@@ -8,6 +8,7 @@
 //#include <unistd.h>
 #include <sstream>          // std::stringstream
 
+
 //==============================================================================
 //  Includes da GridVoronoi++
 //==============================================================================
@@ -104,6 +105,7 @@ std::string RenameFile  (   const std::string& _filename
         return newFilename;
     }
 }
+
 
 
 FVMAKER_NAMESPACE_CLOSE

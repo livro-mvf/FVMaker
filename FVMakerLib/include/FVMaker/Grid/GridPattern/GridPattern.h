@@ -30,6 +30,7 @@
 //==============================================================================
 #include <FVMaker/Misc/type.h>
 #include <FVMaker/Misc/namespace.h>
+#include <FVMaker/Grid/Grid1D/Grid1D.h>
 
 GRID_NAMESPACE_OPEN
 
@@ -73,6 +74,8 @@ public:
 
 public:
 
+    
+    [[nodiscard]] virtual bool GenerateCoordinates (void*) = 0;
     [[nodiscard]] virtual std::shared_ptr<GridPattern> Clone() const = 0;
     
     /**
@@ -82,27 +85,6 @@ public:
      */
       [[nodiscard]] virtual std::string TipoPadraoMalha() const = 0;
 
-    /**
-     * @brief Avalia as coordenadas principais da malha.
-     *
-     * Implementa a lógica para avaliar as coordenadas principais da malha
-     * de acordo com o padrão.
-     *
-     * @param dadosMalha Ponteiro genérico para os dados da malha.
-     * @return true se bem-sucedido, false caso contrário.
-     */
-      [[nodiscard]] virtual bool AvaliarCoordenadaPrincipal() const = 0;
-
-    /**
-     * @brief Avalia coordenadas adicionais da malha.
-     *
-     * Implementa a lógica para avaliar coordenadas adicionais da malha
-     * de acordo com o padrão.
-     *
-     * @param dadosMalha Ponteiro genérico para os dados da malha.
-     * @return true se bem-sucedido, false caso contrário.
-     */
-      [[nodiscard]] virtual bool AvaliarCoordenadaAdicional() const = 0;
       
 };
 

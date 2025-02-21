@@ -67,7 +67,8 @@ public:
 public:
     
     [[nodiscard]] std::shared_ptr<GridPattern> Clone() const override;
-    
+    [[nodiscard]] virtual bool GenerateCoordinates (void*) override {return true;};
+
     /**
      * @brief Retorna o tipo do padrão de malha.
      *
@@ -75,27 +76,6 @@ public:
      */
     std::string TipoPadraoMalha() const override;
 
-    /**
-     * @brief Avalia as coordenadas principais da malha.
-     *
-     * Implementa a lógica para avaliar as coordenadas principais
-     * de acordo com o padrão face-centrado.
-     *
-     * @param dadosMalha Ponteiro para os dados da malha.
-     * @return true se bem-sucedido, false caso contrário.
-     */
-    bool AvaliarCoordenadaPrincipal() const override ;
-
-    /**
-     * @brief Avalia coordenadas adicionais da malha.
-     *
-     * Implementa a lógica para avaliar coordenadas adicionais
-     * de acordo com o padrão face-centrado.
-     *
-     * @param dadosMalha Ponteiro para os dados da malha.
-     * @return true se bem-sucedido, false caso contrário.
-     */
-    bool AvaliarCoordenadaAdicional() const override;
 };
 
 GRID_NAMESPACE_CLOSE

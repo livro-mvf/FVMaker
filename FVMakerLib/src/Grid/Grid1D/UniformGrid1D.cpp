@@ -12,34 +12,26 @@ UniformGrid1D :: UniformGrid1D (    const int&          _nVol
                                 ,   const Real&         _xIni
                                 ) : Grid1D<CellCentered>(_nVol, _lenght, _xIni)
 {
-    try {
-        if (!GeraMalha())  throw fvm::FVMakerException(ErrorCode::GridGenerationError);
-    } catch (const fvm::FVMakerException& e) {
-        std::cerr << "\n\n";
-        PrintLine(std::cerr);
-        std::cerr << "Exceção capturada: " << e.what() << "\n";
-        PrintLine(std::cerr);
-        std::cerr << "\n\n";
-        exit(EXIT_FAILURE);
-    }
+    
+    typePattern->GenerateCoordinates(this);
+    auto flag = CalculaDistancias();
 }
         
 std::unique_ptr<Grid1D<CellCentered>> UniformGrid1D::Clone() const {
         return std::make_unique<UniformGrid1D>(*this);
 }
 
-bool UniformGrid1D::GeraMalha() {
-    if (nVol < 10000) {
-            return GeraMalhaSsequencial();
-        } else if (nVol < 100000) {
-            return GeraMalhaParalelo();
-        }; 
-        
-    std::cout << "🔥 Geração paralela com SIMD.\n";
-    return GeraMalhaSIMD ();     
+bool UniformGrid1D::GeraFaces() {
+    if (nVol < 10000) return GeraMalhaSequencial();
+    return GeraMalhaParalelo(); 
+
 }
 
-bool UniformGrid1D :: GeraMalhaSsequencial () {
+bool UniformGrid1D:: GeraCentros() {
+    return false; 
+}
+
+bool UniformGrid1D :: GeraMalhaSequencial () {
 
 const Real DX(lenght/ nVol);    
 auto Uniforme = [DX] (const Real& soma) { return soma + DX; };
@@ -54,6 +46,8 @@ auto Uniforme = [DX] (const Real& soma) { return soma + DX; };
     return true;
 }
 bool UniformGrid1D :: GeraMalhaParalelo (){
+    
+    if (nVol > 100000) return GeraMalhaSIMD();
     
 const Real DX(lenght/ nVol); 
 

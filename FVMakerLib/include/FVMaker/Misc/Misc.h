@@ -25,7 +25,13 @@
 #pragma once
 
 //==============================================================================
-// Includes da GridVoronoi++
+// Includes da c++
+//==============================================================================
+#include <algorithm>
+#include <execution>
+
+//==============================================================================
+// Includes da FVMaker
 //==============================================================================
 
 //#include <FVMaker/Misc/type.h>
@@ -50,6 +56,14 @@ std::string getFullPath(const std::string&);
 
 [[nodiscard]]
 std::string RenameFile(const std::string&, const std::string&);
+
+
+template<typename T>
+[[nodiscard]] bool OrdemCrescente(const T& _vector) {
+    return std::is_sorted(std::begin(_vector), std::end(_vector));
+}
+
+template bool OrdemCrescente<VecReal>(const VecReal&);
 
 //============================================================================
 // Funcoes importantes

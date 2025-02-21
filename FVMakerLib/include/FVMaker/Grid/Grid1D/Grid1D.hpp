@@ -3,18 +3,16 @@
 //==============================================================================
 // Includes da biblioteca padrão do C++
 //==============================================================================
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <iterator>             // std::ostream_iterator
-#include <sstream>
+#include <algorithm>                // std::transform
+#include <iomanip>                  // std::setw
+#include <iostream>                 // std::cerr 
+#include <iterator>               // std::ostream_iterator
 
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
 #include <FVMaker/Error/FVMakerException.h>
 #include <FVMaker/Misc/Misc.h>
-
 
 GRID_NAMESPACE_OPEN
 
@@ -112,11 +110,55 @@ auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _x
             << "\n";
     
     _os << std::flush;
-
-
-     PrintLine(_os, MYSIZE);
+    PrintLine(_os, MYSIZE);
      
     return _os;
+}
+
+template <typename T>
+bool Grid1D<T> :: CalculaCentros() {
+    
+    if (!fvm::OrdemCrescente(xFace)) {
+        std::cout << "As coordenadas das faces não estão ordenadas\n";
+        exit(EXIT_FAILURE);
+    }
+    
+    auto Media = [] (const Real& _x, const Real& _y) {return 0.5 * (_x + _y);};
+    std::transform  (   std::execution::par
+                    ,   xFace.begin()
+                    ,   xFace.end() - 1
+                    ,   xFace.begin() + 1
+                    ,   xCentro.begin()
+                    ,   Media
+                    );    
+    
+    return true;
+}
+
+template <typename T>
+bool Grid1D<T> :: CalculaDistancias() {
+    
+
+    auto Distancia = [] (const Real& _x, const Real& _y) {return _x - _y;};
+    std::transform  (   std::execution::par
+                    ,   xFace.begin() + 1
+                    ,   xFace.end()
+                    ,   xFace.begin()
+                    ,   dxFace.begin()
+                    ,   Distancia
+                    );    
+
+    std::transform  (   std::execution::par
+                    ,   xCentro.begin() + 1
+                    ,   xCentro.end()
+                    ,   xCentro.begin()
+                    ,   dxCentro.begin() + 1
+                    ,   Distancia
+                    );    
+    dxCentro[0]    = xCentro[0] - xFace[0];
+    dxCentro[nVol] = xFace[nVol] - xCentro[nVol - 1];
+    
+    return true;
 }
 
 GRID_NAMESPACE_CLOSE

@@ -80,19 +80,27 @@ public:
 public:
     
     [[nodiscard]] virtual std::unique_ptr<Grid1D>Clone() const = 0;
-    [[nodiscard]] virtual bool GeraMalha() = 0;
+    [[nodiscard]] virtual bool GeraFaces() = 0;
+    [[nodiscard]] virtual bool GeraCentros() = 0;
 
     
 //==============================================================================
 // Funções 
 //==============================================================================
-
+    
+public:
+        
     void InitVector ();
+    [[nodiscard]] bool CalculaCentros();
+    [[nodiscard]] bool CalculaDistancias();
+
     
 //==============================================================================
 // Funções inline
 //==============================================================================
 
+public:
+        
     [[nodiscard]] inline size_t size () const {return nVol;};
     [[nodiscard]] inline size_t NVol () const {return nVol;};
     [[nodiscard]] inline Real Lenght () const {return lenght;};
@@ -100,6 +108,11 @@ public:
     [[nodiscard]] inline Real XEnd () const {return xIni + lenght;};
     [[nodiscard]] inline bool empty () const {return size() == 0;};
     [[nodiscard]] inline bool GridSetup() const {return gridSetup;};
+
+    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCFaceCoordinate() {return std::make_unique<VecReal>(xFace);};
+    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCCentreCoordinate() {return std::make_unique<VecReal>(xCentro);};
+    [[nodiscard]] inline std::unique_ptr<VecReal> PtrUFaceCoordinate() {return std::make_unique<VecReal>(xFace);};
+    [[nodiscard]] inline std::unique_ptr<VecReal> PtrUCentreCoordinate() {return std::make_unique<VecReal>(xCentro);};
 
 //
 //    /**

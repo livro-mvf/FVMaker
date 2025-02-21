@@ -158,7 +158,7 @@ std::transform(std::begin(xCentro), std::end(xCentro),
                Print);
 
 std::cout << std::setw(5) << volume << std::scientific << std::setw(40)
-          << *(--std::end(xFace));
+          << *(--std::end(xFace)) << "\n" << std::flush;
 
 //==============================================================================
 //      Apagando os vetores
