@@ -3,14 +3,13 @@
 // Autor       : Joao Flavio Vieira de Vasconcellos
 // Versão      : 1.1
 // Descrição   : Programa que calcula as coordenadas dos nós
-//                para uma malha aleatória unidimensional de
-//                diferenças finitas
+//               para uma malha uniforme unidimensional para volumes finitos
 // Livro       : Código 2.2 do livro
-//                Solução Numérica de Equações Diferenciais - 
-//                O Método de Volumes Finitos
+//               Solução Numérica de Equações Diferenciais - 
+//               O Método de Volumes Finitos
 // Testado     : gcc 10.2 usando c++20 em 17 / fev / 2024 
 //
-// Direitos autorais : Copyright (C) <2024> Joao Flavio Vasconcellos 
+// Direitos autorais : Copyright (C) <2025> Joao Flavio Vasconcellos 
 //                    (jflavio at iprj.uerj.br)
 //
 // Este programa é software livre: você pode redistribuí-lo e/ou
@@ -30,76 +29,91 @@
 
 /**
  * @file MalhaUniforme.cpp
- * @brief Programa para calcular as coordenadas dos nós de uma malha
- * aleatória.
- *
- * Este programa gera uma malha unidimensional aleatória utilizando
- * diferenças finitas. Os nós são distribuídos aleatoriamente dentro do
- * comprimento especificado.
- *
+ * @brief Calcula as coordenadas dos nós para uma malha uniforme unidimensional.
+ * 
+ * @details
+ * Este programa demonstra como gerar uma malha uniforme unidimensional para o método dos volumes finitos
+ * utilizando a classe UniformGrid1D da biblioteca FVMaker.
+ * 
+ * A malha é definida pelos seguintes parâmetros:
+ *  - Comprimento total do domínio.
+ *  - Coordenada inicial do domínio.
+ *  - Número de volumes (ou células) da malha.
+ * 
+ * O fluxo do programa é o seguinte:
+ *  1. Configura os parâmetros de entrada e exibe-os formatadamente.
+ *  2. Gera a malha uniforme utilizando a classe UniformGrid1D.
+ *  3. Imprime as coordenadas dos nós resultantes.
+ *    ```
+ * 
  * @version 1.1
  * @date 2024-11-30
- * @author João Flávio Vasconcellos
- *
- * @copyright Copyright (c) 2024
+ * @author 
+ *         João Flávio Vasconcellos
+ * 
+ * @copyright
+ *         Copyright (c) 2025 João Flávio Vasconcellos.
  * @license GNU GPL v3
  */
 
 //==============================================================================
-//      Includes da Biblioteca Padrão do C++
+//      Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <algorithm>            // std::sort
-#include <ctime>                // std::time
-#include <iomanip>              // std::setw
-#include <iostream>             // std::cout
-#include <random>               // std::mt19937 e std::uniform_real_distribution
-//==============================================================================
-//      Includes do fvmmaker
-//==============================================================================
-
-
-#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>
-#include <FVMAKER/Misc/Misc.h> 
+#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h> ///< Definição da classe UniformGrid1D para geração da malha uniforme
 
 //==============================================================================
-//      typedef
+//      Função principal
 //==============================================================================
 
-using fvm::grd::UniformGrid1D;       
-
+/**
+ * @brief Função principal que gera e exibe uma malha uniforme unidimensional.
+ * 
+ * A função define os parâmetros de configuração da malha, gera a malha utilizando a classe UniformGrid1D,
+ * e imprime os dados de entrada e a malha resultante formatadamente na saída padrão.
+ * 
+ * @return int Código de saída do programa. Retorna EXIT_SUCCESS se a execução for bem-sucedida.
+ */
 int main() {
-
+    
 //==============================================================================
-//  dados constantes
-//==============================================================================
-
-const Real  lenght(1.0);            // Comprimento do dominio unidimensional
-const Real  xInit(-4.0);             // Coordenada inicial do dominio
-const int   nVol(10);               // Numero de volumes da malha
-
-//==============================================================================
-//  Impressao dos dados de entrada
+//      Dados de configuração da malha
 //==============================================================================
 
-auto flags  = std::cout.flags();
+    const Real length(1.0);    ///< Comprimento total do domínio
+    const Real xInit(-4.0);    ///< Coordenada inicial do domínio
+    const int nVol(10);        ///< Número de volumes da malha
+
+//==============================================================================
+//      Impressao dos dados da malha
+//==============================================================================
+
+    auto flags = std::cout.flags();
     std::cout << "Dados iniciais do Malha Uniforme\n";
     fvm::PrintLine(std::cout);
     std::cout << std::fixed << std::setprecision(3);
-    std::cout << "Comprimento do dominio unidimencional " 
-              << std::setw(10) << lenght << "\n";
-    std::cout << "Coordenada inicial da malha           " 
-              << std::setw(10) << xInit << "\n";
-    std::cout << "Numero de volumes finitos             " 
-              << std::setw(10) << nVol << "\n";
+    std::cout << "Comprimento do domínio unidimensional: " << std::setw(10) << length << "\n";
+    std::cout << "Coordenada inicial da malha:           " << std::setw(10) << xInit << "\n";
+    std::cout << "Número de volumes finitos:             " << std::setw(10) << nVol << "\n";
     fvm::PrintLine(std::cout);
 
-    
+//==============================================================================
+//      Geração e exibição da malha uniforme
+//==============================================================================
 
-UniformGrid1D      ug1D(nVol, lenght, xInit);
-
+    fvm::grd::UniformGrid1D ug1D(nVol, length, xInit);
     std::cout << ug1D << "\n";
-    
-return EXIT_SUCCESS;
 
+//==============================================================================
+//      Acessando os vetores da malha
+//==============================================================================
+    
+auto    xCentro = *ug1D.PtrUCCentreCoordinate();
+
+
+//==============================================================================
+//     Fim do programa
+//==============================================================================
+
+    return EXIT_SUCCESS;
 }

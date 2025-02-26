@@ -16,9 +16,9 @@ FVMAKER_NAMESPACE_OPEN
 const std::unordered_map<ErrorCode, std::string_view> errorCatalog{
     { ErrorCode::GridGenerationError,       "Erro nao definido na geracao da malha." },
     { ErrorCode::InvalidNumbersOfVolumes,   "Numero de volumes da malha invalido." },
-    { ErrorCode::InvalidLenght,             "Comprimento do dominio invalido." },
+    { ErrorCode::InvalidLength,             "Comprimento do dominio invalido." },
     { ErrorCode::MemoryAllocationError,     "Erro ao alocar memória (std::bad_alloc)." },
-    { ErrorCode::UnhandledException,     "Excecao nao tratada." },
+    { ErrorCode::UnhandledException,        "Excecao nao tratada." },
     { ErrorCode::VectorResizeError,         "Erro ao redimensionar vetor (std::length_error)." }
 };
 

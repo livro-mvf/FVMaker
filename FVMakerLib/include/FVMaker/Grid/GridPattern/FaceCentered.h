@@ -1,9 +1,11 @@
 #pragma once
+
 //==============================================================================
 // Nome        : FaceCentered.h
 // Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.0
-// Descrição   : Classe FaceCentered, um padrão de malha que herda de GridPattern.
+// Versão      : 1.1
+// Descrição   : Classe FaceCentered, um padrão de malha que herda de GridPattern,
+//               atualizada para permitir a definição de um offset.
 //
 // Este programa é software livre: você pode redistribuí-lo e/ou
 // modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
@@ -34,49 +36,96 @@ GRID_NAMESPACE_OPEN
  * @brief Padrão de malha FaceCentered.
  *
  * Implementa a lógica específica para um padrão de malha
- * centrado nas faces.
+ * centrado nas faces, calculando as coordenadas das faces
+ * com base em posições de centros.
  */
-class FaceCentered : public GridPattern {
-    
+class FaceCentered : public GridPattern
+{
 //==============================================================================
 // Construtores/Destrutora
 //==============================================================================
-
-    
 public:
-    
+    /**
+     * @brief Construtor padrão de FaceCentered.
+     *
+     * Utiliza o construtor padrão da classe base (offset_ = 0.5).
+     */
     FaceCentered() noexcept = default;
+
+    /**
+     * @brief Construtor que permite definir o offset para o cálculo das faces.
+     *
+     * @param offset Valor que determina a fração de deslocamento ao posicionar
+     *               as faces (0.5 = meio exato entre dois centros).
+     */
+    explicit FaceCentered(double offset) noexcept
+        : GridPattern(offset)
+    {
+    }
+
+    /**
+     * @brief Construtor de cópia (default).
+     */
     FaceCentered(const FaceCentered&) noexcept = default;
+
+    /**
+     * @brief Destrutor (default).
+     */
     ~FaceCentered() noexcept override = default;
+
+    /**
+     * @brief Construtor de movimento deletado para evitar problemas de cópia
+     *        da classe base.
+     */
     FaceCentered(FaceCentered&&) = delete;
-    
-            
+
 //==============================================================================
 // Sobrecarga de operadores
 //==============================================================================
-
 public:
-    
     FaceCentered& operator=(const FaceCentered&) = delete;
     FaceCentered& operator=(FaceCentered&&) = delete;
-    
-//==============================================================================
-// Funções puramente virtuais
-//==============================================================================
 
+//==============================================================================
+// Funções virtuais
+//==============================================================================
 public:
-    
+    /**
+     * @brief Constrói a malha em um Grid1D<GridPattern> de forma face-centered.
+     *
+     * @param grid Ponteiro único para o Grid1D que será preenchido.
+     * @return true caso a malha seja construída com sucesso, false caso contrário.
+     */
+    template <typename T>
+    [[nodiscard]] bool BuildMesh(Grid1D<T>*) const;
+
+//==============================================================================
+// Funções puramente virtuais (implementadas aqui)
+//==============================================================================
+public:
+    /**
+     * @brief Cria uma cópia (clone) deste objeto.
+     *
+     * @return std::shared_ptr<GridPattern> apontando para uma nova instância.
+     */
     [[nodiscard]] std::shared_ptr<GridPattern> Clone() const override;
-    [[nodiscard]] virtual bool GenerateCoordinates (void*) override {return true;};
 
     /**
      * @brief Retorna o tipo do padrão de malha.
      *
-     * @return "FaceCentered".
+     * @return "Face Centrada".
      */
     std::string TipoPadraoMalha() const override;
-
 };
 
-GRID_NAMESPACE_CLOSE
 
+template <typename T>
+bool FaceCentered::BuildMesh(Grid1D<T> *grid) const
+{
+bool flag = grid->GeraCentros();
+    flag = flag && grid->CalculaFaces(offset_);
+    flag = flag && grid->CalculaDistancias();
+    return flag;
+}
+
+GRID_NAMESPACE_CLOSE

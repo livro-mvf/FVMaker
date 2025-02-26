@@ -1,37 +1,43 @@
 # FVMaker
 
 ## Descrição
-FVMaker é uma biblioteca escrita em **C++20** para solução numérica de equações diferenciais parciais utilizando o **método dos volumes finitos (FVM)**. O projeto tem como objetivo fornecer uma implementação rápida, flexível e fácil de usar, sem dependências externas, utilizando apenas recursos modernos da **STL** e paralelização disponível no **C++20**.
+FVMaker é uma biblioteca em **C++20** para a solução numérica de equações diferenciais parciais utilizando o método dos volumes finitos (FVM). A biblioteca faz uso de recursos modernos do C++ para otimização e paralelização, garantindo desempenho elevado.
+
+## Requisitos de Instalação
+Para compilar e rodar a FVMaker, é necessário ter instalados os seguintes componentes:
+
+- **Compilador C++ com suporte a C++20**  
+  (ex.: GCC 10+, Clang 10+ ou MSVC 19.28+)
+
+- **CMake 3.20 ou superior**
+
+- **Intel TBB (Threading Building Blocks)**  
+  A biblioteca depende do Intel TBB para paralelização.  
+  No Ubuntu, por exemplo, instale com:
+  ```sh
+  sudo apt-get install libtbb-dev
+  ```
+  
+> Caso o Intel TBB não esteja instalado, a configuração com CMake irá falhar com a mensagem:  
+> "Intel TBB não encontrado. Certifique-se de que libtbb-dev está instalado."  
+>  
+> Essa exigência é definida no CMakeLists.txt citeturn0file0.
 
 ## Estrutura do Projeto
 ```
-FVMaker/                # Raiz do projeto
-│── FVMakerLib/         # Biblioteca principal do projeto
-│   │── include/        # Pasta de headers da biblioteca
-│   │   │── FVMaker/    # Todos os arquivos de cabeçalho ficarão aqui
-│   │── src/            # Implementações da biblioteca
-│   │── lib/            # Biblioteca compilada (removida com make clean)
-│── Capitulos/          # Programas relacionados aos capítulos do livro
-│   │── Capitulo 1/     # Programa do Capítulo 1
-│   │── Capitulo 2/     # Programa do Capítulo 2
-│   │── ...             # Outras pastas para capítulos subsequentes
-│── Tests/              # Testes da biblioteca usando Google Test (gtest)
-│   │── Teste 1/        # Pasta de um grupo de testes
-│   │   │── Subteste A/ # Teste específico dentro do grupo
-│   │   │── Subteste B/ # Outro teste específico
-│   │── Teste 2/        # Outro grupo de testes
-│   │── ...             # Outras pastas de testes
-│── Sphinx/             # Pasta para documentação do projeto
-│── CMakeLists.txt      # Arquivo de configuração do CMake
-│── README.md           # Arquivo de documentação geral do projeto
+FVMaker/
+├── FVMakerLib/          # Biblioteca principal
+│   ├── include/         # Arquivos de cabeçalho da biblioteca
+│   ├── src/             # Implementações da biblioteca
+│   └── lib/             # Biblioteca compilada
+├── Capitulos/           # Exemplos de programas
+├── Tests/               # Conjunto de testes (opcional)
+├── Sphinx/              # Documentação (opcional)
+├── CMakeLists.txt       # Configuração do CMake
+└── README.md            # Documentação geral do projeto
 ```
 
-## Requisitos
-- **Compilador compatível com C++20** (GCC 10+, Clang 10+, MSVC 19.28+)
-- **CMake 3.20+**
-- **Google Test (gtest)** para execução dos testes
-
-## Compilação e Instalação
+## Instruções de Compilação e Execução
 
 1. **Clonar o repositório**
    ```sh
@@ -39,48 +45,55 @@ FVMaker/                # Raiz do projeto
    cd FVMaker
    ```
 
-2. **Criar um diretório de compilação e configurar o projeto**
+2. **Criar um diretório de compilação (fora da raiz do projeto)**
    ```sh
-   mkdir build && cd build
-   cmake .. -DCMAKE_BUILD_TYPE=Release
+   mkdir build
+   cd build
    ```
 
-3. **Compilar a biblioteca e os programas**
+3. **Configurar o projeto com CMake**
+   ```sh
+   cmake .. -DCMAKE_BUILD_TYPE=Release
+   ```
+   *Observação:* Certifique-se de que o Intel TBB esteja instalado. Caso contrário, a configuração do CMake falhará.
+
+4. **Compilar a biblioteca (e os exemplos/testes, se habilitados)**
    ```sh
    make -j$(nproc)
    ```
 
-4. **Executar os testes** (se habilitados no CMake)
+5. **Executar a biblioteca ou os programas de exemplo**
+   Após a compilação, os binários estarão disponíveis no diretório configurado (por exemplo, em `FVMakerLib/lib` ou nos diretórios dos exemplos). Para executar um exemplo, por exemplo:
+   ```sh
+   ./Capitulos/Capitulo_1/programa_exemplo
+   ```
+
+6. **Executar os testes (opcional)**
+   Se a opção `BUILD_TESTS` estiver ativada durante a configuração, você poderá executar os testes com:
    ```sh
    ctest
    ```
 
-## Opções de Compilação
-O `CMakeLists.txt` está configurado para otimização total do desempenho, incluindo:
-- **Compilação obrigatória em Release**, sem opção de Debug.
-- **Uso de `-O3`, `-march=native`, `-flto` e outras otimizações**.
-- **Compilação automática de programas em `Capitulos/` e `Tests/`**.
-- **Geração de documentação com Sphinx e Doxygen** (opcional).
-- **Obrigatoriedade de rodar o CMake dentro de uma pasta separada (`build/` ou outra)**.
+## Opções de Build
+O CMakeLists.txt permite configurar as seguintes opções:
 
-## Como Compilar os Programas dos Capítulos
-Os programas dentro da pasta `Capitulos/` serão compilados automaticamente. Para executar um programa específico, após a compilação, utilize:
-   ```sh
-   ./Capitulos/Capitulo_1/programa_exemplo
-   ```
-Substitua `Capitulo_1/programa_exemplo` pelo caminho correto do programa desejado.
+- **BUILD_TESTS:** Habilita a compilação dos testes (não pode ser usado simultaneamente com BUILD_EXAMPLES).
+- **BUILD_EXAMPLES:** Habilita a compilação dos exemplos presentes na pasta `Capitulos/`.
+- **BUILD_DOCUMENTATION:** Gera a documentação utilizando Doxygen e Sphinx (opcional).
 
-## Como Executar os Testes
-Se a opção `BUILD_TESTS=ON` for ativada no CMake, os testes serão compilados automaticamente. Para executá-los:
-   ```sh
-   make run_tests
-   ```
+> **Atenção:** Não é permitido habilitar as opções BUILD_TESTS e BUILD_EXAMPLES simultaneamente.  
+>  
+> As configurações de build e as otimizações (como -O3, -march=native, -flto e suporte a OpenMP) estão definidas no CMakeLists.txt citeturn0file0.
 
 ## Contribuição
-Contribuições são bem-vindas! Para contribuir:
-1. Fork o repositório.
-2. Crie um branch com a funcionalidade desejada (`git checkout -b minha_feature`).
-3. Faça as alterações seguindo o [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
+Contribuições são bem-vindas! Para colaborar:
+
+1. Faça um fork do repositório.
+2. Crie um branch para sua funcionalidade:
+   ```sh
+   git checkout -b minha_feature
+   ```
+3. Realize suas alterações seguindo as boas práticas de desenvolvimento em C++.
 4. Abra um Pull Request para revisão.
 
 ## Licença

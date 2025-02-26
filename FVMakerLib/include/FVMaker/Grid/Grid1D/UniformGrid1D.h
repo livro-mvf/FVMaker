@@ -23,6 +23,10 @@
 //
 //==============================================================================
 
+//==============================================================================
+// Includes da biblioteca FVMaker
+//==============================================================================
+
 #include <FVMAKER/Grid/Grid1D/Grid1D.h>
 #include <FVMAKER/Grid/GridPattern/CellCentered.h>
 
@@ -61,7 +65,7 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<Grid1D<CellCentered>>Clone() const;
+    [[nodiscard]] virtual std::unique_ptr<Grid1D<CellCentered>> Clone() const;
     [[nodiscard]] virtual bool GeraFaces ();
     [[nodiscard]] virtual bool GeraCentros ();
     
@@ -71,9 +75,9 @@ public:
 
 private :
         
-    [[nodiscard]] bool GeraMalhaSequencial ();
-    [[nodiscard]] bool GeraMalhaParalelo ();
-    [[nodiscard]] bool GeraMalhaSIMD ();
+    [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
+    [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
+    [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
 
 };
 

@@ -18,16 +18,16 @@ GRID_NAMESPACE_OPEN
 
 template <typename T>
 Grid1D<T> :: Grid1D     (   const int&          _nvol
-                        ,   const Real&         _lenght
+                        ,   const Real&         _length
                         ,   const Real&         _xIni
                         ) 
                         :   nVol(_nvol)
-                        ,   lenght(_lenght)
+                        ,   length(_length)
                         ,   xIni(_xIni)
 {
     try {
         if (nVol < 2)  throw fvm::FVMakerException(ErrorCode::InvalidNumbersOfVolumes);
-        if (lenght <= 0)  throw fvm::FVMakerException(ErrorCode::InvalidLenght);
+        if (length <= 0)  throw fvm::FVMakerException(ErrorCode::InvalidLength);
         InitVector ();
         
     } catch (const fvm::FVMakerException& e) {
@@ -116,14 +116,14 @@ auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _x
 }
 
 template <typename T>
-bool Grid1D<T> :: CalculaCentros() {
+bool Grid1D<T> :: CalculaCentros(const Real& _offset) {
     
     if (!fvm::OrdemCrescente(xFace)) {
         std::cout << "As coordenadas das faces não estão ordenadas\n";
         exit(EXIT_FAILURE);
     }
     
-    auto Media = [] (const Real& _x, const Real& _y) {return 0.5 * (_x + _y);};
+    auto Media = [_offset] (const Real& _x, const Real& _y) {return _y + _offset * (_x - _y);};
     std::transform  (   std::execution::par
                     ,   xFace.begin()
                     ,   xFace.end() - 1
@@ -134,6 +134,30 @@ bool Grid1D<T> :: CalculaCentros() {
     
     return true;
 }
+
+template <typename T>
+bool Grid1D<T> :: CalculaFaces(const Real& _offset) {
+    
+    xFace[0]=  this->XInit();
+    xFace[this->NVol()] = this->XInit() + this->Length();    
+    
+    if (!fvm::OrdemCrescente(xCentro)) {
+        std::cout << "As coordenadas dos centros não estão ordenadas\n";
+        exit(EXIT_FAILURE);
+    }
+    
+    auto Media = [_offset] (const Real& _x, const Real& _y) {return _y + _offset * (_x - _y);};
+    std::transform  (   std::execution::par
+                    ,   xCentro.begin()
+                    ,   xCentro.end() - 1
+                    ,   xCentro.begin() + 1
+                    ,   xFace.begin() + 1
+                    ,   Media
+                    );    
+    
+    return true;
+}
+
 
 template <typename T>
 bool Grid1D<T> :: CalculaDistancias() {
