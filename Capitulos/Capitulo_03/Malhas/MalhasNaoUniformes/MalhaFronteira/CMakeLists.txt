@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project configuration
-project(MalhaAleatoriaFVM VERSION 1.0 LANGUAGES CXX)
+project(MalhaFronteira VERSION 1.0 LANGUAGES CXX)
 
 # Define o nome do executável
-set(example_name "MalhaAleatoriaFVM1")
+set(example_name "MalhaFronteira")
 
 # Defina o padrão C++
 set(CMAKE_CXX_STANDARD 20)
@@ -18,8 +18,8 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Busque recursivamente todos os arquivos .cpp na pasta src
 file(GLOB_RECURSE SOURCE_FILES "${SRC_DIR}/*.cpp")
 
-# Adicione o arquivo MalhaAleatoriaFVM.cpp explicitamente
-set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MalhaAleatoriaFVM1.cpp)
+# Adicione o arquivo MalhaFronteira.cpp explicitamente
+set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MalhaFronteira.cpp)
 if(NOT EXISTS ${ADDITIONAL_SOURCE})
     message(FATAL_ERROR "The source file ${ADDITIONAL_SOURCE} was not found.")
 endif()

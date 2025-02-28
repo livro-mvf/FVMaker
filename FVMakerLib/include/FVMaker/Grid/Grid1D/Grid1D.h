@@ -35,7 +35,6 @@
 #include <FVMaker/Grid/Grid.h>
 #include <FVMaker/Misc/type.h>
 #include <FVMaker/Misc/namespace.h>
-
 GRID_NAMESPACE_OPEN
 
 /**
@@ -52,6 +51,10 @@ class Grid1D : public Grid <TypePattern> {
 //==============================================================================
 // Construtores e destrutora
 //==============================================================================
+
+public:
+
+    using    DataType = Real;
     
 public:
     
@@ -82,7 +85,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Grid1D>Clone() const = 0;
     [[nodiscard]] virtual bool GeraFaces() {return false;};
     [[nodiscard]] virtual bool GeraCentros() {return false;};
-
+    virtual int Dimension () const {return 1;};
     
 //==============================================================================
 // Funções 
