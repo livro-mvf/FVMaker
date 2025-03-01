@@ -28,7 +28,7 @@
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
-#include <FVMaker/Grid/GridPattern/GridPattern.h>
+#include <FVMaker/Grid/GridPattern/AbstractGridPattern.h>
 
 GRID_NAMESPACE_OPEN
 
@@ -39,7 +39,7 @@ GRID_NAMESPACE_OPEN
  * centrado nas faces, calculando as coordenadas das faces
  * com base em posições de centros.
  */
-class FaceCentered : public GridPattern
+class FaceCentered : public AbstractGridPattern
 {
 //==============================================================================
 // Construtores/Destrutora
@@ -59,7 +59,7 @@ public:
      *               as faces (0.5 = meio exato entre dois centros).
      */
     explicit FaceCentered(double offset) noexcept
-        : GridPattern(offset)
+        : AbstractGridPattern(offset)
     {
     }
 
@@ -97,7 +97,7 @@ public:
      * @return true caso a malha seja construída com sucesso, false caso contrário.
      */
     template <typename T>
-    [[nodiscard]] bool BuildMesh(Grid1D<T>*) const;
+    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
 
 //==============================================================================
 // Funções puramente virtuais (implementadas aqui)
@@ -108,7 +108,7 @@ public:
      *
      * @return std::shared_ptr<GridPattern> apontando para uma nova instância.
      */
-    [[nodiscard]] std::shared_ptr<GridPattern> Clone() const override;
+    [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
 
     /**
      * @brief Retorna o tipo do padrão de malha.
@@ -120,7 +120,7 @@ public:
 
 
 template <typename T>
-bool FaceCentered::BuildMesh(Grid1D<T> *grid) const
+bool FaceCentered::BuildMesh(AbstractGrid1D<T> *grid) const
 {
 bool flag = grid->GeraCentros();
     flag = flag && grid->CalculaFaces(offset_);

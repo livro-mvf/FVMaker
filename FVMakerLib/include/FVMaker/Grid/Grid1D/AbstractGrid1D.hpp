@@ -17,17 +17,17 @@
 GRID_NAMESPACE_OPEN
 
 template <typename T>
-Grid1D<T> :: Grid1D     (   const int&          _nvol
+AbstractGrid1D<T> :: AbstractGrid1D     (   const int&          _nvol
                         ,   const Real&         _length
                         ,   const Real&         _xIni
                         ) 
-                        :   nVol(_nvol)
-                        ,   length(_length)
-                        ,   xIni(_xIni)
+                        :   nVol_(_nvol)
+                        ,   length_(_length)
+                        ,   xIni_(_xIni)
 {
     try {
-        if (nVol < 2)  throw fvm::FVMakerException(ErrorCode::InvalidNumbersOfVolumes);
-        if (length <= 0)  throw fvm::FVMakerException(ErrorCode::InvalidLength);
+        if (nVol_ < 2)  throw fvm::FVMakerException(ErrorCode::InvalidNumbersOfVolumes);
+        if (length_ <= 0)  throw fvm::FVMakerException(ErrorCode::InvalidLength);
         InitVector ();
         
     } catch (const fvm::FVMakerException& e) {
@@ -39,24 +39,24 @@ Grid1D<T> :: Grid1D     (   const int&          _nvol
         exit(EXIT_FAILURE);
     }
     
-    typePattern = std::make_shared<T>();
+    typePattern_ = std::make_shared<T>();
 }
 
 template <typename T>
-void Grid1D<T> :: InitVector () {
+void AbstractGrid1D<T> :: InitVector () {
     
     try {    
-        xFace.reserve(nVol + 1);  
-        xFace.resize(nVol + 1, 0.0);
+        xFace_.reserve(nVol_ + 1);  
+        xFace_.resize(nVol_ + 1, 0.0);
 
-        dxCentro.reserve(nVol + 1);  
-        dxCentro.resize(nVol + 1, 0.0);
+        dxCentro_.reserve(nVol_ + 1);  
+        dxCentro_.resize(nVol_ + 1, 0.0);
 
-        xCentro.reserve(nVol);  
-        xCentro.resize(nVol, 0.0);
+        xCentro_.reserve(nVol_);  
+        xCentro_.resize(nVol_, 0.0);
 
-        dxFace.reserve(nVol);  
-        dxFace.resize(nVol, 0.0);  
+        dxFace_.reserve(nVol_);  
+        dxFace_.resize(nVol_, 0.0);  
     } catch (const std::bad_alloc&) {
         throw fvm::FVMakerException(ErrorCode::MemoryAllocationError);
     } catch (const std::length_error&) {
@@ -68,9 +68,9 @@ void Grid1D<T> :: InitVector () {
 }
 
 template<typename T>
-std::ostream& operator<<(std::ostream& _os, const Grid1D<T>& _grid1D) {
+std::ostream& operator<<(std::ostream& _os, const AbstractGrid1D<T>& _grid1D) {
 const int MYSIZE= LSIZE + 5;    
-     _os << "\nImpressao do Grid1D\n";
+     _os << "\nImpressao do AbstractGrid1D\n";
      PrintLine(_os, MYSIZE);
      _os    << std::setw(5)     << "i" 
             << std::setw(20)    << "xCentro"
@@ -81,8 +81,8 @@ const int MYSIZE= LSIZE + 5;
      PrintLine(_os, MYSIZE);
      
 unsigned volume = 0;
-auto     ptrdxCentro = std::begin(_grid1D.dxCentro);
-auto     ptrdxFace = std::begin(_grid1D.dxFace);
+auto     ptrdxCentro = std::begin(_grid1D.dxCentro_);
+auto     ptrdxFace = std::begin(_grid1D.dxFace_);
 
 auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _xF) {
     std::stringstream ss;
@@ -96,17 +96,17 @@ auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _x
     return ss.str();    
 };
 
-    std::transform  (   std::begin(_grid1D.xCentro)
-                    ,   std::end(_grid1D.xCentro)
-                    ,   std::begin(_grid1D.xFace)
+    std::transform  (   std::begin(_grid1D.xCentro_)
+                    ,   std::end(_grid1D.xCentro_)
+                    ,   std::begin(_grid1D.xFace_)
                     ,   std::ostream_iterator<std::string>(_os, "\n")
                     ,   Print
                     );
 
     
     _os     << std::setw(5) << volume  << std::scientific << std::setprecision(6)
-            << std::setw(40) << *(std::prev(std::end(_grid1D.xFace)))
-            << std::setw(20) << *(std::prev(std::end(_grid1D.dxCentro)))
+            << std::setw(40) << *(std::prev(std::end(_grid1D.xFace_)))
+            << std::setw(20) << *(std::prev(std::end(_grid1D.dxCentro_)))
             << "\n";
     
     _os << std::flush;
@@ -116,19 +116,19 @@ auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _x
 }
 
 template <typename T>
-bool Grid1D<T> :: CalculaCentros(const Real& _offset) {
+bool AbstractGrid1D<T> :: CalculaCentros(const Real& _offset) {
     
-    if (!fvm::OrdemCrescente(xFace)) {
+    if (!fvm::OrdemCrescente(xFace_)) {
         std::cout << "As coordenadas das faces não estão ordenadas\n";
         exit(EXIT_FAILURE);
     }
     
     auto Media = [_offset] (const Real& _x, const Real& _y) {return _y + _offset * (_x - _y);};
     std::transform  (   std::execution::par
-                    ,   xFace.begin()
-                    ,   xFace.end() - 1
-                    ,   xFace.begin() + 1
-                    ,   xCentro.begin()
+                    ,   xFace_.begin()
+                    ,   xFace_.end() - 1
+                    ,   xFace_.begin() + 1
+                    ,   xCentro_.begin()
                     ,   Media
                     );    
     
@@ -136,22 +136,22 @@ bool Grid1D<T> :: CalculaCentros(const Real& _offset) {
 }
 
 template <typename T>
-bool Grid1D<T> :: CalculaFaces(const Real& _offset) {
+bool AbstractGrid1D<T> :: CalculaFaces(const Real& _offset) {
     
-    xFace[0]=  this->XInit();
-    xFace[this->NVol()] = this->XInit() + this->Length();    
+    xFace_[0]=  this->XInit();
+    xFace_[this->NVol()] = this->XInit() + this->Length();    
     
-    if (!fvm::OrdemCrescente(xCentro)) {
+    if (!fvm::OrdemCrescente(xCentro_)) {
         std::cout << "As coordenadas dos centros não estão ordenadas\n";
         exit(EXIT_FAILURE);
     }
     
     auto Media = [_offset] (const Real& _x, const Real& _y) {return _y + _offset * (_x - _y);};
     std::transform  (   std::execution::par
-                    ,   xCentro.begin()
-                    ,   xCentro.end() - 1
-                    ,   xCentro.begin() + 1
-                    ,   xFace.begin() + 1
+                    ,   xCentro_.begin()
+                    ,   xCentro_.end() - 1
+                    ,   xCentro_.begin() + 1
+                    ,   xFace_.begin() + 1
                     ,   Media
                     );    
     
@@ -160,27 +160,27 @@ bool Grid1D<T> :: CalculaFaces(const Real& _offset) {
 
 
 template <typename T>
-bool Grid1D<T> :: CalculaDistancias() {
+bool AbstractGrid1D<T> :: CalculaDistancias() {
     
 
     auto Distancia = [] (const Real& _x, const Real& _y) {return _x - _y;};
     std::transform  (   std::execution::par
-                    ,   xFace.begin() + 1
-                    ,   xFace.end()
-                    ,   xFace.begin()
-                    ,   dxFace.begin()
+                    ,   xFace_.begin() + 1
+                    ,   xFace_.end()
+                    ,   xFace_.begin()
+                    ,   dxFace_.begin()
                     ,   Distancia
                     );    
 
     std::transform  (   std::execution::par
-                    ,   xCentro.begin() + 1
-                    ,   xCentro.end()
-                    ,   xCentro.begin()
-                    ,   dxCentro.begin() + 1
+                    ,   xCentro_.begin() + 1
+                    ,   xCentro_.end()
+                    ,   xCentro_.begin()
+                    ,   dxCentro_.begin() + 1
                     ,   Distancia
                     );    
-    dxCentro[0]    = xCentro[0] - xFace[0];
-    dxCentro[nVol] = xFace[nVol] - xCentro[nVol - 1];
+    dxCentro_[0]    = xCentro_[0] - xFace_[0];
+    dxCentro_[nVol_] = xFace_[nVol_] - xCentro_[nVol_ - 1];
     
     return true;
 }

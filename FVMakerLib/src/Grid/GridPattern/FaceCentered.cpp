@@ -1,9 +1,9 @@
 #include <FVMaker/Grid/GridPattern/FaceCentered.h>
-#include <FVMaker/Grid/Grid1D/Grid1D.h>
+//#include <FVMaker/Grid/Grid1D/AbstractGrid1D.h>
 
 GRID_NAMESPACE_OPEN
 
-std::shared_ptr<GridPattern> FaceCentered::Clone() const {
+std::shared_ptr<AbstractGridPattern> FaceCentered::Clone() const {
     return std::make_shared<FaceCentered>(*this);
 }
 

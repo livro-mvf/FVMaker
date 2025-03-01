@@ -27,14 +27,14 @@
 // Includes da biblioteca FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/Grid1D.h>
+#include <FVMAKER/Grid/Grid1D/AbstractGrid1D.h>
 #include <FVMAKER/Grid/GridPattern/CellCentered.h>
 
 
 GRID_NAMESPACE_OPEN
 
 
-class UniformGrid1D : public Grid1D<CellCentered> {
+class UniformGrid1D : public AbstractGrid1D<CellCentered> {
     
 //==============================================================================
 // Construtores e destrutora
@@ -45,7 +45,7 @@ public:
     UniformGrid1D() noexcept = default;
     UniformGrid1D (const int&, const Real&, const Real& = 0.0);
     UniformGrid1D(const UniformGrid1D& _copia) noexcept
-        : Grid1D(*_copia.Clone()){};
+        : AbstractGrid1D(*_copia.Clone()){};
     virtual ~UniformGrid1D() noexcept override = default;
 
     UniformGrid1D(UniformGrid1D&&) = delete;
@@ -65,7 +65,7 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<Grid1D<CellCentered>> Clone() const;
+    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<CellCentered>> Clone() const;
     [[nodiscard]] virtual bool GeraFaces ();
     [[nodiscard]] virtual bool GeraCentros ();
     

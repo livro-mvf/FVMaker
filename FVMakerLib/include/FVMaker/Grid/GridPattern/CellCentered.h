@@ -29,7 +29,7 @@
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
-#include <FVMaker/Grid/GridPattern/GridPattern.h>
+#include <FVMaker/Grid/GridPattern/AbstractGridPattern.h>
 
 GRID_NAMESPACE_OPEN
 
@@ -40,7 +40,7 @@ GRID_NAMESPACE_OPEN
  * em que o volume é centrado, calculando as coordenadas dos centros
  * com base nas faces.
  */
-class CellCentered : public GridPattern
+class CellCentered : public AbstractGridPattern
 {
 //==============================================================================
 // Construtores/Destrutora
@@ -60,7 +60,7 @@ public:
      *               dos centros (0.5 = centro exato entre duas faces).
      */
     explicit CellCentered(double offset) noexcept
-        : GridPattern(offset)
+        : AbstractGridPattern(offset)
     {
     }
 
@@ -98,7 +98,7 @@ public:
      * @return true caso a malha seja construída com sucesso, false caso contrário.
      */
     template <typename T>
-    [[nodiscard]] bool BuildMesh(Grid1D<T>*) const;
+    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
 
 //==============================================================================
 // Funções puramente virtuais (implementadas aqui)
@@ -109,7 +109,7 @@ public:
      *
      * @return std::shared_ptr<GridPattern> apontando para uma nova instância.
      */
-    [[nodiscard]] std::shared_ptr<GridPattern> Clone() const override;
+    [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
 
     /**
      * @brief Retorna o tipo do padrão de malha.
@@ -120,7 +120,7 @@ public:
 };
 
 template <typename T>
-bool CellCentered::BuildMesh(Grid1D<T> *grid) const
+bool CellCentered::BuildMesh(AbstractGrid1D<T> *grid) const
 {
 
 bool flag = grid->GeraFaces();

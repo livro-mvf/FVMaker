@@ -31,12 +31,12 @@
 // Includes da biblioteca FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/Grid1D.h>
+#include <FVMAKER/Grid/Grid1D/AbstractGrid1D.h>
 #include <FVMAKER/Grid/GridPattern/CellCentered.h>
 
 GRID_NAMESPACE_OPEN
 
-class RMGrid1D : public Grid1D<CellCentered>  {
+class RMGrid1D : public AbstractGrid1D<CellCentered>  {
     
 ////==============================================================================
 ////   Identificacao da classe

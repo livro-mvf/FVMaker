@@ -10,9 +10,9 @@
 // Incluições do FVMAKER
 //==============================================================================
 
-#include <FVMaker/Grid/Grid1D/Grid1D.h>     // Definições da Grid1D; 
+#include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
 
-using fvm::grd::Grid;
+using fvm::grd::AbstractGrid;
 
 //#include <vector>
 //#include <memory>
@@ -51,8 +51,8 @@ public:
 // Definição da função a ser utilizada pelo function
 //==============================================================================
 
-    void setFunction (std::function<Real (const DataType&)> f) {
-        function_ = std::move(f);
+    void setFunction (std::function<Real (const DataType&)> _function) {
+        function_ = std::move(_function);
     }
 //
 //    /// Avalia a função para um único ponto (representado como std::vector<Real>).

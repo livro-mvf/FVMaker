@@ -1,7 +1,7 @@
 #pragma once
 
 //==============================================================================
-// Nome        : Grid.h
+// Nome        : Abstract.h
 // Autor       : João Flávio Vieira de Vasconcellos
 // Versão      : 1.0
 // Descrição   : Classe base para todas as classes de geração de malhas.
@@ -23,22 +23,22 @@
 #include <FVMaker/Misc/type.h>
 
 //==============================================================================
-// Abertura do namespace FVMaker::Grid
+// Abertura do namespace FVMaker::AbstractGrid
 //==============================================================================
 
 GRID_NAMESPACE_OPEN
 
 /**
- * @class Grid
+ * @class AbstractGrid
  * @brief Classe base para todas as classes de malhas (1D, 2D, 3D, etc.).
  *
  * Esta classe fornece uma interface comum para as classes derivadas, mas
- * não armazena as coordenadas. As classes derivadas (como Grid1D, Grid2D, etc.)
+ * não armazena as coordenadas. As classes derivadas (como AbstractGrid1D, AbstractGrid2D, etc.)
  * devem implementar a lógica para gerar e armazenar as coordenadas específicas.
  */
 
 template<typename TypePattern>
-class Grid {
+class AbstractGrid {
 
 //==============================================================================
 // Construtores / destrutora
@@ -46,10 +46,10 @@ class Grid {
     
 public:
     
-    Grid() noexcept = default;
-    Grid(const Grid&) noexcept = default;
-    virtual ~Grid() noexcept = default;
-    Grid(Grid&&) = delete;
+    AbstractGrid() noexcept = default;
+    AbstractGrid(const AbstractGrid&) noexcept = default;
+    virtual ~AbstractGrid() noexcept = default;
+    AbstractGrid(AbstractGrid&&) = delete;
     
 //==============================================================================
 // Sobrecarga de operadores
@@ -57,8 +57,8 @@ public:
     
 public:
     
-    Grid& operator=(const Grid&) = delete;
-    Grid& operator=(Grid&&) = delete;
+    AbstractGrid& operator=(const AbstractGrid&) = delete;
+    AbstractGrid& operator=(AbstractGrid&&) = delete;
     
 //==============================================================================
 // funções puramente virtuais
@@ -71,24 +71,24 @@ public:
 //public:
 //   
 //    /**
-//     * @brief Construtora default da classe Grid.
+//     * @brief Construtora default da classe AbstractGrid.
 //     */
 //
-//    Grid() noexcept = default;
+//    AbstractGrid() noexcept = default;
 //
 //     /**
-//     * @brief Construtor de cópia da classe Grid.
+//     * @brief Construtor de cópia da classe AbstractGrid.
 //     * 
 //     * @param other Objeto a ser copiado.
 //     */
 //
-//    Grid(const Grid& other) noexcept = default;
+//    AbstractGrid(const AbstractGrid& other) noexcept = default;
 //    
 //    /**
-//     * @brief Destrutora da classe Grid.
+//     * @brief Destrutora da classe AbstractGrid.
 //     */
 //
-//    virtual ~Grid() noexcept = default;
+//    virtual ~AbstractGrid() noexcept = default;
 //
 ////==============================================================================
 //// Funções da classe
@@ -113,17 +113,17 @@ public:
 //    /**
 //     * @brief Sobrecarga do operador de saída para imprimir as coordenadas.
 //     * @param os Fluxo de saída.
-//     * @param grid Referência para o objeto Grid.
+//     * @param grid Referência para o objeto AbstractGrid.
 //     * @return Referência para o fluxo de saída.
 //     */
 //
-//    friend std::ostream& operator<<(std::ostream& os, const Grid& grid) {
+//    friend std::ostream& operator<<(std::ostream& os, const AbstractGrid& grid) {
 //        grid.printCoordinates(os);
 //        return os;
 //    }
 //
 };
 
-#include <FVMAKER/Grid/Grid.hpp>
+#include <FVMAKER/Grid/AbstractGrid.hpp>
 
 GRID_NAMESPACE_CLOSE

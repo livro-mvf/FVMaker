@@ -28,13 +28,12 @@
 //==============================================================================
 //      Includes da Biblioteca FVMaker
 //==============================================================================
-
-#include <FVMAKER/Grid/Grid1D/Grid1D.h>
+#include <FVMAKER/Grid/Grid1D/AbstractGrid1D.h>
 
 GRID_NAMESPACE_OPEN
 
 template<typename TypePattern>
-class RandomGrid1D : public Grid1D<TypePattern> {
+class RandomGrid1D : public AbstractGrid1D<TypePattern> {
     
 //==============================================================================
 // Construtores e destrutora
@@ -45,7 +44,7 @@ public:
     RandomGrid1D() noexcept = default;
     RandomGrid1D (const int&, const Real&, const Real& = 0.0);
     RandomGrid1D(const RandomGrid1D& _copia) noexcept
-        : Grid1D<TypePattern>(*_copia.Clone()){};
+        : AbstractGrid1D<TypePattern>(*_copia.Clone()){};
     virtual ~RandomGrid1D() noexcept override = default;
 //
     RandomGrid1D(RandomGrid1D&&) = delete;
@@ -65,7 +64,7 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<Grid1D<TypePattern>> Clone() const;
+    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<TypePattern>> Clone() const;
     [[nodiscard]] virtual bool GeraFaces ();
     [[nodiscard]] virtual bool GeraCentros ();
 //    

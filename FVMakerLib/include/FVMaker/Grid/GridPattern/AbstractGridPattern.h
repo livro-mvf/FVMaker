@@ -37,7 +37,7 @@
 GRID_NAMESPACE_OPEN
 
 template<typename TypePattern>
-class Grid1D;
+class AbstractGrid1D;
 
 /**
  * @brief Classe base para padrões de malha.
@@ -49,7 +49,7 @@ class Grid1D;
  * Cada padrão concreto, como FaceCentered ou CellCentered, deve herdar
  * de GridPattern e implementar os métodos aqui definidos.
  */
-class GridPattern
+class AbstractGridPattern
 {
 //==============================================================================
 // Construtores/Destrutora
@@ -61,7 +61,7 @@ public:
      *
      * Inicializa offset_ com 0.5.
      */
-    GridPattern() noexcept = default;
+    AbstractGridPattern() noexcept = default;
 
     /**
      * @brief Construtor que permite definir o offset.
@@ -70,22 +70,22 @@ public:
      *               centros ou faces, dependendo do padrão concreto.
      *               Padrão tipicamente é 0.5.
      */
-    explicit GridPattern(const Real& offset) noexcept
+    explicit AbstractGridPattern(const Real& offset) noexcept
         : offset_{offset}
     {
     }
 
-    GridPattern(const GridPattern&) noexcept = default;
-    GridPattern(GridPattern&&) = delete;
-    virtual ~GridPattern() noexcept = default;
+    AbstractGridPattern(const AbstractGridPattern&) noexcept = default;
+    AbstractGridPattern(AbstractGridPattern&&) = delete;
+    virtual ~AbstractGridPattern() noexcept = default;
 
 //==============================================================================
 // Sobrecarga de operadores
 //==============================================================================
 public:
 
-    GridPattern& operator=(const GridPattern&) = delete;
-    GridPattern& operator=(GridPattern&&) = delete;
+    AbstractGridPattern& operator=(const AbstractGridPattern&) = delete;
+    AbstractGridPattern& operator=(AbstractGridPattern&&) = delete;
 
 //==============================================================================
 // Atributo offset e seus métodos de acesso
@@ -132,7 +132,7 @@ public:
      * @return true se a malha foi construída com sucesso, false em caso contrário.
      */
     template <typename T>
-    [[nodiscard]] bool BuildMesh(Grid1D<T>*) const {return true;};
+    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const {return true;};
 
 //==============================================================================
 // Funções puramente virtuais
@@ -144,7 +144,7 @@ public:
      *
      * @return Um std::shared_ptr para a nova instância clonada.
      */
-    [[nodiscard]] virtual std::shared_ptr<GridPattern> Clone() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<AbstractGridPattern> Clone() const = 0;
 
     /**
      * @brief Retorna o tipo do padrão de malha.

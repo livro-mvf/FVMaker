@@ -1,13 +1,17 @@
 #pragma once
 
-#include <FVMaker/Grid/Grid1D/RandomGrid1D.h>
-#include <FVMaker/Grid/GridPattern/GridPattern.h>
-#include <random>
+//==============================================================================
+// Includes da biblioteca padrão do C++
+//==============================================================================
 #include <chrono>
-//#include <algorithm>
-//#include <iostream>
-//#include <numeric>          // Para std::iota
-//#include <execution>        //  Necessário para std::execution
+#include <random>
+
+
+//==============================================================================
+// Includes da biblioteca FVMaker
+//==============================================================================
+#include <FVMaker/Grid/Grid1D/RandomGrid1D.h>
+#include <FVMaker/Grid/GridPattern/AbstractGridPattern.h>
 
 GRID_NAMESPACE_OPEN
         
@@ -16,28 +20,28 @@ RandomGrid1D<TypePattern> :: RandomGrid1D   (   const int&          _nVol
                                             ,   const Real&         _length
                                             ,   const Real&         _xIni
                                             ) 
-                                            : Grid1D<TypePattern>(_nVol, _length, _xIni)
+                                            : AbstractGrid1D<TypePattern>(_nVol, _length, _xIni)
 {
-auto flag =    this->typePattern->BuildMesh(this);
+auto flag =    this->typePattern_->BuildMesh(this);
 
 }
   
 template<typename TypePattern>
-std::unique_ptr<Grid1D<TypePattern>> RandomGrid1D<TypePattern>::Clone() const {
+std::unique_ptr<AbstractGrid1D<TypePattern>> RandomGrid1D<TypePattern>::Clone() const {
         return std::make_unique<RandomGrid1D<TypePattern>>(*this);
 }
 
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraFaces() {
-    if (this->nVol < 10000) return  GeraMalhaSequencial(&this->xFace);
-     return GeraMalhaParalelo(&this->xFace);
+    if (this->NVol() < 10000) return  GeraMalhaSequencial(&this->xFace_);
+     return GeraMalhaParalelo(&this->xFace_);
 
 }
 
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraCentros() {
-    if (this->nVol < 10000) return  GeraMalhaSequencial(&this->xCentro);
-    return GeraMalhaParalelo(&this->xCentro);     
+    if (this->NVol() < 10000) return  GeraMalhaSequencial(&this->xCentro_);
+    return GeraMalhaParalelo(&this->xCentro_);     
 }
 
 template<typename TypePattern>
@@ -46,7 +50,7 @@ bool RandomGrid1D<TypePattern> :: GeraMalhaSequencial (VecReal* _coord) {
 auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     std::vector<size_t> indices(_coord->size());
     std::iota(indices.begin(), indices.end(), 0); 
-    std::uniform_real_distribution<Real> dist(this->xIni, this->xIni + this->length);
+    std::uniform_real_distribution<Real> dist(this->XInit (), this->XInit () + this->Length());
     
     auto Sorteio = [&_coord, seed, &dist] (const size_t& i){
         std::mt19937 localGen(seed + i);
@@ -66,9 +70,9 @@ auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count()
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraMalhaParalelo (VecReal* _coord){
     
-    if (this->nVol > 100000) return GeraMalhaSIMD( _coord);
+    if (this->NVol() > 100000) return GeraMalhaSIMD( _coord);
 auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::vector<size_t> indices(this->nVol);
+    std::vector<size_t> indices(this->NVol());
     std::iota(indices.begin(), indices.end(), 0);
     return true;
 }
@@ -77,7 +81,7 @@ template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraMalhaSIMD (VecReal*){
     
 auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();    return true;
-    std::vector<size_t> indices(this->nVol);
+    std::vector<size_t> indices(this->NVol());
     std::iota(indices.begin(), indices.end(), 0);
     return true;
 }
