@@ -11,7 +11,6 @@
 //==============================================================================
 
 #include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
-
 using fvm::grd::AbstractGrid;
 
 //#include <vector>
@@ -45,7 +44,7 @@ using DataType = typename T::DataType;
 public:
 
     explicit Function (const T& _grid) : grid_(_grid) {}
-    virtual ~Function() = default;
+    virtual ~Function() noexcept  = default;
 
 //==============================================================================
 // Definição da função a ser utilizada pelo function

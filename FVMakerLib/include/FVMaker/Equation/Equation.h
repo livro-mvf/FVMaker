@@ -27,7 +27,12 @@ FVMAKER_NAMESPACE_OPEN
 template <typename T>
 class Equation {
 
-    
+public:
+        
+    Equation(const Equation&) noexcept = default;
+    virtual ~Equation() noexcept = default;
+    Equation(Equation&&) = delete; 
+    Equation (const T& _grid) {};
 };
 
 FVMAKER_NAMESPACE_CLOSE

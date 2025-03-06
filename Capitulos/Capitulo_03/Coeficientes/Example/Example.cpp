@@ -60,12 +60,12 @@
 //      Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMaker/BoundaryCondition/Dirichlet.h>
-#include <FVMaker/BoundaryCondition/Neumann.h>
-#include <FVMaker/BoundaryCondition/Robin.h>
-#include <FVMAKER/Coefficient/Coefficient.h>
-#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h> ///< Definição da classe UniformGrid1D para geração da malha uniforme
-#include <FVMAKER/Equation/Diffusion.h>
+#include <FVMaker/BoundaryCondition/Dirichlet.h>        ///< Definição da classe Dirichlet para as condições de contorno
+#include <FVMaker/BoundaryCondition/Neumann.h>          ///< Definição da classe Neumann para as condições de contorno
+#include <FVMaker/BoundaryCondition/Robin.h>            ///< Definição da classe Robin para as condições de contorno
+#include <FVMaker/Coefficient/Coefficient1D.h>          ///< Definição da classe Coefficient para os coeficientes unidimensional da equação diferencial
+#include <FVMAKER/Equation/Diffusion.h>                 ///< Definição da classe Diffusion para o termo de difusao
+#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>          ///< Definição da classe UniformGrid1D para geração da malha uniforme
 
 
 //==============================================================================
@@ -117,12 +117,18 @@ int main() {
     fvm::Dirichlet      cc_e(4);
     fvm::Neumann        cc_w(-1);
     fvm::Robin          cc_c(3,2,1);
+
+//==============================================================================
+//      Definicao das condições de contorno
+//==============================================================================
+    
+    fvm::Coefficient1D<fvm::grd::UniformGrid1D>          coeff(ug1D);
     
 //==============================================================================
 //      Definicao dos coeficientes do sistema de equações lineares
 //==============================================================================
     
-    fvm::Diffusion<fvm::grd::UniformGrid1D>    equation;
+    fvm::Diffusion<fvm::grd::UniformGrid1D>    equation(ug1D, coeff);
     
 //==============================================================================
 //     Fim do programa

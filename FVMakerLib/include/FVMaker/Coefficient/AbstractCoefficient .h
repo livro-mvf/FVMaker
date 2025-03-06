@@ -9,9 +9,7 @@
 // Incluições do FVMAKER
 //==============================================================================
 
-#include <FVMaker/Coefficient/AbstractCoefficient .h>               ///< Definições da classe base de coeficientes; 
-#include <FVMaker/Equation/Equation.h>                              ///< Definições da Equation; 
-
+#include <FVMaker/Grid/AbstractGrid.h>              ///< Definições da Grid; 
 using fvm::grd::AbstractGrid;
 
 FVMAKER_NAMESPACE_OPEN
@@ -26,8 +24,9 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 template <typename T>
-class Diffusion : public Equation <T>
-{
+class AbstractCoefficient {
+    public :
+using DataType = typename T::DataType;
 
 //==============================================================================
 // Construtores e destrutora
@@ -35,13 +34,26 @@ class Diffusion : public Equation <T>
     
 public:
     
-    Diffusion(const Diffusion&) noexcept = default;
-    virtual ~Diffusion() noexcept override = default;
-    Diffusion(Diffusion&&) = delete;    
-    
-    Diffusion (const T& _grid, const AbstractCoefficient<T> _coeff) : Equation<T> (_grid){
+
+    AbstractCoefficient(const AbstractCoefficient&) noexcept = default;
+    virtual ~AbstractCoefficient() noexcept = default;
+    explicit AbstractCoefficient (const T& _grid) : grid_(_grid) {
+        coeff_.reserve(this->grid_.NVol());
+        coeff_.resize(this->grid_.NVol());
     };
+
+//==============================================================================
+// Variaveis da classe
+//==============================================================================
+  
+protected:
     
+const T&                    grid_;  ///< Referência para a grid usada
+std::vector<DataType>       coeff_; ///< Vetor para armazenar os coeficientes 
 };
 
+
 FVMAKER_NAMESPACE_CLOSE
+
+#include <FVMaker/Coefficient/AbstractCoefficient.hpp>
+        
