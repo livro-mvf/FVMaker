@@ -37,6 +37,8 @@ GRID_NAMESPACE_OPEN
  * devem implementar a lógica para gerar e armazenar as coordenadas específicas.
  */
 
+
+
 template<typename TypePattern>
 class AbstractGrid {
 
@@ -65,8 +67,8 @@ public:
 //==============================================================================
     
 public:
-    
-    virtual int Dimension () const = 0;
+
+    [[nodiscard]] virtual bool empty() const = 0;
     
 //public:
 //   
@@ -125,5 +127,7 @@ public:
 };
 
 #include <FVMAKER/Grid/AbstractGrid.hpp>
+
+
 
 GRID_NAMESPACE_CLOSE

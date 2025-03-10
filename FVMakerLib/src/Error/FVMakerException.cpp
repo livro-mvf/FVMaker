@@ -15,9 +15,12 @@ FVMAKER_NAMESPACE_OPEN
 // Definição do catálogo de erros usando unordered_map
 const std::unordered_map<ErrorCode, std::string_view> errorCatalog{
     { ErrorCode::GridGenerationError,       "Erro nao definido na geracao da malha." },
-    { ErrorCode::InvalidNumbersOfVolumes,   "Numero de volumes da malha invalido." },
+    { ErrorCode::InvalidGridDimension,      "Dimensao da Grid nao definida." },            
     { ErrorCode::InvalidLength,             "Comprimento do dominio invalido." },
+    { ErrorCode::InvalidNumbersOfVolumes,   "Numero de volumes da malha invalido." },
     { ErrorCode::MemoryAllocationError,     "Erro ao alocar memória (std::bad_alloc)." },
+    { ErrorCode::UndefiniedCoefficient,     "Coeficiente nao definido." },
+    { ErrorCode::UndefiniedGrid,            "Malha nao definida." },
     { ErrorCode::UnhandledException,        "Excecao nao tratada." },
     { ErrorCode::VectorResizeError,         "Erro ao redimensionar vetor (std::length_error)." }
 };

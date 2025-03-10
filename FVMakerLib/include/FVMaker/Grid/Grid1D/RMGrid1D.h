@@ -37,6 +37,11 @@
 GRID_NAMESPACE_OPEN
 
 class RMGrid1D : public AbstractGrid1D<CellCentered>  {
+
+public:
+
+    using DataType = Real;  // Define DataType para que GridDim e Is1DGrid funcionem corretamente
+    
     
 ////==============================================================================
 ////   Identificacao da classe

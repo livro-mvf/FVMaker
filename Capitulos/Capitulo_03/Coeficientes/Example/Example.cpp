@@ -86,9 +86,9 @@ int main() {
 //      Dados de configuração da malha
 //==============================================================================
 
-    const Real length(1.0);    ///< Comprimento total do domínio
-    const Real xInit(-4.0);    ///< Coordenada inicial do domínio
-    const int nVol(10);        ///< Número de volumes da malha
+    const Real length(5.0);    ///< Comprimento total do domínio
+    const Real xInit(0.0);    ///< Coordenada inicial do domínio
+    const int nVol(5);        ///< Número de volumes da malha
 
 //==============================================================================
 //      Impressao dos dados da malha
@@ -114,6 +114,7 @@ int main() {
 //      Definicao das condições de contorno
 //==============================================================================
 
+ 
     fvm::Dirichlet      cc_e(4);
     fvm::Neumann        cc_w(-1);
     fvm::Robin          cc_c(3,2,1);
@@ -123,12 +124,19 @@ int main() {
 //==============================================================================
     
     fvm::Coefficient1D<fvm::grd::UniformGrid1D>          coeff(ug1D);
+    std::cout <<  coeff << "\n\n";
+
+
     
 //==============================================================================
 //      Definicao dos coeficientes do sistema de equações lineares
 //==============================================================================
     
-    fvm::Diffusion<fvm::grd::UniformGrid1D>    equation(ug1D, coeff);
+    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff);
+    bool flag = eq_diff.ComputeCoefficient();
+    
+    
+    std::cout << eq_diff << "\n\n";
     
 //==============================================================================
 //     Fim do programa

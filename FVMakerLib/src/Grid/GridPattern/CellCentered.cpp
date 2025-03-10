@@ -11,6 +11,4 @@ std::string CellCentered::TipoPadraoMalha() const {
     return "Volume Centrado";
 }
 
-
-
 GRID_NAMESPACE_CLOSE

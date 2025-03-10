@@ -34,6 +34,10 @@ GRID_NAMESPACE_OPEN
 
 template<typename TypePattern>
 class RandomGrid1D : public AbstractGrid1D<TypePattern> {
+
+public:
+
+    using DataType = Real;  // Define DataType para que GridDim e Is1DGrid funcionem corretamente
     
 //==============================================================================
 // Construtores e destrutora

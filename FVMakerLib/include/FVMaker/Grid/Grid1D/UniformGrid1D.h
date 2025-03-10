@@ -35,6 +35,10 @@ GRID_NAMESPACE_OPEN
 
 
 class UniformGrid1D : public AbstractGrid1D<CellCentered> {
+
+public:
+
+    using DataType = Real;  // Define DataType para que GridDim e Is1DGrid funcionem corretamente
     
 //==============================================================================
 // Construtores e destrutora

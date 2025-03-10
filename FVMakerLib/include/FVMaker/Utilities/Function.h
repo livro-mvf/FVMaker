@@ -12,7 +12,7 @@
 
 #include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
 using fvm::grd::AbstractGrid;
-
+#include <FVMaker/Grid/GridDimension.h>              ///< Definições da Grid; 
 //#include <vector>
 //#include <memory>
 //#include <stdexcept>
@@ -39,7 +39,7 @@ class Function {
 // Construtores / Destrutora
 //==============================================================================
 
-using DataType = typename T::DataType;
+    using DataType = typename GridDim<T>::DataType;
     
 public:
 

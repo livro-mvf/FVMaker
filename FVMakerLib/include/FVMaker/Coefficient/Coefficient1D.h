@@ -9,7 +9,7 @@
 // Incluições do FVMAKER
 //==============================================================================
 
-#include <FVMaker/Coefficient/AbstractCoefficient .h>              ///< Definições da classe base de coeficientes; 
+#include <FVMaker/Coefficient/AbstractCoefficient.h>              ///< Definições da classe base de coeficientes; 
 
 
 FVMAKER_NAMESPACE_OPEN
@@ -26,6 +26,11 @@ FVMAKER_NAMESPACE_OPEN
 template <typename T>
 class Coefficient1D : public AbstractCoefficient<T> {
 
+public :
+    
+
+    
+    
 //==============================================================================
 // Construtores e destrutora
 //==============================================================================
@@ -39,14 +44,28 @@ public:
     
     explicit Coefficient1D (const T& _grid, const Real& = 1.0) : AbstractCoefficient<T>(_grid) {
         this->coeff_.assign(this->grid_.size(), 1.0);
-        
-        std::cout << "Aqui: " << sizeof(this->coeff_[0]) << "\n\n\n";
     };
+    
+    explicit Coefficient1D(const AbstractCoefficient<T>& _other)
+            : AbstractCoefficient<T>( _other.getGridRef())  // chama construtor base com "other.grid_"
+    {
+    // Copia dados do "other" para this->coeff_
+        this->coeff_ = *(_other.VectorCoeff());
+    }
+//==============================================================================
+// Sobrecarga de operadores
+//==============================================================================
+    
+public:
+    
+    Coefficient1D& operator=(const Coefficient1D&) = delete;
+    Coefficient1D& operator=(Coefficient1D&&) = delete;
+    
+    template <typename U>
+    friend std::ostream& operator<< (std::ostream&, const Coefficient1D<U>&);    
 };
 
 
 FVMAKER_NAMESPACE_CLOSE
 
 #include <FVMaker/Coefficient/Coefficient1D.hpp>
-
-        

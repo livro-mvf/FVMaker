@@ -9,10 +9,12 @@
 // Incluições do FVMAKER
 //==============================================================================
 
-#include <FVMaker/Coefficient/AbstractCoefficient .h>               ///< Definições da classe base de coeficientes; 
+#include <FVMaker/Coefficient/AbstractCoefficient.h>               ///< Definições da classe base de coeficientes; 
 #include <FVMaker/Equation/Equation.h>                              ///< Definições da Equation; 
-
+#include <FVMaker/Grid/GridDimension.h>
 using fvm::grd::AbstractGrid;
+using fvm::GridDim;
+
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -25,7 +27,9 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+        
 template <typename T>
+requires Is1DGrid<T>        
 class Diffusion : public Equation <T>
 {
 
@@ -38,10 +42,25 @@ public:
     Diffusion(const Diffusion&) noexcept = default;
     virtual ~Diffusion() noexcept override = default;
     Diffusion(Diffusion&&) = delete;    
+    Diffusion (const T& _grid, const AbstractCoefficient<T> _coeff);
     
-    Diffusion (const T& _grid, const AbstractCoefficient<T> _coeff) : Equation<T> (_grid){
-    };
+//==============================================================================
+// Funções
+//==============================================================================
+public  :
+        
+    [[nodiscard]] bool ComputeCoefficient();
+    
+private:    
+    [[nodiscard]] bool ComputeCoefficient1D();
+    
+//==============================================================================
+// dados da classe
+//==============================================================================
+    
     
 };
 
 FVMAKER_NAMESPACE_CLOSE
+
+#include <FVMaker/Equation/Diffusion.hpp>                              ///< Definições da Equation; 

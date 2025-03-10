@@ -47,9 +47,12 @@
 // Enum com os códigos de erro
 enum class ErrorCode {
     GridGenerationError,
+    InvalidGridDimension,
     InvalidLength,
     InvalidNumbersOfVolumes,
     MemoryAllocationError,
+    UndefiniedCoefficient,
+    UndefiniedGrid,
     UnhandledException,
     VectorResizeError
 };

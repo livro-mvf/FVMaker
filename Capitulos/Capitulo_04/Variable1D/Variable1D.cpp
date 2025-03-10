@@ -109,7 +109,7 @@ int main() {
 //      Acessando os vetores da malha
 //==============================================================================
     
-auto    xCentro = *ug1D.PtrUCCentreCoordinate();
+const auto&    xCentro = ug1D.CentreCoordinate();
 
 
 //==============================================================================
