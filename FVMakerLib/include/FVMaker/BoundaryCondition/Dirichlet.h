@@ -4,7 +4,7 @@
 // FVMAKER includes
 //==============================================================================
 
-#include <FVMaker/BoundaryCondition/BoundaryCondition.h>
+#include <FVMaker/BoundaryCondition/BC.h>
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -18,7 +18,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-class Dirichlet : public BoundaryCondition{
+class Dirichlet : public BC{
 
 //==============================================================================
 // Construtores e destrutora
@@ -29,7 +29,7 @@ public:
     Dirichlet()                noexcept = default;
     Dirichlet(const Dirichlet&)   noexcept = default;
     virtual ~Dirichlet()       noexcept = default;
-    Dirichlet (const Real& _gamma) : BoundaryCondition(1,0, _gamma) {};
+    Dirichlet (const Real& _gamma) : BC(1,0, _gamma) {};
     
     Dirichlet(Dirichlet&&) = delete;
     

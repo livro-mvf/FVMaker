@@ -4,7 +4,7 @@
 // FVMAKER includes
 //==============================================================================
 
-#include <FVMaker/BoundaryCondition/BoundaryCondition.h>
+#include <FVMaker/BoundaryCondition/BC.h>
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -18,7 +18,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-class Robin : public BoundaryCondition{
+class Robin : public BC{
 
 //==============================================================================
 // Construtores e destrutora
@@ -32,7 +32,7 @@ public:
     Robin   ( const Real&   _alpha
             , const Real&   _beta
             , const Real&   _gamma
-            ) : BoundaryCondition( _alpha, _beta, _gamma)
+            ) : BC( _alpha, _beta, _gamma)
     {};
     
     

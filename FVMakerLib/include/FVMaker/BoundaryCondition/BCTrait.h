@@ -3,13 +3,12 @@
 //==============================================================================
 // Includes da biblioteca padrão do C++
 //==============================================================================
-#include <utility> // std::forward
 
 //==============================================================================
 // FVMAKER includes
 //==============================================================================
 
-#include <FVMaker/BoundaryCondition/BCTrait.h>
+#include <FVMaker/BoundaryCondition/BC.h>
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -23,30 +22,25 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-
 template<int Dim>
-class BoundaryConditions {
-public:
-    using Trait   = BCTrait<Dim>;
-    using Face    = typename Trait::FaceType;  // Tipo da face
-    static constexpr int N = Trait::numFaces;  // Nº de faces
+struct BCTrait;
 
-    std::array<Face, N> faces;
+template<>
+struct BCTrait<1> {
+    static constexpr int numFaces = 2;
+    using FaceType = BC;
 };
 
-template<int Dim, typename... Args>
-BoundaryConditions<Dim> makeBC(Args&&... args)
-{
-    // Checa em tempo de compilação se a quantidade de parâmetros bate com as faces
-    static_assert(sizeof...(Args) == BCTrait<Dim>::numFaces,
-                  "Numero de argumentos nao corresponde ao numero de faces!");
+template<>
+struct BCTrait<2> {
+    static constexpr int numFaces = 4;
+    using FaceType = std::vector<BC>;
+};
 
-    BoundaryConditions<Dim> bc;
-    // Constrói std::array<Face, N> a partir do pack (args...)
-    // e atribui em bc.faces
-    bc.faces = { std::forward<Args>(args)... };
-
-    return bc;
-}
+template<>
+struct BCTrait<3> {
+    static constexpr int numFaces = 6;
+    using FaceType = std::vector<BC>;
+};
 
 FVMAKER_NAMESPACE_CLOSE

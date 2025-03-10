@@ -4,17 +4,12 @@
 // Includes da biblioteca padrão do C++
 //==============================================================================
 
-
 //==============================================================================
-// Incluições do FVMAKER
+// FVMAKER includes
 //==============================================================================
 
-#include <FVMaker/Coefficient/AbstractCoefficient.h>               ///< Definições da classe base de coeficientes; 
-#include <FVMaker/Equation/Equation.h>                              ///< Definições da Equation; 
-#include <FVMaker/Grid/GridDimension.h>
-using fvm::grd::AbstractGrid;
-using fvm::GridDim;
-
+#include <FVMaker/Misc/namespace.h>
+#include <FVMaker/Misc/type.h>
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -27,45 +22,55 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
-        
-template <typename T>
-requires Is1DGrid<T>        
-class Diffusion : public Equation <T>
-{
+
+class BC {
 
 //==============================================================================
 // Construtores e destrutora
 //==============================================================================
+
+public:
+    
+    BC()                noexcept = default;
+    BC(const BC&)   noexcept = default;
+    virtual ~BC()       noexcept = default;
+    BC   ( const Real&   _alpha
+                        , const Real&   _beta
+                        , const Real&   _gamma
+                        ) : alpha_(_alpha), beta_(_beta), gamma_(_gamma)
+    {};
+    
+    BC(BC&&) = delete;
+    
+//==============================================================================
+// Sobrecarga de operadores
+//==============================================================================
     
 public:
     
-    Diffusion(const Diffusion&) noexcept = default;
-    virtual ~Diffusion() noexcept override = default;
-    Diffusion(Diffusion&&) = delete;    
+    BC& operator=(const BC&) noexcept = default;
+    BC& operator=(BC&&) = delete;
+    
+//==============================================================================
+// Funções inline
+//==============================================================================
+    
+public:
 
-    Diffusion   (   const T& _grid
-                ,   const AbstractCoefficient<T> _coeff
-                ,   const BoundaryConditions<Is1DGrid<T>> _bc
-                );
- 
+    [[nodiscard]] inline Real Alpha() const {return alpha_;};
+    [[nodiscard]] inline Real Beta() const {return beta_;};
+    [[nodiscard]] inline Real Gamma() const {return gamma_;};
     
 //==============================================================================
-// Funções
-//==============================================================================
-public  :
-        
-    [[nodiscard]] bool ComputeCoefficient();
-    
-private:    
-    [[nodiscard]] bool ComputeCoefficient1D();
-    
-//==============================================================================
-// dados da classe
+// Variaveis da classe
 //==============================================================================
     
+private:
+
+    Real    alpha_ = 0;
+    Real    beta_ = 0;
+    Real    gamma_ = 0;
     
-};
+};    
 
 FVMAKER_NAMESPACE_CLOSE
-
-#include <FVMaker/Equation/Diffusion.hpp>                              ///< Definições da Equation; 

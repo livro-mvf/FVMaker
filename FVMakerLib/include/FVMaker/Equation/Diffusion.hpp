@@ -20,8 +20,9 @@ template <typename T>
 requires Is1DGrid<T>
 Diffusion<T> ::Diffusion    (   const T& _grid
                             ,   const AbstractCoefficient<T> _coeff
+                            ,   const BoundaryConditions<Is1DGrid<T>> _bc
                             ) 
-                            : Equation<T> (_grid, _coeff){
+                            : Equation<T> (_grid, _coeff, _bc){
 };
             
         

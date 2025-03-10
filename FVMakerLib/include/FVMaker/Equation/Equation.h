@@ -10,6 +10,7 @@
 //==============================================================================
 
 #include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
+#include <FVMaker/BoundaryCondition/BoundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
 
 using fvm::grd::AbstractGrid;
 
@@ -32,7 +33,10 @@ public:
     Equation(const Equation&) noexcept = default;
     virtual ~Equation() noexcept = default;
     Equation(Equation&&) = delete; 
-    Equation (const T& _grid, const AbstractCoefficient<T> _coeff) :
+    Equation    (   const T& _grid
+                ,   const AbstractCoefficient<T> _coeff
+                ,   const BoundaryConditions<Is1DGrid<T>> _bc
+                ) :
         grid_(_grid)
     {
         
@@ -47,17 +51,7 @@ public:
         std::cerr << "\n\n";
         exit(EXIT_FAILURE);
     }
-    
         this->coeffPtr_ = std::make_shared<Coefficient1D<T>>(_coeff);    
-//        std::cout << "Vou imprimir o coeff na equation\n";
-//            auto    ptrCoeffic = this->coeffPtr_->VectorCoeff();
-//
-//            for (auto xx : *ptrCoeffic) {
-//                std::cout << "coeff = " << xx << "\n";
-//            }
-//            
-//            exit(EXIT_SUCCESS);
-    
     };
     
 
@@ -74,7 +68,16 @@ protected :
     SharedAbstractCoefficient<T>        coeffPtr_;   
     const T&                            grid_;  ///< Referência para a grid usada
     
-    VecReal                             aP_, aE_, aW_, aN_, aS_, aF_, aB_, BP_, SP_, SC_;
+    VecReal                             aP_, 
+                                        aE_, 
+                                        aW_, 
+                                        aN_, 
+                                        aS_, 
+                                        aF_, 
+                                        aB_, 
+                                        BP_, 
+                                        SP_, 
+                                        SC_;
     
 };
 

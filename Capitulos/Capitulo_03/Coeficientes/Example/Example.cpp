@@ -60,6 +60,7 @@
 //      Includes da Biblioteca FVMaker
 //==============================================================================
 
+#include <FVMaker/BoundaryCondition/BoundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
 #include <FVMaker/BoundaryCondition/Dirichlet.h>        ///< Definição da classe Dirichlet para as condições de contorno
 #include <FVMaker/BoundaryCondition/Neumann.h>          ///< Definição da classe Neumann para as condições de contorno
 #include <FVMaker/BoundaryCondition/Robin.h>            ///< Definição da classe Robin para as condições de contorno
@@ -114,10 +115,11 @@ int main() {
 //      Definicao das condições de contorno
 //==============================================================================
 
- 
     fvm::Dirichlet      cc_e(4);
     fvm::Neumann        cc_w(-1);
     fvm::Robin          cc_c(3,2,1);
+ 
+    fvm::BoundaryConditions<1>       bc1D = makeBC<1>(cc_w, cc_e);
 
 //==============================================================================
 //      Definicao das condições de contorno
@@ -132,7 +134,7 @@ int main() {
 //      Definicao dos coeficientes do sistema de equações lineares
 //==============================================================================
     
-    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff);
+    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff, bc1D);
     bool flag = eq_diff.ComputeCoefficient();
     
     
