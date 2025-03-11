@@ -60,6 +60,12 @@ public:
 //==============================================================================
 
 public:
+
+  /**
+   * @brief Construtor de cópia padrão.
+   */
+  AbstractCoefficient() noexcept = default;
+
   /**
    * @brief Construtor de cópia padrão.
    */
@@ -90,7 +96,7 @@ public:
       std::cerr << "\n\n";
       exit(EXIT_FAILURE);
     }
-    coeff_.reserve(this->grid_.NVol());
+
     coeff_.resize(this->grid_.NVol());
   }
 
@@ -174,3 +180,5 @@ using UniqueConstAbstractCoefficient = std::unique_ptr<AbstractCoefficient<TypeP
 FVMAKER_NAMESPACE_CLOSE
 
 #include <FVMaker/Coefficient/AbstractCoefficient.hpp>
+
+

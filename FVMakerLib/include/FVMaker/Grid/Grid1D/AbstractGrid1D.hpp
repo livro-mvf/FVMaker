@@ -80,6 +80,32 @@ const int MYSIZE= LSIZE + 5;
             << "\n";
      PrintLine(_os, MYSIZE);
      
+    const std::size_t N = _grid1D.NVol();
+
+    std::vector<std::size_t> indices(N > 3 ? N : 0);
+    std::iota(indices.begin(), indices.end(), 0);
+ 
+const auto xFace = _grid1D.FaceCoordinate();
+
+//    std::cout << "Aqio   " << xFace[0] << "\n\n";
+
+auto Print = [&](const std::size_t& i)
+{
+    std::stringstream ss;
+    ss << std::setw(5) << i;
+ //      << std::setw(20) << _grid1D.xCentro_[i];
+ //      << std::setw(20) << _grid1D.xFace_[i];
+    return ss.str(); 
+};
+
+    std::transform  (   std::execution::par
+                    ,   std::begin(indices)
+                    ,   std::end(indices)
+                    ,   std::ostream_iterator<std::string>(_os, "\n")
+                    ,   Print
+                    );
+
+/*
 unsigned volume = 0;
 auto     ptrdxCentro = std::begin(_grid1D.dxCentro_);
 auto     ptrdxFace = std::begin(_grid1D.dxFace_);
@@ -111,7 +137,7 @@ auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _x
     
     _os << std::flush;
     PrintLine(_os, MYSIZE);
-     
+  */   
     return _os;
 }
 

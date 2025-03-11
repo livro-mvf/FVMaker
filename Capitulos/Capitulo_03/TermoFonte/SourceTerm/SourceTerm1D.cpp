@@ -62,6 +62,7 @@
 
 #include <FVMAKER/Grid/Grid1D/UniformGrid1D.h> ///< Definição da classe UniformGrid1D para geração da malha uniforme
 #include <FVMAKER/Utilities/Function.h>
+#include <FVMAKER/SourceTerm/SourceTerm.h>
 
 //==============================================================================
 //      Função principal
@@ -107,9 +108,8 @@ int main() {
 
 
 //==============================================================================
-//      Geração e exibição da malha uniforme
+//      Definição da função que será utilizada para definir o termo fonte
 //==============================================================================
-
     
 fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);   
     
@@ -118,7 +118,15 @@ auto TermoFonte = [] (const Real& _x) -> Real {
 };
 
     fx.setFunction(TermoFonte);
-//
+
+//==============================================================================
+//      Definição do termo fonte
+//==============================================================================
+
+fvm::SourceTerm<fvm::grd::UniformGrid1D>        source(ug1D);
+
+
+    std::cout << source << "\n\n\n";
 
 //==============================================================================
 //     Fim do programa

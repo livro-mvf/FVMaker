@@ -62,9 +62,8 @@ using LstReal = std::list<Real>;
 /// Vetor de números reais.
 using VecReal = std::vector<Real>;
 
-using SharedVecReal       = std::shared_ptr<VecReal>;              ///< Ponteiro compartilhado para um vetor de números reais.
-using SharedConstVecReal  = std::shared_ptr<const VecReal>;   ///< Ponteiro compartilhado para um vetor de números reais constante.
-using UniqueVecReal       = std::unique_ptr<VecReal>;              ///< Ponteiro compartilhado para um vetor de números reais.
-using UniqueConstVecReal  = std::unique_ptr<const VecReal>;   ///< Ponteiro compartilhado para um vetor de números reais constante.
+
+using SourceData = std::pair<Real,Real>;
+using VecSource  = std::vector<SourceData>;
 
 #endif // __FVMAKER_TYPE_H__
