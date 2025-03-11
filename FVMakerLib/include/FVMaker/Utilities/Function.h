@@ -87,7 +87,7 @@ public:
 private:
     
     const T&                                grid_;  ///< Referência para a grid usada
-    std::function <Real(const DataType&)>   function_; ///< Função matemática
+    std::function<Real(const DataType&)>   function_; ///< Função matemática
 //
 //    // Funções auxiliares para converter o dado do centro para std::vector<Real>
 //    // Para grid 1D: assume que o centro é do tipo Real.

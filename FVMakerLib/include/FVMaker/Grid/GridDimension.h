@@ -20,9 +20,9 @@
 #include <FVMaker/Misc/namespace.h>
 #include <FVMaker/Misc/type.h>
 #include <FVMaker/Grid/Grid1D/AbstractGrid1D.h>
-//#include <FVMaker/Grid/GridPattern/FaceCentered.h>
 #include <FVMaker/Grid/GridPattern/CellCentered.h>
 using fvm::grd::CellCentered;
+
 //==============================================================================
 // Abertura do namespace FVMaker
 //==============================================================================
@@ -40,8 +40,9 @@ struct GridDim {
 };
 
 //==============================================================================
-// 📌 Concept para restringir a Diffusion<T> a grids 1D
+//  Concept para restringir a Diffusion<T> a grids 1D
 //==============================================================================
+
 template<typename T>
 concept Is1DGrid =
     std::is_base_of_v<fvm::grd::AbstractGrid1D<CellCentered>, T> ||  // Para UniformGrid1D

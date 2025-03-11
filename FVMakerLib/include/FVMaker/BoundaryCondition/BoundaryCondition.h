@@ -10,6 +10,7 @@
 //==============================================================================
 
 #include <FVMaker/BoundaryCondition/BCTrait.h>
+#include <FVMaker/Grid/GridDimension.h>
 
 FVMAKER_NAMESPACE_OPEN
 
@@ -24,26 +25,26 @@ FVMAKER_NAMESPACE_OPEN
  */
 
 
-template<int Dim>
+template<typename TypePattern>
 class BoundaryConditions {
+    
 public:
+    
+    static constexpr int Dim = GridDim<TypePattern>::value;
     using Trait   = BCTrait<Dim>;
     using Face    = typename Trait::FaceType;  // Tipo da face
-    static constexpr int N = Trait::numFaces;  // Nº de faces
-
+    static constexpr int N = Trait::numFaces;  // Numero de faces
     std::array<Face, N> faces;
 };
 
-template<int Dim, typename... Args>
-BoundaryConditions<Dim> makeBC(Args&&... args)
+template<typename TypePattern, typename... Args>
+BoundaryConditions<TypePattern> makeBC(Args&&... args)
 {
-    // Checa em tempo de compilação se a quantidade de parâmetros bate com as faces
+    static constexpr int Dim = GridDim<TypePattern>::value;
     static_assert(sizeof...(Args) == BCTrait<Dim>::numFaces,
-                  "Numero de argumentos nao corresponde ao numero de faces!");
+                  "Numero de argumentos nao corresponde a dimensão da malha");
 
-    BoundaryConditions<Dim> bc;
-    // Constrói std::array<Face, N> a partir do pack (args...)
-    // e atribui em bc.faces
+    BoundaryConditions<TypePattern> bc;
     bc.faces = { std::forward<Args>(args)... };
 
     return bc;

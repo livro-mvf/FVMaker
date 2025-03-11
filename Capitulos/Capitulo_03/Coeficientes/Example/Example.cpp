@@ -63,7 +63,6 @@
 #include <FVMaker/BoundaryCondition/BoundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
 #include <FVMaker/BoundaryCondition/Dirichlet.h>        ///< Definição da classe Dirichlet para as condições de contorno
 #include <FVMaker/BoundaryCondition/Neumann.h>          ///< Definição da classe Neumann para as condições de contorno
-#include <FVMaker/BoundaryCondition/Robin.h>            ///< Definição da classe Robin para as condições de contorno
 #include <FVMaker/Coefficient/Coefficient1D.h>          ///< Definição da classe Coefficient para os coeficientes unidimensional da equação diferencial
 #include <FVMAKER/Equation/Diffusion.h>                 ///< Definição da classe Diffusion para o termo de difusao
 #include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>          ///< Definição da classe UniformGrid1D para geração da malha uniforme
@@ -96,7 +95,7 @@ int main() {
 //==============================================================================
 
     auto flags = std::cout.flags();
-    std::cout << "Dados iniciais do Malha Uniforme\n";
+    std::cout << "Dados iniciais do Malha\n";
     fvm::PrintLine(std::cout);
     std::cout << std::fixed << std::setprecision(3);
     std::cout << "Comprimento do domínio unidimensional: " << std::setw(10) << length << "\n";
@@ -115,11 +114,10 @@ int main() {
 //      Definicao das condições de contorno
 //==============================================================================
 
-    fvm::Dirichlet      cc_e(4);
-    fvm::Neumann        cc_w(-1);
-    fvm::Robin          cc_c(3,2,1);
+    fvm::Dirichlet      cc_w(1);
+    fvm::Neumann        cc_e(0);
  
-    fvm::BoundaryConditions<1>       bc1D = makeBC<1>(cc_w, cc_e);
+    fvm::BoundaryConditions<fvm::grd::UniformGrid1D>       bc1D = makeBC<fvm::grd::UniformGrid1D>(cc_w, cc_e);
 
 //==============================================================================
 //      Definicao das condições de contorno
@@ -129,12 +127,25 @@ int main() {
     std::cout <<  coeff << "\n\n";
 
 
+//==============================================================================
+//      Definição da função
+//==============================================================================
+
+    
+fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);       
+auto TermoFonte = [] (const Real& _x) -> Real { 
+    return _x * _x;
+};
+
+    fx.setFunction(TermoFonte);
+    
+
     
 //==============================================================================
 //      Definicao dos coeficientes do sistema de equações lineares
 //==============================================================================
     
-    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff, bc1D);
+    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff, bc1D, &fx);
     bool flag = eq_diff.ComputeCoefficient();
     
     

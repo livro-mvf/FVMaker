@@ -11,6 +11,7 @@
 
 #include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
 #include <FVMaker/BoundaryCondition/BoundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
+#include <FVMaker/Utilities/Function.h>        ///< Definição da classe Function
 
 using fvm::grd::AbstractGrid;
 
@@ -33,11 +34,12 @@ public:
     Equation(const Equation&) noexcept = default;
     virtual ~Equation() noexcept = default;
     Equation(Equation&&) = delete; 
-    Equation    (   const T& _grid
-                ,   const AbstractCoefficient<T> _coeff
-                ,   const BoundaryConditions<Is1DGrid<T>> _bc
+    Equation    (   const T&                        _grid
+                ,   const AbstractCoefficient<T>    _coeff
+                ,   const BoundaryConditions<T>     _bc
+                ,   const Function<T>*              _funcao = nullptr
                 ) :
-        grid_(_grid)
+        grid_(_grid), bc_(_bc)
     {
         
     try {
@@ -79,6 +81,7 @@ protected :
                                         SP_, 
                                         SC_;
     
+    const BoundaryConditions<T>         bc_;
 };
 
 FVMAKER_NAMESPACE_CLOSE

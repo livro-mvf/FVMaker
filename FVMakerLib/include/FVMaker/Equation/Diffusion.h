@@ -44,8 +44,9 @@ public:
     Diffusion(Diffusion&&) = delete;    
 
     Diffusion   (   const T& _grid
-                ,   const AbstractCoefficient<T> _coeff
-                ,   const BoundaryConditions<Is1DGrid<T>> _bc
+                ,   const AbstractCoefficient<T>    _coeff
+                ,   const BoundaryConditions<T>     _bc
+                ,   const Function<T>*              _funcao = nullptr  
                 );
  
     
