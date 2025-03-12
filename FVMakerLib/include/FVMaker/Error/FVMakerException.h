@@ -52,6 +52,7 @@ enum class ErrorCode {
     InvalidNumbersOfVolumes,
     MemoryAllocationError,
     UndefiniedCoefficient,
+    UndefiniedFunction,
     UndefiniedGrid,
     UnhandledException,
     VectorResizeError

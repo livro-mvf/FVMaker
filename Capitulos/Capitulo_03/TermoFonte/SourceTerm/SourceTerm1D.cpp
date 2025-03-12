@@ -82,9 +82,9 @@ int main() {
 //      Dados de configuração da malha
 //==============================================================================
 
-    const Real length(1.0);    ///< Comprimento total do domínio
+    const Real length(5.0);    ///< Comprimento total do domínio
     const Real xInit(0.0);    ///< Coordenada inicial do domínio
-    const int nVol(10);        ///< Número de volumes da malha
+    const int nVol(5);        ///< Número de volumes da malha
 
 //==============================================================================
 //      Impressao dos dados da malha
@@ -113,8 +113,8 @@ int main() {
     
 fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);   
     
-auto TermoFonte = [] (const Real& _x) -> Real { 
-    return  _x * _x;
+auto TermoFonte = [] (const Real& _x) -> PairData { 
+    return  PairData(_x * _x, 0.0);
 };
 
     fx.setFunction(TermoFonte);
@@ -123,9 +123,9 @@ auto TermoFonte = [] (const Real& _x) -> Real {
 //      Definição do termo fonte
 //==============================================================================
 
-fvm::SourceTerm<fvm::grd::UniformGrid1D>        source(ug1D);
+fvm::SourceTerm<fvm::grd::UniformGrid1D>        source(ug1D, &fx);
 
-
+bool    flag = source.EvaluateSourceFunction();
     std::cout << source << "\n\n\n";
 
 //==============================================================================

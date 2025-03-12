@@ -60,6 +60,15 @@ public:
     
     template <typename U>
     friend std::ostream& operator<< (std::ostream&, const Equation<U>&);
+
+
+//==============================================================================
+// Funções inline
+//==============================================================================
+
+  [[nodiscard]] inline size_t NVol() const {
+    return  this->grid_.NVol();
+  }
     
 //==============================================================================
 // Variaveis da classe

@@ -47,7 +47,7 @@ public:
     };
     
     explicit Coefficient1D(const AbstractCoefficient<T>& _other)
-            : AbstractCoefficient<T>( _other.getGridRef())  // chama construtor base com "other.grid_"
+            : AbstractCoefficient<T>( _other.Grid())  // chama construtor base com "other.grid_"
     {
     // Copia dados do "other" para this->coeff_
         this->coeff_ = *(_other.VectorCoeff());

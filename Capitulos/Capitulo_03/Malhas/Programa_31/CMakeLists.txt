@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project configuration
-project(MalhaUniforme VERSION 1.0 LANGUAGES CXX)
+project(Programa_31 VERSION 1.0 LANGUAGES CXX)
 
 # Define o nome do executável
-set(example_name "MalhaUniforme")
+set(example_name "Programa_31")
 
 # Defina o padrão C++
 set(CMAKE_CXX_STANDARD 20)
@@ -18,8 +18,8 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Busque recursivamente todos os arquivos .cpp na pasta src
 file(GLOB_RECURSE SOURCE_FILES "${SRC_DIR}/*.cpp")
 
-# Adicione o arquivo MalhaUniforme.cpp explicitamente
-set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MalhaUniforme.cpp)
+# Adicione o arquivo Programa_31.cpp explicitamente
+set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Programa_31.cpp)
 if(NOT EXISTS ${ADDITIONAL_SOURCE})
     message(FATAL_ERROR "The source file ${ADDITIONAL_SOURCE} was not found.")
 endif()

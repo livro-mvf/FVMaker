@@ -100,13 +100,10 @@ public:
     coeff_.resize(this->grid_.NVol());
   }
 
-   inline const T& getGridRef() const {
-      return grid_;
-  }
 //==============================================================================
-// Funções virtuais
+// Funções inline
 //==============================================================================
-  
+   
 public:
       
 
@@ -115,25 +112,22 @@ public:
    * 
    * @return true se estiver vazio, caso contrário false.
    */
-  [[nodiscard]] virtual bool empty() const {
+  [[nodiscard]] inline bool empty() const {
     return this->coeff_.empty() || this->grid_.empty();
   }
 
-
-  
-//==============================================================================
-// Funções inline
-//==============================================================================
-  
-public:
+  [[nodiscard]] inline size_t NVol() const {
+    return  this->grid_.NVol();
+  }
+    
       
   /**
    * @brief Retorna ponteiro para o grid.
    * 
    * @return Ponteiro constante para o grid.
    */
-  [[nodiscard]] inline const T* Grid() const {
-    return &grid_;
+  [[nodiscard]] inline const T& Grid() const {
+    return grid_;
   }
 
   /**
@@ -145,7 +139,7 @@ public:
     return &coeff_;
   }
   
-    [[nodiscard]] inline std::shared_ptr<const std::vector<DataType>> PtrSCCoeff() const {return std::make_shared<const std::vector<DataType>>(coeff_);};
+ //   [[nodiscard]] inline std::shared_ptr<const std::vector<DataType>> PtrSCCoeff() const {return std::make_shared<const std::vector<DataType>>(coeff_);};
   
 //==============================================================================
 // Dados da classe

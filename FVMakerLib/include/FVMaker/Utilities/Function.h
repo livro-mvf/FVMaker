@@ -50,9 +50,15 @@ public:
 // Definição da função a ser utilizada pelo function
 //==============================================================================
 
-    void setFunction (std::function<Real (const DataType&)> _function) {
+public:
+
+    void setFunction (std::function<PairData(const DataType&)> _function) {
         function_ = std::move(_function);
     }
+
+    [[nodiscard]] inline PairData Fx (const DataType& _data) const {
+        return function_(_data);
+    };
 //
 //    /// Avalia a função para um único ponto (representado como std::vector<Real>).
 //    double Fx(const std::vector<Real>& point) const {
@@ -86,8 +92,8 @@ public:
 //
 private:
     
-    const T&                                grid_;  ///< Referência para a grid usada
-    std::function<Real(const DataType&)>   function_; ///< Função matemática
+    const T&                                    grid_;  ///< Referência para a grid usada
+    std::function<PairData(const DataType&)>    function_; ///< Função matemática
 //
 //    // Funções auxiliares para converter o dado do centro para std::vector<Real>
 //    // Para grid 1D: assume que o centro é do tipo Real.

@@ -20,6 +20,7 @@ const std::unordered_map<ErrorCode, std::string_view> errorCatalog{
     { ErrorCode::InvalidNumbersOfVolumes,   "Numero de volumes da malha invalido." },
     { ErrorCode::MemoryAllocationError,     "Erro ao alocar memória (std::bad_alloc)." },
     { ErrorCode::UndefiniedCoefficient,     "Coeficiente nao definido." },
+    { ErrorCode::UndefiniedFunction,        "Funcao nao definida." },
     { ErrorCode::UndefiniedGrid,            "Malha nao definida." },
     { ErrorCode::UnhandledException,        "Excecao nao tratada." },
     { ErrorCode::VectorResizeError,         "Erro ao redimensionar vetor (std::length_error)." }

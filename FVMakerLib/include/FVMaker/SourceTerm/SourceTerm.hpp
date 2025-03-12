@@ -18,9 +18,13 @@ FVMAKER_NAMESPACE_OPEN
 
 
 template<typename T>
-std::ostream& operator<<(std::ostream& _os, const SourceTerm<T>& _source) {
+std::ostream& operator<<    (  std::ostream& _os
+                            ,   const SourceTerm<T>& _source
+                            ) 
+{
+std::ios_base::fmtflags fflags = _os.flags();
 const int MYSIZE= LSIZE - 15;    
-     _os << "\nImpressao do AbstractGrid1D\n";
+     _os << "\nImpressao do SourceTerm\n";
      PrintLine(_os, MYSIZE);
      _os    << std::setw(5)     << "i" 
             << std::setw(20)    << "xCentro"
@@ -28,40 +32,71 @@ const int MYSIZE= LSIZE - 15;
             << std::setw(20)    << "SC"
             << "\n";
      PrintLine(_os, MYSIZE);
-/*     
-unsigned volume = 0;
-auto     ptrdxCentro = std::begin(_grid1D.dxCentro_);
-auto     ptrdxFace = std::begin(_grid1D.dxFace_);
 
-auto Print = [&volume, &ptrdxCentro, &ptrdxFace](const auto& _xC, const auto& _xF) {
+    const std::size_t N = _source.NVol();
+
+    std::vector<std::size_t> indices(N);
+    std::iota(indices.begin(), indices.end(), 0);
+
+auto xCentro = _source.Grid().CentreCoordinate();
+
+auto Print = [&](const std::size_t& i)
+{
     std::stringstream ss;
-    ss << std::setw(5) << volume 
+    ss << std::setw(5) << i
        << std::scientific 
-       << std::setw(20) << _xC
-       << std::setw(20) << _xF
-       << std::setw(20) << *ptrdxCentro
-       << std::setw(20) << *ptrdxFace;
-    volume++;ptrdxCentro++;ptrdxFace++;
-    return ss.str();    
+       << std::setw(20) << xCentro[i]
+       << std::setw(20) << _source.vecSource_[i].first
+       << std::setw(20) << _source.vecSource_[i].second;
+    return ss.str(); 
 };
 
-    std::transform  (   std::begin(_grid1D.xCentro_)
-                    ,   std::end(_grid1D.xCentro_)
-                    ,   std::begin(_grid1D.xFace_)
+    std::transform  (   std::begin(indices)
+                    ,   std::end(indices)
                     ,   std::ostream_iterator<std::string>(_os, "\n")
                     ,   Print
                     );
 
-    
-    _os     << std::setw(5) << volume  << std::scientific << std::setprecision(6)
-            << std::setw(40) << *(std::prev(std::end(_grid1D.xFace_)))
-            << std::setw(20) << *(std::prev(std::end(_grid1D.dxCentro_)))
-            << "\n";
-    
+
     _os << std::flush;
     PrintLine(_os, MYSIZE);
-*/     
+    _os.flags(fflags);
     return _os;
+}
+
+template<typename T>
+bool SourceTerm<T> :: EvaluateSourceFunction () {
+
+    try {
+        if (this->sourceFunction_ == nullptr) {
+            throw fvm::FVMakerException(ErrorCode::UndefiniedFunction);
+        }
+
+    } catch (const fvm::FVMakerException& e) {
+        std::cerr << "\n\n";
+        PrintLine(std::cerr);
+        std::cerr << "Exceção capturada: " << e.what() << "\n";
+        PrintLine(std::cerr);
+        std::cerr << "\n\n";
+        exit(EXIT_FAILURE);
+    }
+
+    const std::size_t N = this->grid_.NVol();
+    std::vector<std::size_t> indices(N);
+    std::iota(indices.begin(), indices.end(), 0);
+    
+const auto& xc    = this->grid_.CentreCoordinate();  // vetor de centros
+
+auto CalculaFuncao = [&] (const size_t& i) {
+    return this->sourceFunction_->Fx(xc[i]);
+};
+
+    std::transform  (   std::begin(indices)
+                    ,   std::end(indices)
+                    ,   std::begin(this->vecSource_)
+                    ,   CalculaFuncao
+                    );
+    return true;
 }
 
 

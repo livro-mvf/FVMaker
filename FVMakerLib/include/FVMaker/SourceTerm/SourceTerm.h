@@ -11,6 +11,8 @@
 
 #include <FVMaker/Grid/AbstractGrid.h>     // Definições da Grid; 
 #include <FVMaker/Grid/GridDimension.h>       // GridDim
+#include <FVMaker/Utilities/Function.h>        ///< Definição da classe Function
+
 using fvm::grd::AbstractGrid;
 
 FVMAKER_NAMESPACE_OPEN
@@ -54,7 +56,13 @@ public:
    * 
    * @param _grid Grid a ser utilizado.
    */
-  explicit SourceTerm(const T& _grid) : grid_(_grid) {
+                
+
+  explicit SourceTerm   (   const T& _grid
+                        ,   const Function<T>*  _funcao = nullptr
+                        ) 
+                        :   grid_(_grid) 
+                        ,   sourceFunction_(_funcao) {
     try {
       if (this->grid_.empty()) {
         throw fvm::FVMakerException(ErrorCode::UndefiniedGrid);
@@ -68,13 +76,9 @@ public:
       exit(EXIT_FAILURE);
     }
     
-    vecSource.resize(this->grid_.size(), SourceData(0,0));
+    vecSource_.resize(this->grid_.size(), PairData(0,0));
   }
 
-   inline const T& getGridRef() const {
-      return grid_;
-  }
-   
 //==============================================================================
 // Sobrecarga de operadores
 //==============================================================================
@@ -88,6 +92,27 @@ public:
     friend std::ostream& operator<< (std::ostream&, const SourceTerm<U>&);
 
 
+//==============================================================================
+// Funções inline
+//==============================================================================
+    
+public:
+
+  [[nodiscard]] inline size_t NVol() const {
+    return  this->grid_.NVol();
+  }
+
+  [[nodiscard]] inline const T& Grid() const {
+    return grid_;
+  }
+
+//==============================================================================
+// Funcoes
+//==============================================================================
+
+  [[nodiscard]] bool EvaluateSourceFunction ();
+    
+public:
 
 //==============================================================================
 // Dados da classe
@@ -99,9 +124,9 @@ protected:
    * 
    * O tempo de vida da malha deve ser maior que o deste objeto.
    */
-    const T&        grid_; 
-    VecSource       vecSource;
-
+    const T&                grid_; 
+    VecSource               vecSource_;
+    const Function<T>*      sourceFunction_;    
 };
 
 FVMAKER_NAMESPACE_CLOSE

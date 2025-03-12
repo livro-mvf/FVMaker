@@ -19,7 +19,10 @@ FVMAKER_NAMESPACE_OPEN
 
 template<typename T>
 std::ostream& operator<< (std::ostream& _os, const Equation<T>& _equation) {
+
+std::ios_base::fmtflags fflags = _os.flags();
 const int MYSIZE= LSIZE + 5;    
+
      _os << "\nImpressao do Equation\n";
      PrintLine(_os, MYSIZE);
      _os    << std::setw(5)     << "i" 
@@ -28,34 +31,31 @@ const int MYSIZE= LSIZE + 5;
             << std::setw(12)    << "AE"
             << "\n";
      PrintLine(_os, MYSIZE);
-     
-unsigned volume = 0;
 
-auto ptrAW = std::begin(_equation.aW_);
-auto ptrAE = std::begin(_equation.aE_);
+    const std::size_t N = _equation.NVol();
 
-auto Print = [&volume, &ptrAW, &ptrAE](const auto& _aP) {
+    std::vector<std::size_t> indices(N);
+    std::iota(indices.begin(), indices.end(), 0);
+
+auto Print = [&](const std::size_t& i) {
     std::stringstream ss;
-    ss << std::setw(5) << volume 
+    ss << std::setw(5) << i
        << std::scientific
        << std::setprecision(4)
-       << std::setw(12) << _aP
-       << std::setw(12) << *ptrAW
-       << std::setw(12) << *ptrAE;
-//       << std::setw(20) << _xF
-//       << std::setw(20) << *ptrdxCentro
-//       << std::setw(20) << *ptrdxFace;
-   volume++; ++ptrAW; ++ptrAE;
+       << std::setw(12) << _equation.aP_[i]
+       << std::setw(12) << _equation.aW_[i]
+       << std::setw(12) << _equation.aE_[i];
     return ss.str();    
 };
 
-    std::transform  (   std::begin(_equation.aP_)
-                    ,   std::end(_equation.aP_)
+    std::transform  (   std::begin(indices)
+                    ,   std::end(indices)
                     ,   std::ostream_iterator<std::string>(_os, "\n")
                     ,   Print
                     );
-
+    _os << std::flush;
     PrintLine(_os, MYSIZE);
+    _os.flags(fflags);
      
     return _os;
 }

@@ -86,9 +86,6 @@ const int MYSIZE= LSIZE + 5;
 
     std::vector<std::size_t> indices(N > 3 ? N : 0);
     std::iota(indices.begin(), indices.end(), 0);
- 
-const auto xFace = _grid1D.FaceCoordinate();
-
 
 auto Print = [&](const std::size_t& i)
 {

@@ -63,7 +63,7 @@ using LstReal = std::list<Real>;
 using VecReal = std::vector<Real>;
 
 
-using SourceData = std::pair<Real,Real>;
-using VecSource  = std::vector<SourceData>;
+using PairData = std::pair<Real, Real>;
+using VecSource  = std::vector<PairData>;
 
 #endif // __FVMAKER_TYPE_H__
