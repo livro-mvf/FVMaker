@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
-project(MalhaAleatoria VERSION 1.0 LANGUAGES CXX)
+project(Programa_22 VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(example_name "MalhaAleatoria")
+set(example_name "Programa_22")
 set(SRC_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -15,10 +15,10 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${SRC_DIR}/**/*.cpp")
 if(NOT SOURCE_FILES)
     message(WARNING "Nenhum arquivo fonte .cpp encontrado em ${SRC_DIR}")
 else()
-    message(STATUS "Arquivos encontrados em MalhaAleatoria: ${SOURCE_FILES}")
+    message(STATUS "Arquivos encontrados em Programa_22: ${SOURCE_FILES}")
 endif()
 
-set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MalhaAleatoria.cpp)
+set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Programa_22.cpp)
 if(EXISTS ${ADDITIONAL_SOURCE})
     list(APPEND SOURCE_FILES ${ADDITIONAL_SOURCE})
 else()
@@ -47,7 +47,7 @@ add_custom_command(
     TARGET ${example_name}
     POST_BUILD
     COMMAND $<TARGET_FILE:${example_name}>
-    COMMENT "Executando exemplo ${example_name} em MalhaAleatoria..."
+    COMMENT "Executando exemplo ${example_name} em Programa_22..."
 )
 
 # Registra a pasta "bin" para ser limpa com "make clean"

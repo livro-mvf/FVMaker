@@ -45,11 +45,10 @@
 //      Inclusões da Biblioteca Padrão do C++
 //==============================================================================
 
-#include <algorithm>    // std::generate_n, std::for_each
+#include <algorithm>    // std::for_each
 #include <iomanip>      // std::setw, std::setprecision, std::fixed, std::scientific
 #include <iostream>     // std::cout, std::endl
 #include <iterator>     // std::ostream_iterator
-#include <sstream>      // std::stringstream
 #include <vector>       // std::vector
 
 //==============================================================================
@@ -148,7 +147,7 @@ int main() {
     std::cout << "Impressão das coordenadas dos nós da malha geométrica\n";
     std::cout << std::string(LSIZE, '=') << "\n";
     std::cout << std::setw(5) << "NO" 
-              << std::setw(20) << "x" << "\n";
+              << std::setw(20) << "xNo" << "\n";
     std::cout << std::string(LSIZE, '=') << "\n";
 
     unsigned no = 0;
