@@ -4,12 +4,9 @@
 // Name        : RMGrid1D.h
 // Author      : Joao Flavio Vieira de Vasconcellos
 // Version     : 1.0
-// Description : Classe para gera��o de malha n�o uniforme
-//               segundo a equa��o de Roberts presente
-//               no livro do Maliska
-//               doi: 10.1016/j.envsoft.2022.105563
+// Description : Classe para gera��o de malha uniforme
 //
-// Copyright   : Copyright (C) <2025>  Joao Flavio Vasconcellos
+// Copyright   : Copyright (C) <2024>  Joao Flavio Vasconcellos
 //                                      (jflavio at iprj.uerj.br)
 //
 // This program is free software: you can redistribute it and/or modify
@@ -26,7 +23,6 @@
 //
 //==============================================================================
 
-
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
@@ -34,99 +30,71 @@
 #include <FVMAKER/Grid/Grid1D/AbstractGrid1D.h>
 #include <FVMAKER/Grid/GridPattern/CellCentered.h>
 
+
 GRID_NAMESPACE_OPEN
 
-class RMGrid1D : public AbstractGrid1D<CellCentered>  {
+
+template <typename T>
+class RMGrid1D : public AbstractGrid1D<T> {
 
 public:
 
     using DataType = Real;  // Define DataType para que GridDim e Is1DGrid funcionem corretamente
     
+//==============================================================================
+// Construtores e destrutora
+//==============================================================================
     
-////==============================================================================
-////   Identificacao da classe
-////==============================================================================
-//
-//public:
-//
-//    DefineIdentity  (   "RobertsMaliskaI"
-//                    ,   ID::RobertsMaliskaI
-//                    );    
-//
-//public:
-//    
-//    RobertsMaliskaI()                       noexcept    = default;
-//    RobertsMaliskaI(const RobertsMaliskaI&)             = default;
-//    virtual ~RobertsMaliskaI()                          = default;
-//
-//    RobertsMaliskaI (   const int&                                      _nvol                               // Numero de Volumes da malha
-//                    ,   const Real&                                     _lenght                             // Comprimento da malha
-//                    ) 
-//                    : RobertsMaliskaI (_nvol, _lenght, 0.0, AbstractMeshPattern::FACECENTRADA, BETA) {};
-//
-//    
-////    RobertsMaliskaI (   const int&                                     _nvol                               // Numero de Volumes da malha
-////                    ,   const Real&                                     _lenght                             // Comprimento da malha
-////                    ,   const AbstractMeshPattern::TIPOVOLUME&          _typeVol = AbstractMeshPattern::FACECENTRADA  // Tipo de Arranjo da malha
-////                    ,   const Real&                                     _alpha = BETA
-////                    ) : RobertsMaliskaI (_nvol, _lenght, 0.0, _typeVol, _alpha) {};
-//
-//                    
-//private: 
-//    
-//    RobertsMaliskaI (   const int&                                                         // Numero de Volumes da malha 
-//                    ,   const Real&                                                         // Comprimento da malha
-//                    ,   const Real&                                                         // Coordenada inicial da malha
-//                    ,   const AbstractMeshPattern::TIPOVOLUME&                              // Tipo de Arranjo da malha
-//                    ,   const Real&                                                         
-//                    );
-//    
-////==============================================================================
-//// Sobrecarga de operadores
-////==============================================================================
-//    
-//public:
-//
-//    RobertsMaliskaI&  operator = (const RobertsMaliskaI&) noexcept = default;
-//    
-//    
-////==============================================================================
-//// Funcoes virtuais
-////==============================================================================
-//        
-//protected:
-//        
-//    virtual void MeshGeneration (VecReal&)  override;    
-//    
-//
-////==============================================================================
-//// Funcoes da classe
-////==============================================================================
-//        
-//    
-//public:
-//
-//    [[nodiscard]]    
-//    virtual std::shared_ptr<AbstractMesh1D const > SharedPtr() const override {return std::make_shared <RobertsMaliskaI const> (*this);};    
-//
-////==============================================================================
-//// Variaveis da classe
-////==============================================================================
-//        
-//private:
-//
-//    const Real          beta = 2;
-//    static Real const   BETA;
+public:
+    
+    RMGrid1D() noexcept = default;
+    RMGrid1D (const Real&, const int&, const Real&,  const Real& = 0.0);
+    RMGrid1D (const RMGrid1D& _copia) noexcept
+        : AbstractGrid1D<T>(*_copia.Clone()){};
+    virtual ~RMGrid1D() noexcept override = default;
+
+    RMGrid1D(RMGrid1D&&) = delete;
+    
+//==============================================================================
+// Sobrecarga de operadores
+//==============================================================================
+    
+public:
+    
+    RMGrid1D& operator=(const RMGrid1D&) = delete;
+    RMGrid1D& operator=(RMGrid1D&&) = delete;
+    
+//==============================================================================
+// Funções Virtuais
+//==============================================================================
+    
+public:
+    
+    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<T>> Clone() const;
+    [[nodiscard]] virtual bool GeraFaces ();
+    [[nodiscard]] virtual bool GeraCentros ();
+    
+//==============================================================================
+// Funções 
+//==============================================================================
+
+private :
+        
+    [[nodiscard]] bool GeraMalhaSequencial (const Real&, VecReal*);
+    [[nodiscard]] bool GeraMalhaParalelo (const Real&, VecReal*);
+    [[nodiscard]] bool GeraMalhaSIMD (const Real&, VecReal*);
+    [[nodiscard]] Real Funcao (const Real&) const;
+
+//==============================================================================
+// Dados da classe 
+//==============================================================================
+
+private:
+
+Real    beta_= 1.001;
+Real    auxiBeta_;
+static  constexpr Real ALPHA_ = 0.5;
 };
-
-//============================================================================== 
-//   typedef    
-//============================================================================== 
-
-//typedef std::shared_ptr<RobertsMaliskaI>                             SharedRobertsMaliskaI;
-//typedef std::shared_ptr<RobertsMaliskaI const>                        SharedConstRobertsMaliskaI;
-
-
 GRID_NAMESPACE_CLOSE
 
-
+#include <FVMaker/Grid/Grid1D/RMGrid1D.hpp>

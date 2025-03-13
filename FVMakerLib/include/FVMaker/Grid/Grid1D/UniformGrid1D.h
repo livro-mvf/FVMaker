@@ -85,14 +85,6 @@ private :
 
 };
 
-//============================================================================== 
-//   typedef    
-//============================================================================== 
-
-using SharedUniformGrid1D = std::shared_ptr<UniformGrid1D>;
-using SharedConstUniformGrid1D = std::shared_ptr<UniformGrid1D const>;
-using UniqueUniformGrid1D = std::unique_ptr<UniformGrid1D>;
-using UniqueConstUniformGrid1D = std::unique_ptr<UniformGrid1D const>;
 
 
 GRID_NAMESPACE_CLOSE

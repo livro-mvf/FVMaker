@@ -62,6 +62,12 @@
 //==============================================================================
 
 #include <FVMAKER/Grid/Grid1D/RMGrid1D.h> ///< Definição da classe RMGrid para geração da malha nao uniforme
+#include <FVMAKER/Grid/GridPattern/CellCentered.h>
+#include <FVMAKER/Grid/GridPattern/FaceCentered.h>
+
+using fvm::grd::CellCentered;
+using fvm::grd::FaceCentered;
+using fvm::grd::RMGrid1D;
 
 //==============================================================================
 //      Função principal
@@ -81,10 +87,10 @@ int main() {
 //      Dados de configuração da malha
 //==============================================================================
 
-    const Real length(4.0);    ///< Comprimento total do domínio
-    const Real xInit(12.0);    ///< Coordenada inicial do domínio
-    const int nVol(20);        ///< Número de volumes da malha
-
+    const Real LENGTH(4.0);    ///< Comprimento total do domínio
+    const Real XINIT(12.0);    ///< Coordenada inicial do domínio
+    const int NVOL(20);        ///< Número de volumes da malha
+    const Real BETA(1.001);     ///<Beta
 //==============================================================================
 //      Impressao dos dados da malha
 //==============================================================================
@@ -93,23 +99,24 @@ int main() {
     std::cout << "Dados iniciais do Malha Uniforme\n";
     fvm::PrintLine(std::cout);
     std::cout << std::fixed << std::setprecision(3);
-    std::cout << "Comprimento do domínio unidimensional: " << std::setw(10) << length << "\n";
-    std::cout << "Coordenada inicial da malha:           " << std::setw(10) << xInit << "\n";
-    std::cout << "Número de volumes finitos:             " << std::setw(10) << nVol << "\n";
+    std::cout << "Comprimento do domínio unidimensional: " << std::setw(10) << LENGTH << "\n";
+    std::cout << "Coordenada inicial da malha:           " << std::setw(10) << XINIT << "\n";
+    std::cout << "Número de volumes finitos:             " << std::setw(10) << NVOL << "\n";
+    std::cout << "Fator de concentração beta:            " << std::setw(10) << BETA << "\n";
     fvm::PrintLine(std::cout);
 
 //==============================================================================
 //      Geração e exibição da malha uniforme
 //==============================================================================
 
-//    fvm::grd::RMGrid1D ug1D(nVol, length, xInit);
-//    std::cout << ug1D << "\n";
+    fvm::grd::RMGrid1D<CellCentered> malhaFronteira1D(BETA, NVOL, LENGTH, XINIT);
+    std::cout << malhaFronteira1D << "\n";
 
 //==============================================================================
 //      Acessando os vetores da malha
 //==============================================================================
     
-//auto    xCentro = *ug1D.PtrUCCentreCoordinate();
+//auto    xCentro = *malhaFronteira1D.PtrUCCentreCoordinate();
 
 
 //==============================================================================
