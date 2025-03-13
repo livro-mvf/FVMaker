@@ -1,5 +1,5 @@
 //==============================================================================
-// Nome        : MalhaGeometrica.cpp
+// Nome        : Programa_21.cpp
 // Autor       : Joao Flavio Vieira de Vasconcellos
 // Versão      : 1.1
 // Descrição   : Programa que calcula as coordenadas dos nós
@@ -27,7 +27,7 @@
 //==============================================================================
 
 /**
- * @file MalhaGeometrica.cpp
+ * @file Programa_21.cpp
  * @brief Programa para calcular as coordenadas dos nós de uma malha.
  *
  * Este programa gera uma malha unidimensional utilizando diferenças finitas.
@@ -94,21 +94,20 @@ int main() {
 //      Definição das variáveis
 //==============================================================================
 
-const unsigned NVOL = 10;         // Número de nós da malha
-const Real LENGHT = 1.0;          // Comprimento do domínio    
-const Real RATIO = 1.5;           // Razão da progressão geométrica
-const Real XINIT = 2.0;           // Coordenada do primeiro nó
+const unsigned NNOS = 10;         // Número de nós da malha
+const Real LENGHT   = 1.0;          // Comprimento do domínio    
+const Real RATIO    = 1.0000000005;           // Razão da progressão geométrica
+const Real XINIT    = 2.0;           // Coordenada do primeiro nó
     
 Real Dx;                         // Distância entre os nós
-VetorReal xCentro(NVOL);         // Coordenadas x dos nós
-VetorReal xFace(NVOL + 1);       // Coordenadas das faces dos volumes    
+VetorReal xCentro(NNOS);         // Coordenadas x dos nós
 
 //==============================================================================
 //      Geração das coordenadas dos nós segundo uma progressão geométrica
 //==============================================================================
 
 Real x = XINIT;
-Dx = LENGHT * (RATIO - 1.0) / (ipow(RATIO, NVOL) - 1.0);
+Dx = LENGHT * (RATIO - 1.0) / (ipow(RATIO, NNOS) - 1.0);
 
 // Lambda para gerar a progressão geométrica
 auto GeometricProgression = [&x, &Dx, RATIO](auto& _x) -> void {
@@ -117,55 +116,43 @@ auto GeometricProgression = [&x, &Dx, RATIO](auto& _x) -> void {
     Dx *= RATIO;
 };
 
-std::for_each(std::begin(xCentro), std::end(xCentro), GeometricProgression);
-
-// Calcula as coordenadas das faces
-auto CoordFace = [](const auto& _xw, const auto& _xe) {
-    return 0.5 * (_xe + _xw);
-};
-
-std::transform(std::begin(xCentro), std::end(xCentro) - 1,
-               std::begin(xCentro) + 1, std::begin(xFace) + 1,
-               CoordFace);
-
-xFace.front() = XINIT;
-xFace.back() = XINIT + LENGHT;
+std::for_each   (   std::begin(xCentro)
+                ,   std::end(xCentro)
+                ,   GeometricProgression
+                );
 
 //==============================================================================
 //      Impressão do resultado
 //==============================================================================
 
-constexpr unsigned LSIZE = 45;
+constexpr unsigned LSIZE = 25;
 
 std::cout << std::string(LSIZE, '=') << "\n";
-std::cout << std::setw(5) << "vol" << std::setw(20) << "xCentro"
-          << std::setw(20) << "xFace" << "\n";
+std::cout << std::setw(5) << "NO" << std::setw(20) << "xNos\n";
 std::cout << std::string(LSIZE, '=') << "\n\n";
 
-unsigned volume = 0;
+unsigned no = 0;
 
-auto Print = [&volume](const auto& _xC, const auto& _xF) {
+auto Print = [&no](const auto& _xC) {
     std::stringstream ss;
-    ss << std::setw(5) << volume << std::scientific << std::setw(20) << _xC
-       << std::setw(20) << _xF;
-    volume++;
+    ss  << std::setw(5) << no 
+        << std::scientific 
+        << std::setw(20) << _xC;
+    no++;
     return ss.str();    
 };
 
-std::transform(std::begin(xCentro), std::end(xCentro),
-               std::begin(xFace),
-               std::ostream_iterator<std::string>(std::cout, "\n"),
-               Print);
-
-std::cout << std::setw(5) << volume << std::scientific << std::setw(40)
-          << *(--std::end(xFace)) << "\n" << std::flush;
+std::transform  (   std::begin(xCentro)
+                ,   std::end(xCentro)
+                ,   std::ostream_iterator<std::string>(std::cout, "\n")
+                ,   Print
+                );
 
 //==============================================================================
-//      Apagando os vetores
+//      Apagando o vetor
 //==============================================================================
 
 xCentro.clear();
-xFace.clear();
 
 //==============================================================================
 //     Fim do programa

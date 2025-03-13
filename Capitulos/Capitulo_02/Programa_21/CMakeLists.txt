@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Project configuration
-project(MalhaGeometrica VERSION 1.0 LANGUAGES CXX)
+project(Programa_21 VERSION 1.0 LANGUAGES CXX)
 
 # Define o nome do executável
-set(example_name "MalhaGeometrica")
+set(example_name "Programa_21")
 
 # Defina o padrão C++
 set(CMAKE_CXX_STANDARD 20)
@@ -18,8 +18,8 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Busque recursivamente todos os arquivos .cpp na pasta src
 file(GLOB_RECURSE SOURCE_FILES "${SRC_DIR}/*.cpp")
 
-# Adicione o arquivo MalhaGeometrica.cpp explicitamente
-set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MalhaGeometrica.cpp)
+# Adicione o arquivo Programa_21.cpp explicitamente
+set(ADDITIONAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Programa_21.cpp)
 if(NOT EXISTS ${ADDITIONAL_SOURCE})
     message(FATAL_ERROR "The source file ${ADDITIONAL_SOURCE} was not found.")
 endif()
