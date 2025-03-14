@@ -34,7 +34,6 @@
 #include <string_view>          // std::string_view
 #include <source_location>      // std::source_location
 
-
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
@@ -55,6 +54,8 @@ enum class ErrorCode {
     UndefiniedFunction,
     UndefiniedGrid,
     UnhandledException,
+    UnorderedCenterCoordinates,
+    UnorderedFaceCoordinates,
     VectorResizeError
 };
 

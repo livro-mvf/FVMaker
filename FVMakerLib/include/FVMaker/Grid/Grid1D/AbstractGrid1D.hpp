@@ -121,10 +121,17 @@ auto Print = [&](const std::size_t& i)
 template <typename T>
 bool AbstractGrid1D<T> :: CalculaCentros(const Real& _offset) {
     
-    if (!fvm::OrdemCrescente(xFace_)) {
-        std::cout << "As coordenadas das faces não estão ordenadas\n";
+    try {
+        if (!fvm::OrdemCrescente(xFace_))  throw fvm::FVMakerException(ErrorCode::UnorderedFaceCoordinates);
+    } catch (const fvm::FVMakerException& e) {
+        std::cerr << "\n\n";
+        PrintLine(std::cerr);
+        std::cerr << "Exceção capturada: " << e.what() << "\n";
+        PrintLine(std::cerr);
+        std::cerr << "\n\n";
         exit(EXIT_FAILURE);
     }
+
     
     auto Media = [_offset] (const Real& _x, const Real& _y) {return _y + _offset * (_x - _y);};
     std::transform  (   std::execution::par
@@ -143,9 +150,15 @@ bool AbstractGrid1D<T> :: CalculaFaces(const Real& _offset) {
     
     xFace_[0]=  this->XInit();
     xFace_[this->NVol()] = this->XInit() + this->Length();    
-    
-    if (!fvm::OrdemCrescente(xCentro_)) {
-        std::cout << "As coordenadas dos centros não estão ordenadas\n";
+
+    try {
+        if (!fvm::OrdemCrescente(xCentro_))  throw fvm::FVMakerException(ErrorCode::UnorderedCenterCoordinates);
+    } catch (const fvm::FVMakerException& e) {
+        std::cerr << "\n\n";
+        PrintLine(std::cerr);
+        std::cerr << "Exceção capturada: " << e.what() << "\n";
+        PrintLine(std::cerr);
+        std::cerr << "\n\n";
         exit(EXIT_FAILURE);
     }
     
