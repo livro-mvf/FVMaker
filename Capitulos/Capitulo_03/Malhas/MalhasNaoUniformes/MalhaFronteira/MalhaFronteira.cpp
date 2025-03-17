@@ -89,8 +89,8 @@ int main() {
 
     const Real LENGTH(4.0);    ///< Comprimento total do domínio
     const Real XINIT(12.0);    ///< Coordenada inicial do domínio
-    const int NVOL(20);        ///< Número de volumes da malha
-    const Real BETA(1.001);     ///<Beta
+    const int NVOL(10);        ///< Número de volumes da malha
+    const Real BETA(1.005);     ///<Beta
 //==============================================================================
 //      Impressao dos dados da malha
 //==============================================================================

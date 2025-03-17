@@ -129,6 +129,14 @@ bool AbstractGrid1D<T> :: CalculaCentros(const Real& _offset) {
         std::cerr << "Exceção capturada: " << e.what() << "\n";
         PrintLine(std::cerr);
         std::cerr << "\n\n";
+        std::cout << "Coordenada das faces\n";
+        int vol(0);
+        for (auto xx: xFace_) {
+            std::cout << std::setw(10) << vol++
+                      << std::setw(15) << xx 
+                      << "\n";
+        }
+        std::cout << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -159,6 +167,13 @@ bool AbstractGrid1D<T> :: CalculaFaces(const Real& _offset) {
         std::cerr << "Exceção capturada: " << e.what() << "\n";
         PrintLine(std::cerr);
         std::cerr << "\n\n";
+        std::cout << "Coordenada dos centros\n";
+        int vol(0);
+        for (auto xx: xCentro_) {
+            std::cout << std::setw(10) << vol++
+                      << std::setw(15) << xx 
+                      << "\n";
+        }
         exit(EXIT_FAILURE);
     }
     

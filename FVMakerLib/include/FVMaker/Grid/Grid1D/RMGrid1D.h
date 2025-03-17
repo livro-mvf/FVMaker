@@ -80,9 +80,9 @@ public:
 
 private :
         
-    [[nodiscard]] bool GeraMalhaSequencial (const Real&, VecReal*);
-    [[nodiscard]] bool GeraMalhaParalelo (const Real&, VecReal*);
-    [[nodiscard]] bool GeraMalhaSIMD (const Real&, VecReal*);
+    [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
+    [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
+    [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
     [[nodiscard]] Real Funcao (const Real&) const;
 
 //==============================================================================
