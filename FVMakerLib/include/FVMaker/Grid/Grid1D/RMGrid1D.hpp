@@ -11,6 +11,20 @@ RMGrid1D<T> :: RMGrid1D (   const Real&         _beta
                         :   beta_(_beta)
                         ,   AbstractGrid1D<T>(_nVol, _length, _xIni)
 {
+    
+
+    try {
+        if (beta_ <=  1.0)  throw fvm::FVMakerException(ErrorCode::InvalidBeta);
+        
+    } catch (const fvm::FVMakerException& e) {
+        std::cerr << "\n\n";
+        PrintLine(std::cerr);
+        std::cerr << "Exceção capturada: " << e.what() << "\n";
+        PrintLine(std::cerr);
+        std::cerr << "\n\n";
+        exit(EXIT_FAILURE);
+    }
+        
     auxiBeta_ = (beta_ + 1) / (beta_ - 1);
 auto flag =    this->typePattern_->BuildMesh(this);
 }
@@ -39,14 +53,29 @@ auto Uniforme = [DX] (const Real& _soma) {return _soma + DX; };
 
 template<typename T>
 bool RMGrid1D<T>:: GeraCentros() {
-    return false; 
+const Real DX(1.0 / this->NVol());    
+auto Uniforme = [DX] (const Real& _soma) {return _soma + DX; };
+
+    this->xCentro_[0] = 0.5 * DX;
+    std::transform  (   this->xCentro_.begin()
+                    ,   this->xCentro_.end() - 1
+                    ,   this->xCentro_.begin() + 1
+                    ,   Uniforme
+                    );          
+    if (this->NVol() < 10000) return GeraMalhaSequencial(&this->xCentro_);
+    return GeraMalhaParalelo(&this->xCentro_); 
+    return true; 
 }
 
 template<typename T>
 bool RMGrid1D<T>:: GeraMalhaSequencial (VecReal* _coord) {
 
-const Real DX(1.0/ this->NVol());    
+ 
 auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
+
+//for (auto xx : *_coord) {
+//    std::cout << xx << "\n";
+//}
 
     std::transform  (   _coord->begin()
                     ,   _coord->end()
@@ -62,7 +91,7 @@ bool RMGrid1D<T> :: GeraMalhaParalelo (VecReal* _coord){
     
     if (this->NVol() > 100000) return GeraMalhaSIMD(_coord);
     
-const Real DX(1.0/ this->NVol());    
+   
 auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
 
     std::transform  (   std::execution::par
@@ -79,7 +108,7 @@ template<typename T>
 bool RMGrid1D<T> :: GeraMalhaSIMD (VecReal* _coord){
     
     
-const Real DX(1.0/ this->NVol());    
+    
 auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
 
     std::transform  (   std::execution::par_unseq

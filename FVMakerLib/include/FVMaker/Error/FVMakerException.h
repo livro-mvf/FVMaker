@@ -47,8 +47,10 @@
 enum class ErrorCode {
     GridGenerationError,
     InvalidGridDimension,
+    InvalidBeta,
     InvalidLength,
     InvalidNumbersOfVolumes,
+    InvalidOption,
     MemoryAllocationError,
     UndefiniedCoefficient,
     UndefiniedFunction,

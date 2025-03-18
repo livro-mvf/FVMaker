@@ -106,11 +106,16 @@ int main() {
     fvm::PrintLine(std::cout);
 
 //==============================================================================
-//      Geração e exibição da malha uniforme
+//      Geração e exibição da malha 
 //==============================================================================
 
-    fvm::grd::RMGrid1D<CellCentered> malhaFronteira1D(BETA, NVOL, LENGTH, XINIT);
-    std::cout << malhaFronteira1D << "\n";
+    fvm::grd::RMGrid1D<CellCentered> malhaCellCentered(BETA, NVOL, LENGTH, XINIT);
+    std::cout << "\nMalha do tipo Volume Centrado";
+    std::cout << malhaCellCentered << "\n";
+
+    std::cout << "\nMalha do tipo Face Centrada";
+    fvm::grd::RMGrid1D<FaceCentered> malhaFaceCentered(BETA, NVOL, LENGTH, XINIT);
+    std::cout << malhaFaceCentered << "\n";
 
 //==============================================================================
 //      Acessando os vetores da malha
