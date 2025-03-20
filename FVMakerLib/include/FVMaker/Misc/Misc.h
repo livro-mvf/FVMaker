@@ -1,76 +1,90 @@
 //==============================================================================
-// Name        : Misc.h
-// Author      : Joao Flavio Vieira de Vasconcellos
-// Version     : 1.0
-// Description : Arquivo com definições que serao utilizadas
-//               pela biblioteca
+// Nome        : Misc.h
+// Autor       : João Flávio Vieira de Vasconcellos
+// Versão      : 1.0
+// Descrição   : Arquivo com definições auxiliares para a biblioteca FVMaker,
+//               incluindo utilitários para manipulação de strings e arquivos.
 //
-// Copyright   : Copyright (C) <2025>  Joao Flavio Vasconcellos 
-//                                      (jflavio at iprj.uerj.br)
+// Este programa é software livre: você pode redistribuí-lo e/ou
+// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
+// da licença, ou (a seu critério) qualquer versão posterior.
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License.
+// Este programa é distribuído na esperança de que seja útil, mas SEM
+// QUALQUER GARANTIA; sem mesmo a garantia implícita de
+// COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO.
+// Consulte a Licença Pública Geral GNU para mais detalhes.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
+// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
 #pragma once
 
+/**
+ * @file Misc.h
+ * @brief Definições auxiliares para a biblioteca FVMaker.
+ *
+ * Este arquivo contém funções auxiliares para manipulação de strings,
+ * caminhos de arquivos e ordenação de vetores.
+ *
+ * @author João Flávio Vasconcellos
+ * @date 2025
+ * @copyright GNU General Public License v3.0
+ *
+ * @ingroup Misc
+ */
+
 //==============================================================================
-// Includes da c++
+// Includes da Biblioteca Padrão do C++
 //==============================================================================
-#include <algorithm>
-#include <execution>
+#include <algorithm>            // Para std::is_sorted
 
 //==============================================================================
 // Includes da FVMaker
 //==============================================================================
-
-//#include <FVMaker/Misc/type.h>
 #include <FVMaker/Misc/Configure.h>
 
 FVMAKER_NAMESPACE_OPEN
 
-//============================================================================
-// include das funcoes que nao sao de classe alguma
-//============================================================================
+//==============================================================================
+// Funções auxiliares
+//==============================================================================
 
-void            PrintLine(std::ostream&, const unsigned& = LSIZE);
+/** @brief Imprime uma linha no stream de saída. */
+void PrintLine(std::ostream&, const unsigned& = LSIZE);
 
-[[nodiscard]]
-bool            string2bool (std::string);
+/** @brief Converte uma string em booleano. */
+[[nodiscard]] bool string2bool(std::string);
 
-[[nodiscard]]
-std::string getCurrentWorkingDirectory();
+/** @brief Obtém o diretório de trabalho atual. */
+[[nodiscard]] std::string getCurrentWorkingDirectory();
 
-[[nodiscard]]
-std::string getFullPath(const std::string&);
+/** @brief Retorna o caminho absoluto de um arquivo. */
+[[nodiscard]] std::string getFullPath(const std::string&);
 
-[[nodiscard]]
-std::string RenameFile(const std::string&, const std::string&);
+/** @brief Renomeia um arquivo. */
+[[nodiscard]] std::string RenameFile(const std::string&, const std::string&);
 
-
+/** @brief Verifica se um vetor está ordenado de forma crescente. */
 template<typename T>
 [[nodiscard]] bool OrdemCrescente(const T& _vector) {
     return std::is_sorted(std::begin(_vector), std::end(_vector));
 }
 
+/** @brief Implementação explícita da função OrdemCrescente para VecReal. */
 template bool OrdemCrescente<VecReal>(const VecReal&);
 
-//============================================================================
-// Funcoes importantes
-//============================================================================
+//==============================================================================
+// Funções importantes
+//==============================================================================
 
-//! Funcao utilizada para converter string em inteiros.
-
+/**
+ * @brief Converte uma string em um inteiro hash.
+ *
+ * @param _str String de entrada.
+ * @param _h Parâmetro auxiliar para recursão.
+ * @return Valor hash gerado a partir da string.
+ */
 constexpr unsigned int str2int(const char* _str, const int& _h = 0)
 {
     return !_str[_h] ? 5381 : (str2int(_str, _h+1) * 33) ^ _str[_h];

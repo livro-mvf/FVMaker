@@ -5,9 +5,9 @@
 #include <algorithm>        // std::generate_n
 #include <iostream>         // std::iostream
 #include <iterator>         // std::ostream_iterator
-//#include <unistd.h>
+#include <climits>
 #include <sstream>          // std::stringstream
-
+#include <unistd.h>
 
 //==============================================================================
 //  Includes da GridVoronoi++

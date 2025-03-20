@@ -3,10 +3,12 @@
 //==============================================================================
 // Includes da biblioteca padrão do C++
 //==============================================================================
-#include <algorithm>                // std::transform
+//#include <algorithm>                // std::transform
+#include <execution>                // std::execution
 #include <iomanip>                  // std::setw
 #include <iostream>                 // std::cerr 
-#include <iterator>               // std::ostream_iterator
+#include <numeric>                  // std::iota
+#include <iterator>                 // std::ostream_iterator
 
 //==============================================================================
 // Includes da biblioteca FVMaker

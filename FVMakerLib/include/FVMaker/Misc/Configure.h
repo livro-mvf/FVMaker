@@ -1,57 +1,66 @@
-/**
- * @mainpage Documentação da Biblioteca GridVoronoi++
- *
- * @section intro_sec Introdução
- *
- *  Esta é a documentação da biblioteca GridVoronoi++. Ela foi projetada para 
- *  aqueles que necessitam desenvolver programas na área de geometria computacional
- *  envolvendo algoritmos de Voronoi em grades.
- *
- *  Por isso, desenvolvemos esta biblioteca que oferece uma variedade de funcionalidades
- *  relacionadas a diagramas de Voronoi em grades.
- *
- * @section dependencies Dependências
- *
- * Esta biblioteca depende de <a href="https://github.com/adafruit/Adafruit_Sensor">
- * Adafruit_Sensor</a> estar presente no seu sistema. Por favor, certifique-se de ter
- * instalado a versão mais recente antes de usar esta biblioteca.
- *
- * @section authors Autores
- *
- *  O código foi desenvolvido por:
- *  - Lara Botelho Brum
- *  - Luan Rodrigues Soares de Souza
- * 
- *  sob a supervisão de
- *  - João Flávio Vasconcellos
- *
- * @section license Licença
- * 
- * @copyright   : Copyright (C) 2021 João Flávio Vasconcellos 
- *                                      (jflavio at iprj.uerj.br)
- *
- * Este projeto é lançado sob a Licença Pública GNU. Veja o arquivo LICENSE
- * junto com este programa. Se não, veja <http://www.gnu.org/licenses/>.
- */
+//==============================================================================
+// Nome        : Configure.h
+// Autor       : João Flávio Vieira de Vasconcellos
+// Versão      : 1.1
+// Descrição   : Arquivo de configuração global da biblioteca FVMaker,
+//               com definições numéricas para precisão e cálculos.
+//
+// Este programa é software livre: você pode redistribuí-lo e/ou
+// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
+// da licença, ou (a seu critério) qualquer versão posterior.
+//
+// Este programa é distribuído na esperança de que seja útil, mas SEM
+// QUALQUER GARANTIA; sem mesmo a garantia implícita de
+// COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO.
+// Consulte a Licença Pública Geral GNU para mais detalhes.
+//
+// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
+// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
+//==============================================================================
 
 #pragma once
+
+/**
+ * @file Configure.h
+ * @brief Configurações globais da biblioteca FVMaker.
+ *
+ * Este arquivo contém definições de constantes e configurações gerais
+ * utilizadas em toda a biblioteca FVMaker, incluindo precisão numérica
+ * e valores limite para cálculos.
+ *
+ * @author João Flávio Vasconcellos
+ * @date 2025
+ * @copyright GNU General Public License v3.0
+ *
+ * @ingroup Misc
+ */
 
 #include <FVMaker/Misc/Type.h>
 
 //==============================================================================
 // Includes da Biblioteca Padrão do C++
 //==============================================================================
-
-#include <cmath>                // std::acos
-#include <limits>               // std::numeric_limits
+#include <cmath>  ///< Funções matemáticas como std::acos
+#include <limits> ///< Limites numéricos da máquina
 
 FVMAKER_NAMESPACE_OPEN
 
+/** @brief Definição do valor zero, considerando precisão numérica. */
+const Real ZERO = (1e250 * std::numeric_limits<Real>::min());
 
-    const Real ZERO = (1e250 * std::numeric_limits<Real>::min());  ///< Valor de zero
-    const Real LIMITE(1e-30);                                      ///< Limite
-    const Real EPSILON(1e-6);                                      ///< Epsilon
-    const int LSIZE(0x50);                                          ///< Tamanho padrão
+/** @brief Limite numérico usado para evitar erros de arredondamento. */
+const Real LIMITE(1e-30);
 
-    constexpr Real Pi() {return acos(-1.0L);};
-FVMAKER_NAMESPACE_CLOSE 
+/** @brief Pequeno valor usado para comparações de precisão numérica. */
+const Real EPSILON(1e-6);
+
+/** @brief Tamanho padrão usado em diversas configurações da biblioteca. */
+const int LSIZE(0x50);
+
+/**
+ * @brief Retorna o valor de \f$ \pi \f$ com precisão longa.
+ * @return Valor de \f$ \pi \f$ com precisão de long double.
+ */
+constexpr Real Pi() { return acos(-1.0L); }
+
+FVMAKER_NAMESPACE_CLOSE

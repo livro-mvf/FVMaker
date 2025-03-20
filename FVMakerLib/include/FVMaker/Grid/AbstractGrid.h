@@ -1,133 +1,86 @@
-#pragma once
-
 //==============================================================================
-// Nome        : Abstract.h
+// Nome        : AbstractGrid.h
 // Autor       : João Flávio Vieira de Vasconcellos
 // Versão      : 1.0
 // Descrição   : Classe base para todas as classes de geração de malhas.
-//               Define a interface comum para as classes derivadas de malhas 1D, 2D, 3D, etc.
+//               Define a interface comum para as classes derivadas de malhas
+//               1D, 2D, 3D.
+//
+// Este programa é software livre: você pode redistribuí-lo e/ou
+// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
+// da licença, ou (a seu critério) qualquer versão posterior.
+//
+// Este programa é distribuído na esperança de que seja útil, mas SEM
+// QUALQUER GARANTIA; sem mesmo a garantia implícita de
+// COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO.
+// Consulte a Licença Pública Geral GNU para mais detalhes.
+//
+// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
+// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
-////==============================================================================
-//// Includes do C++
-////==============================================================================
-//
-//#include <memory>
-//#include <iosfwd>  // Para declaração antecipada de std::ostream
-//
-//==============================================================================
-// FVMAKER includes
-//==============================================================================
+#pragma once
 
-#include <FVMaker/Misc/namespace.h>
-#include <FVMaker/Misc/type.h>
+/**
+ * @file AbstractGrid.h
+ * @brief Classe base para geração de malhas na biblioteca FVMaker.
+ *
+ * Esta classe fornece uma interface comum para classes derivadas de malhas
+ * (1D, 2D, 3D, etc.). As classes derivadas devem implementar a lógica
+ * específica para geração e armazenamento das coordenadas.
+ *
+ * @author João Flávio Vasconcellos
+ * @date 2025
+ * @copyright GNU General Public License v3.0
+ *
+ * @ingroup Grid
+ */
+
+//==============================================================================
+// Includes do C++
+//==============================================================================
+#include <FVMaker/Misc/Namespace.h>
+#include <FVMaker/Misc/Type.h>
 
 //==============================================================================
 // Abertura do namespace FVMaker::AbstractGrid
 //==============================================================================
-
 GRID_NAMESPACE_OPEN
 
 /**
  * @class AbstractGrid
- * @brief Classe base para todas as classes de malhas (1D, 2D, 3D, etc.).
+ * @brief Classe base abstrata para geração de malhas (1D, 2D, 3D, etc.).
  *
- * Esta classe fornece uma interface comum para as classes derivadas, mas
- * não armazena as coordenadas. As classes derivadas (como AbstractGrid1D, AbstractGrid2D, etc.)
- * devem implementar a lógica para gerar e armazenar as coordenadas específicas.
+ * Esta classe define uma interface comum para todas as malhas da biblioteca.
+ * As classes derivadas devem implementar a lógica para gerar e armazenar
+ * as coordenadas específicas.
  */
-
-
-
 template<typename TypePattern>
 class AbstractGrid {
 
-//==============================================================================
-// Construtores / destrutora
-//==============================================================================
-    
 public:
-    
+    /** @brief Construtor padrão. */
     AbstractGrid() noexcept = default;
+    
+    /** @brief Construtor de cópia. */
     AbstractGrid(const AbstractGrid&) noexcept = default;
+    
+    /** @brief Destrutor virtual. */
     virtual ~AbstractGrid() noexcept = default;
+    
+    /** @brief Construtor de movimento deletado. */
     AbstractGrid(AbstractGrid&&) = delete;
     
-//==============================================================================
-// Sobrecarga de operadores
-//==============================================================================
-    
-public:
-    
+    /** @brief Operador de atribuição de cópia deletado. */
     AbstractGrid& operator=(const AbstractGrid&) = delete;
+    
+    /** @brief Operador de atribuição de movimento deletado. */
     AbstractGrid& operator=(AbstractGrid&&) = delete;
     
-//==============================================================================
-// funções puramente virtuais
-//==============================================================================
-    
-public:
-
+    /** @brief Verifica se a grade está vazia. */
     [[nodiscard]] virtual bool empty() const = 0;
-    
-//public:
-//   
-//    /**
-//     * @brief Construtora default da classe AbstractGrid.
-//     */
-//
-//    AbstractGrid() noexcept = default;
-//
-//     /**
-//     * @brief Construtor de cópia da classe AbstractGrid.
-//     * 
-//     * @param other Objeto a ser copiado.
-//     */
-//
-//    AbstractGrid(const AbstractGrid& other) noexcept = default;
-//    
-//    /**
-//     * @brief Destrutora da classe AbstractGrid.
-//     */
-//
-//    virtual ~AbstractGrid() noexcept = default;
-//
-////==============================================================================
-//// Funções da classe
-////==============================================================================
-//    
-//protected:    
-//    
-//    /**
-//     * @brief Função puramente virtual para gerar as coordenadas das faces e centros.
-//     * As classes derivadas devem implementar esse método.
-//     */
-//    virtual void generate() = 0;
-//
-//    /**
-//     * @brief Método virtual puro para imprimir as coordenadas.
-//     * Cada classe derivada implementará como imprimir as coordenadas específicas.
-//     */
-//    virtual void printCoordinates(std::ostream& os) const = 0;
-//    
-//public:    
-//
-//    /**
-//     * @brief Sobrecarga do operador de saída para imprimir as coordenadas.
-//     * @param os Fluxo de saída.
-//     * @param grid Referência para o objeto AbstractGrid.
-//     * @return Referência para o fluxo de saída.
-//     */
-//
-//    friend std::ostream& operator<<(std::ostream& os, const AbstractGrid& grid) {
-//        grid.printCoordinates(os);
-//        return os;
-//    }
-//
 };
 
-#include <FVMAKER/Grid/AbstractGrid.hpp>
-
-
+#include <FVMaker/Grid/AbstractGrid.hpp>
 
 GRID_NAMESPACE_CLOSE

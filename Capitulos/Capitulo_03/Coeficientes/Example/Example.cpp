@@ -133,8 +133,8 @@ int main() {
 
     
 fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);       
-auto TermoFonte = [] (const Real& _x) -> PairData { 
-    return PairData(_x * _x, 0);
+auto TermoFonte = [] (const Real& _x) -> fvm::PairData { 
+    return fvm::PairData(_x * _x, 0);
 };
 
     fx.setFunction(TermoFonte);
