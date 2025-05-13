@@ -1,4 +1,3 @@
-
 //==============================================================================
 // Nome        : AbstractGrid.h
 // Autor       : João Flávio Vieira de Vasconcellos
