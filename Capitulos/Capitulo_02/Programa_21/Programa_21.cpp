@@ -1,182 +1,229 @@
 //==============================================================================
 // Nome        : Programa_21.cpp
 // Autor       : Joao Flavio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Programa que calcula as coordenadas dos nós para uma malha
-//               unidimensional de diferenças finitas
-// Livro       : Código 2.1 do livro
-//               Solução Numérica de Equações Diferenciais - 
-//               O Método de Volumes Finitos
-// Testado     : gcc 10.2 usando c++20 em 12 / mar / 2025
-//
-// Direitos autorais : Copyright (C) <2025> Joao Flavio Vasconcellos 
-//                    (jflavio at iprj.uerj.br)
-//
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU como publicada
-// pela Free Software Foundation, tanto a versão 3 da Licença como (a
-// seu critério) qualquer versão posterior.
-//
-// Este programa é distribuído na esperança de que seja útil,
-// mas SEM NENHUMA GARANTIA; sem mesmo a garantia implícita de
-// COMERCIABILIDADE ou ADEQUAÇÃO A QUALQUER PROPÓSITO EM PARTICULAR.
-// Consulte a Licença Pública Geral GNU para mais detalhes.
-//
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU
-// junto com este programa. Se não, veja <http://www.gnu.org/licenses/>.
+// Versao      : 2.2
+// Descricao   : Programa para calculo de coordenadas de nos em malha unidimensional
+//               com progressao geometrica usando o metodo de diferencas finitas
+// Livro       : Codigo 2.1 do livro:
+//               "Solucao Numerica de Equacoes Diferenciais - O Metodo de Volumes Finitos"
+// Testado     : gcc 13.2 usando c++23 em 2024-06-20
 //==============================================================================
 
 /**
  * @file Programa_21.cpp
- * @brief Programa para calcular as coordenadas dos nós de uma malha.
- *
- * Este programa gera uma malha unidimensional utilizando diferenças finitas.
- * Os nós são distribuídos segundo uma progressão geométrica especificada.
- *
- * @version 1.1
- * @date 2025-03-12
- * @author João Flávio Vasconcellos
- *
- * @copyright Copyright (c) 2025
+ * @brief Programa para calculo de coordenadas de nos em malha unidimensional com progressao geometrica
+ * 
+ * Este programa gera uma malha unidimensional onde os nos sao distribuidos segundo
+ * uma progressao geometrica. Versao com implementacoes paralela e sequencial.
+ * 
+ * @version 2.2
+ * @date 2024-06-20
+ * @author Joao Flavio Vasconcellos
+ * 
+ * @copyright Copyright (c) 2024
  * @license GNU GPL v3
  */
 
 //==============================================================================
-//      Inclusões da Biblioteca Padrão do C++
+//      Inclusoes da Biblioteca Padrao do C++
 //==============================================================================
 
-#include <algorithm>    // std::for_each
-#include <iomanip>      // std::setw, std::setprecision, std::fixed, std::scientific
-#include <iostream>     // std::cout, std::endl
-#include <iterator>     // std::ostream_iterator
-#include <vector>       // std::vector
+#include <algorithm>       // Para std::for_each, std::generate
+#include <execution>       // Para std::execution::par
+#include <iomanip>         // Para std::setw, std::setprecision
+#include <iostream>        // Para std::cout, std::endl
+#include <numeric>         // Para std::inclusive_scan
+#include <vector>          // Para std::vector
 
 //==============================================================================
-//      typedef
+//      Definicoes de tipos
 //==============================================================================
 
-using Real      = double;
-using VetorReal = std::vector<Real>;
+using Real = double;                   // Tipo para numeros reais
+using VetorReal = std::vector<Real>;   // Vetor de numeros reais
 
 //==============================================================================
-//      Função para o cálculo de real elevado a um inteiro
+//      Prototipos das funcoes
 //==============================================================================
 
-/**
- * @brief Calcula a potência de um número real com expoente inteiro.
- *
- * @param _base  Base real.
- * @param _exp   Expoente inteiro.
- * @param _result Resultado parcial (usado na recursão).
- * @return Real  Resultado de _base elevado a _exp.
- */
-constexpr Real ipow(const Real& _base, const int& _exp, 
-                      const Real& _result = 1) {
-    return _exp < 1 ? _result 
-                    : ipow(_base * _base, _exp >> 1,
-                           (_exp % 2) ? _result * _base : _result);
-}
+constexpr Real ipow(Real _base, int _exp) noexcept;
+void CalcularSequencial(VetorReal&, const Real&, const Real&, const Real&, const unsigned&);
+void CalcularParalelo(VetorReal&, const Real&, const Real&, const Real&, const unsigned&);
+void ImprimirResultados(const VetorReal&, const Real&, const Real&, const Real&, const unsigned&);
 
 //==============================================================================
-//      Função principal
+//      Funcao principal
 //==============================================================================
 
-/**
- * @brief Função principal do programa.
- *
- * Esta função gera uma malha unidimensional utilizando diferenças finitas e
- * imprime as coordenadas dos nós, os quais são distribuídos segundo uma
- * progressão geométrica.
- *
- * @return int Código de saída do programa. Retorna EXIT_SUCCESS se a 
- *             execução for bem-sucedida.
- */
 int main() {
 
 //==============================================================================
-//      Definição das variáveis
+//      Parametros da malha
 //==============================================================================
 
-    const unsigned NNOS  = 11;      // Número de nós da malha
-    const Real     LENGTH = 4.0;     // Comprimento do domínio
-    const Real     RATIO  = 1.05;     // Razão da progressão geométrica
-    const Real     XINIT  = -2.0;    // Coordenada do primeiro nó
-    constexpr unsigned LSIZE = 25;
+    constexpr Real XINIT = 0;                   // Coordenada inicial da malha
+    constexpr Real LENGTH = 4;                  // Comprimento da malha
+    constexpr unsigned NNOS = 11;               // Numero de nos
+    constexpr unsigned NNOSSERIAL = 1000;       // Limite para usar versao serial
+    constexpr Real RATIO = 1.05;                // Razao da progressao geometrica
+    
 
-    Real Dx;                      // Distância entre os nós
-    VetorReal xCentro(NNOS);      // Coordenadas x dos nós
-
-//==============================================================================
-//      Impressão dos dados da malha
-//==============================================================================
-
-    std::cout << "Dados iniciais da malha geométrica\n";
-    std::cout << std::string(LSIZE + 24, '=') << "\n";
-    std::cout << std::fixed << std::setprecision(3);
-    std::cout << "Comprimento do domínio unidimensional: " 
-              << std::setw(10) << LENGTH << "\n";
-    std::cout << "Coordenada inicial da malha:           " 
-              << std::setw(10) << XINIT << "\n";
-    std::cout << "Razão da progressão geométrica:        " 
-              << std::setw(10) << RATIO << "\n";
-    std::cout << "Número de nós da malha:                " 
-              << std::setw(10) << NNOS << "\n";
-    std::cout << std::string(LSIZE + 24, '=') << "\n\n\n";
+    if (NNOS < 2) {
+        std::cerr << "Erro: Numero de nos deve ser >= 2\n";
+        return EXIT_FAILURE;
+    }
+    
+    VetorReal xCentro(NNOS);
 
 //==============================================================================
-//      Geração das coordenadas dos nós segundo uma progressão geométrica
+//      Selecao automatica da versao (serial/paralela)
+//==============================================================================
+    
+    if (NNOS < NNOSSERIAL) {
+        CalcularSequencial(xCentro, XINIT, LENGTH, RATIO, NNOS);
+    } else {
+        CalcularParalelo(xCentro, XINIT, LENGTH, RATIO, NNOS);
+    }
+
+    ImprimirResultados(xCentro, XINIT, LENGTH, RATIO, NNOS);
+    
+    return EXIT_SUCCESS;
+}
+
+//==============================================================================
+//     Funcoes do codigo
 //==============================================================================
 
-    Real x = XINIT;
-    Dx = LENGTH * (RATIO - 1.0) / (ipow(RATIO, NNOS - 1) - 1.0);
+/**
+ * @brief Calcula a potencia de um numero real com expoente inteiro
+ * 
+ * @param _base     Base da potencia
+ * @param _exp      Expoente inteiro
+ * @return Real     Resultado da potencia
+ */
+constexpr Real ipow(Real _base, int _exp) noexcept {
 
-    // Lambda para gerar a progressão geométrica
-    auto GeometricProgression = [&x, &Dx, RATIO](auto& _x) -> void {
+    if (_exp < 0) return 0.0;
+    
+    Real result = 1.0;
+    while (_exp > 0) {
+        if (_exp % 2 == 1) {
+            result *= _base;
+        }
+        _base *= _base;
+        _exp /= 2;
+    }
+
+    return result;
+}
+
+/**
+ * @brief Versao serial da geracao de malha
+ * 
+ * @param _xNo Vetor para armazenar as coordenadas dos nos
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ * @param _ratio Razao da geracao da malha geometrica
+ * @param _nNos Comprimento total do dominio
+ */
+void CalcularSequencial(    VetorReal&          _xNode,
+                            const Real&         _xInit,
+                            const Real&         _length,
+                            const Real&         _ratio,
+                            const unsigned&     _nNos) {
+
+    Real delta = _length * (_ratio - 1.0) / (ipow(_ratio, _nNos - 1) - 1.0);;
+    Real x = _xInit;
+    auto geomProg = [&](Real& _x) {
         _x = x;
-        x += Dx;
-        Dx *= RATIO;
+        x += delta;
+        delta *= _ratio;
+    };
+    
+    std::for_each(_xNode.begin(), _xNode.end(), geomProg);
+}
+
+/**
+ * @brief Versao paralela da geracao de malha
+ * 
+ * @param _xNo Vetor para armazenar as coordenadas dos nos
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ * @param _ratio Razao da geracao da malha geometrica
+ * @param _nNos Comprimento total do dominio
+ */
+void CalcularParalelo(  VetorReal&          _xNode,
+                        const Real&         _xInit,
+                        const Real&         _length,
+                        const Real&         _ratio,
+                        const unsigned&     _nNos) {
+    
+    VetorReal deltas(_nNos);
+    deltas[0] = 0.0;
+
+    Real delta = _length * (_ratio - 1.0) / (ipow(_ratio, _nNos - 1) - 1.0);;
+
+    
+    for (unsigned i = 1; i < _nNos; ++i) {
+        deltas[i] = delta;
+        delta *= _ratio;
+    }
+
+    std::inclusive_scan(    std::execution::par,
+                            deltas.begin(), 
+                            deltas.end(),
+                            deltas.begin());
+
+    auto Soma = [_xInit](const Real& _valor) { return _xInit + _valor; };
+
+    std::transform  (   std::execution::par,
+                        deltas.begin(),
+                        deltas.end(),
+                        _xNode.begin(),
+                        Soma);
+}
+
+/**
+ * @brief Imprime os resultados formatados
+ * 
+ * @param _xNo Vetor para armazenar as coordenadas dos nos
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ * @param _ratio Razao da geracao da malha geometrica
+ * @param _nNos Comprimento total do dominio
+ */
+void ImprimirResultados(    const VetorReal&    _xNo,
+                            const Real&         _xInit,
+                            const Real&         _length,
+                            const Real&         _ratio,
+                            const unsigned&     _nNos) {
+    constexpr unsigned LSIZE = 25;
+    constexpr unsigned PRECISION = 6;
+    
+    std::cout << "\nDADOS DA MALHA GEOMETRICA\n";
+    std::cout << std::string(LSIZE + 4, '=') << "\n";
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << "Comprimento total: " << std::setw(10) << _length << "\n";
+    std::cout << "Coordenada inicial:" << std::setw(10) << _xInit << "\n";
+    std::cout << "Razao geometrica:  " << std::setw(10) << _ratio << "\n";
+    std::cout << "Numero de nos:     " << std::setw(10) << _nNos << "\n";
+    std::cout << std::string(LSIZE + 4, '=') << "\n\n";
+
+    std::cout << "COORDENADAS DOS NOS\n";
+    std::cout << std::string(LSIZE, '=') << "\n";
+    std::cout << std::setw(5) << "No" << std::setw(20) << "Posicao" << "\n";
+    std::cout << std::string(LSIZE, '=') << "\n";
+
+    auto ImprimirNo = [PRECISION](unsigned i, Real valor) {
+        std::cout << std::setw(5) << i 
+                  << std::scientific << std::setprecision(PRECISION)
+                  << std::setw(20) << valor << "\n";
     };
 
-    std::for_each(std::begin(xCentro), std::end(xCentro),
-                  GeometricProgression);
-
-//==============================================================================
-//      Impressão do resultado
-//==============================================================================
-
-    std::cout << "Impressão das coordenadas dos nós da malha geométrica\n";
-    std::cout << std::string(LSIZE, '=') << "\n";
-    std::cout << std::setw(5) << "NO" 
-              << std::setw(20) << "xNo" << "\n";
-    std::cout << std::string(LSIZE, '=') << "\n";
-
-    unsigned no = 0;
-    auto Print = [&no](const auto& _xC) {
-        std::stringstream ss;
-        ss << std::setw(5) << no 
-           << std::scientific 
-           << std::setw(20) << _xC;
-        no++;
-        return ss.str();
-    };
-
-    std::transform  (   std::begin(xCentro)
-                    ,   std::end(xCentro)
-                    ,   std::ostream_iterator<std::string>(std::cout, "\n")
-                    ,   Print
-                    );
+    int contador(1);
+    for (auto no : _xNo) {
+        ImprimirNo(contador++, no);
+    }
 
     std::cout << std::string(LSIZE, '=') << "\n\n";
-
-//==============================================================================
-//      Limpeza do vetor
-//==============================================================================
-
-    xCentro.clear();
-
-//==============================================================================
-//     Fim do programa
-//==============================================================================
-
-    return EXIT_SUCCESS;
 }

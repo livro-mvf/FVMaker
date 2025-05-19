@@ -1,160 +1,213 @@
 //==============================================================================
 // Nome        : Programa_22.cpp
 // Autor       : Joao Flavio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Programa que calcula as coordenadas dos nós para uma malha
-//               aleatória unidimensional de diferenças finitas
-// Livro       : Código 2.2 do livro
-//               Solução Numérica de Equações Diferenciais -
-//               O Método de Volumes Finitos
-// Testado     : gcc 10.2 usando c++20 em 12 / mar / 2025
-//
-// Direitos autorais : Copyright (C) <2025> Joao Flavio Vasconcellos
-//                    (jflavio at iprj.uerj.br)
-//
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU, conforme
-// publicada pela Free Software Foundation, na versão 3 da Licença ou
-// (a seu critério) qualquer versão posterior.
-//
-// Este programa é distribuído na esperança de que seja útil, mas SEM
-// NENHUMA GARANTIA; sem mesmo a garantia implícita de COMERCIABILIDADE
-// ou ADEQUAÇÃO A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença
-// Pública Geral GNU para mais detalhes.
-//
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-// com este programa. Se não, veja <http://www.gnu.org/licenses/>.
+// Versao      : 2.3
+// Descricao   : Programa para geracao de malha aleatoria unidimensional
+//               (versao serial/paralela com STL e lambdas separadas)
+// Livro       : Codigo 2.2 do livro:
+//               "Solucao Numerica de Equacoes Diferenciais - O Metodo de Volumes Finitos"
+// Testado     : gcc 13.2 usando c++23 em 2024-06-20
 //==============================================================================
 
 /**
  * @file Programa_22.cpp
- * @brief Programa para calcular as coordenadas dos nós de uma malha
- *        aleatória.
- *
- * Este programa gera uma malha unidimensional aleatória utilizando
- * diferenças finitas. Os nós são distribuídos aleatoriamente dentro do
- * comprimento especificado.
- *
- * @version 1.1
- * @date 2025-03-12
- * @author João Flávio Vasconcellos
- *
- * @copyright Copyright (c) 2025
+ * @brief Programa para geracao de malha aleatoria unidimensional
+ * 
+ * Versao com implementacoes serial e paralela usando STL,
+ * com lambdas separadas das operacoes STL e geracao aleatoria melhorada.
+ * 
+ * @version 2.3
+ * @date 2024-06-20
+ * @author Joao Flavio Vasconcellos
+ * 
+ * @copyright Copyright (c) 2024
  * @license GNU GPL v3
  */
 
 //==============================================================================
-//      Inclusões da Biblioteca Padrão do C++
+//      Inclusoes da Biblioteca Padrao do C++
 //==============================================================================
 
-#include <algorithm>   // std::sort
-#include <chrono>      // std::chrono::system_clock::now()
-#include <iomanip>     // std::setw, std::fixed, std::setprecision
-#include <iostream>    // std::cout, std::endl
-#include <random>      // std::default_random_engine,
-#include <vector>      // std::vector
+#include <execution>       // Para std::execution::par
+#include <functional>      // Para std::function<Real()>
+#include <iomanip>         // Para std::setw, std::setprecision
+#include <iostream>        // Para std::cout, std::endl
+#include <random>          // Para std::random_device, std::mt19937
+#include <vector>          // Para std::vector
 
 //==============================================================================
-//      typedef
+//      Definicoes de tipos
 //==============================================================================
 
-using Real      = double;
-using VetorReal = std::vector<Real>;
+using Real = double;                   // Tipo para numeros reais
+using VetorReal = std::vector<Real>;   // Vetor de numeros reais
 
 //==============================================================================
-//      Função principal
+//      Prototipos das funcoes
+//==============================================================================
+
+auto CriarGeradorAleatorio(const Real&, const Real&) -> std::function<Real()>;
+void GerarMalhaSerial(VetorReal&, const Real&, const Real&);
+void GerarMalhaParalela(VetorReal&, const Real&, const Real&);
+void ImprimirResultados(const VetorReal&, const Real&, const Real&, const unsigned&);
+
+//==============================================================================
+//      Funcao principal
+//==============================================================================
+
+int main() {
+//==============================================================================
+//      Parametros da malha
+//==============================================================================
+
+    constexpr Real XINIT = 0;                   // Coordenada inicial da malha
+    constexpr Real LENGTH = 4;                  // Comprimento da malha
+    constexpr unsigned NNOS = 11;               // Numero de nos
+    constexpr unsigned NNOSSERIAL = 1000;       // Limite para usar versao serial
+
+    if (NNOS < 2) {
+        std::cerr << "Erro: Numero de nos deve ser >= 2\n";
+        return EXIT_FAILURE;
+    }
+
+    VetorReal xNo(NNOS);
+
+//==============================================================================
+//      Selecao automatica da versao (serial/paralela)
+//==============================================================================
+
+    if (NNOS < NNOSSERIAL) {
+        GerarMalhaSerial(xNo, XINIT, LENGTH);
+    } else {
+        GerarMalhaParalela(xNo, XINIT, LENGTH);
+    }
+
+    ImprimirResultados(xNo, LENGTH, XINIT, NNOS);
+    
+    return EXIT_SUCCESS;
+}
+
+//==============================================================================
+//      Implementacao das funcoes
 //==============================================================================
 
 /**
- * @brief Função principal do programa.
- *
- * Esta função gera uma malha aleatória unidimensional utilizando
- * diferenças finitas e imprime as coordenadas dos nós da malha.
- *
- * @return int Indicação de sucesso na execução do programa.
+ * @brief Cria gerador aleatorio com mt19937 e random_device
+ * 
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ * @return std::function<Real()> Funcao geradora de numeros aleatorios
  */
-int main() {
+auto CriarGeradorAleatorio (    const Real& _xInit, 
+                                const Real& _length) -> std::function<Real()> {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<Real> dist(_xInit, _xInit + _length);
 
-    //==============================================================================
-    //      Definição das constantes
-    //==============================================================================
+    return [gen = std::move(gen), dist = std::move(dist)]() mutable {
+        return dist(gen);
+    };
+}
 
-    const Real XINIT = 0.0;      // Coordenada inicial da malha
-    const Real LENGTH = 2.0;     // Comprimento da malha
-    const int  NNOS   = 10;      // Número de nós
-    constexpr unsigned LSIZE = 25;
-
-    //==============================================================================
-    //      Impressão dos dados iniciais da malha
-    //==============================================================================
-
-    std::cout << "Dados iniciais da malha aleatória\n";
-    std::cout << std::string(LSIZE + 24, '=') << "\n";
-    std::cout << std::fixed << std::setprecision(3);
-    std::cout << "Comprimento do domínio unidimensional: "
-              << std::setw(10) << LENGTH << "\n";
-    std::cout << "Coordenada inicial da malha:           "
-              << std::setw(10) << XINIT << "\n";
-    std::cout << "Número de nós da malha:                "
-              << std::setw(10) << NNOS << "\n";
-    std::cout << std::string(LSIZE + 24, '=') << "\n\n\n";
-
-    //==============================================================================
-    //      Inicialização do gerador de números aleatórios
-    //==============================================================================
-
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch()
-                    .count();
-    std::default_random_engine generator(seed);
-    std::uniform_real_distribution<Real> distribution(XINIT, XINIT + LENGTH);
-
-    //==============================================================================
-    //      Criação do vetor para armazenar as coordenadas dos nós
-    //==============================================================================
-
-    VetorReal xNo(NNOS, 0.0);   // Vetor com as coordenadas dos nós da malha
-
-    //==============================================================================
-    //      Geração das coordenadas dos nós
-    //==============================================================================
-
-    // Lambda para gerar um número aleatório
-    auto Aleatorio = [&distribution, &generator]() {
-        return distribution(generator);
+/**
+ * @brief Versao serial da geracao de malha
+ * 
+ * @param _xNo Vetor para armazenar as coordenadas dos nos
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ */
+void GerarMalhaSerial   (   VetorReal&      _xNo, 
+                            const Real&     _xInit, 
+                            const Real&     _length) {
+    
+    auto aleatorio = CriarGeradorAleatorio(_xInit, _length);
+    
+    auto PreencherAleatorio = [&](auto& elemento) {
+        elemento = aleatorio();
     };
 
-    // Gera coordenadas aleatórias para os nós, exceto para o primeiro e o último
-    std::generate_n(std::next(xNo.begin()), NNOS - 2, Aleatorio);
+    std::for_each   (   std::next(_xNo.begin()), 
+                        std::prev(_xNo.end()), 
+                        PreencherAleatorio);
+    
+    _xNo.front() = _xInit;
+    _xNo.back() = _xInit + _length;
+    
+    std::sort(std::next(    _xNo.begin()), 
+                            std::prev(_xNo.end()));
+}
 
-    xNo.front() = XINIT;          // Coordenada do primeiro nó
-    xNo.back()  = XINIT + LENGTH; // Coordenada do último nó
+/**
+ * @brief Versao paralela da geracao de malha
+ * 
+ * @param _xNo Vetor para armazenar as coordenadas dos nos
+ * @param _xInit Coordenada inicial do dominio
+ * @param _length Comprimento total do dominio
+ */
+void GerarMalhaParalela (   VetorReal&      _xNo, 
+                            const Real&     _xInit, 
+                            const Real&     _length) {
 
-    // Ordena as coordenadas em ordem crescente
-    std::ranges::sort(xNo);
+    // Cria um gerador por thread para thread-safety
+    thread_local auto aleatorio = CriarGeradorAleatorio(_xInit, _length);
+    
+    auto PreencherAleatorio = [](auto& elemento) {
+        elemento = aleatorio();
+    };
 
+    
+    std::for_each(std::execution::par,
+                 std::next(_xNo.begin()),
+                 std::prev(_xNo.end()),
+                 PreencherAleatorio);
+    
+    _xNo.front() = _xInit;
+    _xNo.back() = _xInit + _length;
 
-    //==============================================================================
-    //      Impressão da malha gerada
-    //==============================================================================
+    std::sort(  std::execution::par, 
+                std::next(_xNo.begin()),
+                std::prev(_xNo.end()));
+}
 
-    std::cout << "Impressão das coordenadas dos nós da malha aleatória\n";
+/**
+ * @brief Imprime os resultados formatados
+ * 
+ * @param _xNo Vetor com as coordenadas dos nos
+ * @param _length Comprimento total do dominio
+ * @param _xInit Coordenada inicial do dominio
+ * @param _nNos Numero total de nos
+ */
+void ImprimirResultados(    const VetorReal&    _xNo,
+                            const Real& _length,
+                            const Real& _xInit,
+                            const unsigned& _nNos) {
+   
+    constexpr unsigned LSIZE = 25;
+    constexpr unsigned PRECISION = 6;
+    
+    std::cout << "\nDADOS DA MALHA ALEATORIA\n";
+    std::cout << std::string(LSIZE + 4, '=') << "\n";
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << "Comprimento total: " << std::setw(10) << _length << "\n";
+    std::cout << "Coordenada inicial:" << std::setw(10) << _xInit << "\n";
+    std::cout << "Numero de nos:     " << std::setw(10) << _nNos << "\n";
+    std::cout << std::string(LSIZE + 4, '=') << "\n\n";
+
+    std::cout << "COORDENADAS DOS NOS\n";
     std::cout << std::string(LSIZE, '=') << "\n";
-    std::cout << std::setw(5) << "No" << std::setw(20) << "xNo" << "\n";
+    std::cout << std::setw(5) << "No" << std::setw(20) << "Posicao" << "\n";
     std::cout << std::string(LSIZE, '=') << "\n";
 
-    unsigned no = 0;
-    std::cout << std::scientific << std::setprecision(4);
+    auto ImprimirNo = [PRECISION](unsigned i, Real valor) {
+        std::cout << std::setw(5) << i 
+                  << std::scientific << std::setprecision(PRECISION)
+                  << std::setw(20) << valor << "\n";
+    };
 
-    for (const auto &xno : xNo) {
-        std::cout << std::setw(5) << no++ << std::setw(20) << xno 
-                  << std::endl;
+    int contador(1);
+    for (auto no : _xNo) {
+        ImprimirNo(contador++, no);
     }
 
     std::cout << std::string(LSIZE, '=') << "\n\n";
-
-    //==============================================================================
-    //     Fim do programa
-    //==============================================================================
-
-    return EXIT_SUCCESS;
 }
