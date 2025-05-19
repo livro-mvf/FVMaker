@@ -1,115 +1,105 @@
-# ========================================================
-# CMake configuration for Programa_21 - Finite Volume Mesh
-# Optimized for performance and parallel execution
-# ========================================================
+#==============================================================================
+# Configuracao CMake para Programa_21 - Malha de Diferenças Finitas 1D
+# Versao: 1.0
+# Data: 2024-06-20
+# Otimizado para desempenho e execucao paralela
+#==============================================================================
 
 cmake_minimum_required(VERSION 3.15)
 
-# Project configuration
-project(Programa_21 
-    VERSION 1.0 
-    DESCRIPTION "Program for 1D mesh node coordinates calculation using geometric progression"
+#==============================================================================
+# Configuracao Basica do Projeto
+#==============================================================================
+
+project(Programa_21
+    VERSION 1.0
+    DESCRIPTION "Programa para calculo de coordenadas de nos em malha 1D usando progressao geometrica"
     LANGUAGES CXX
 )
 
-# ========================
-# Compiler Configuration
-# ========================
+#==============================================================================
+# Configuracao do Compilador
+#==============================================================================
 
-# C++ standard setup
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ========================
-# Performance Flags
-# ========================
-
-# Base optimization flags for all compilers
-add_compile_options(
-    "$<$<CONFIG:RELEASE>:-O3>"
-    "$<$<CONFIG:RELEASE>:-DNDEBUG>"
-)
-
-# Compiler-specific optimizations
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    # GCC/Clang specific optimizations
-    add_compile_options(
-        -march=native       # Optimize for current CPU architecture
-        -flto               # Link-time optimization
-        -ffast-math         # Faster math operations (safe for this application)
-        -funroll-loops      # Loop unrolling
-        -fopenmp           # OpenMP support for parallelization
-    )
-    add_link_options(-fopenmp)
-    
-elseif(MSVC)
-    # MSVC specific optimizations
-    add_compile_options(
-        /O2        # Optimize for speed
-        /GL        # Whole program optimization
-        /arch:AVX2 # Enable AVX2 instructions
-        /openmp    # OpenMP support
-    )
-endif()
-
-# ========================
-# Source Files Setup
-# ========================
+#==============================================================================
+# Diretorios e Nomes
+#==============================================================================
 
 set(EXECUTABLE_NAME "Programa_21")
-
-# Source directories
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(BIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-# Find all source files
-file(GLOB_RECURSE SOURCE_FILES 
+file(MAKE_DIRECTORY ${BIN_DIR})
+
+#==============================================================================
+# Configuracao de Fontes
+#==============================================================================
+
+file(GLOB_RECURSE SOURCE_FILES
     "${SRC_DIR}/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Programa_21.cpp"
 )
 
-# ========================
-# Executable Configuration
-# ========================
+#==============================================================================
+# Configuracao do Executavel
+#==============================================================================
 
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
-# Include directories
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Link TBB for parallel execution
-find_package(TBB REQUIRED)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE TBB::tbb)
+#==============================================================================
+# Otimizacoes de Compilacao
+#==============================================================================
 
-# ========================
-# Output Configuration
-# ========================
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE
+        -O3
+        -march=native
+        -flto
+        -fopenmp
+    )
+    target_link_options(${EXECUTABLE_NAME} PRIVATE -fopenmp)
+elseif(MSVC)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE
+        /O2
+        /GL
+        /arch:AVX2
+        /openmp
+    )
+endif()
+
+#==============================================================================
+# Configuracao de Saida
+#==============================================================================
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
-    OUTPUT_NAME "${EXECUTABLE_NAME}"
+    RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
 )
 
-# ========================
-# Build Messages
-# ========================
+#==============================================================================
+# Alvos Personalizados
+#==============================================================================
 
-message(STATUS "Building with maximum optimizations")
-message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "Source files: ${SOURCE_FILES}")
-
-# ========================
-# Post-Build Configuration
-# ========================
-
-# Add run target
 add_custom_target(run_${EXECUTABLE_NAME}
     COMMAND ${EXECUTABLE_NAME}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
+    WORKING_DIRECTORY ${BIN_DIR}
     DEPENDS ${EXECUTABLE_NAME}
-    COMMENT "Running ${EXECUTABLE_NAME} with optimized settings"
+    COMMENT "Executando ${EXECUTABLE_NAME}"
 )
+
+#==============================================================================
+# Mensagens de Status
+#==============================================================================
+
+message(STATUS "Configuracao completa para ${EXECUTABLE_NAME}")
+message(STATUS "Compilador: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Flags de otimizacao ativadas")

@@ -148,7 +148,6 @@ void GerarMalhaParalela (   VetorReal&      _xNo,
                             const Real&     _xInit, 
                             const Real&     _length) {
 
-    // Cria um gerador por thread para thread-safety
     thread_local auto aleatorio = CriarGeradorAleatorio(_xInit, _length);
     
     auto PreencherAleatorio = [](auto& elemento) {

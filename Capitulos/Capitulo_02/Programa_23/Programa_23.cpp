@@ -28,12 +28,13 @@
 //      Inclusoes da Biblioteca Padrao do C++
 //==============================================================================
 
-#include <algorithm>        // Para std::for_each, std::sort, std::generate_n
+#include <algorithm>       // Para std::for_each, std::sort, std::generate_n
 #include <execution>       // Para std::execution::par
 #include <functional>      // Para std::function<Real()>
 #include <iomanip>         // Para std::setw, std::setprecision
 #include <iostream>        // Para std::cout, std::endl
 #include <random>          // Para std::random_device, std::mt19937
+#include <ranges>          // Para std::views::iota 
 #include <vector>          // Para std::vector
 
 //==============================================================================
@@ -61,10 +62,10 @@ int main() {
 //      Parametros da malha
 //==============================================================================
     
-    constexpr Real XINIT = 0;                  // Coordenada inicial da malha
-    constexpr Real LENGTH = 4;                  // Comprimento da malha
-    constexpr unsigned NNOS = 7;               // Numero de nos
-    constexpr unsigned NNOSSERIAL = 3;       // Limite para usar versao serial
+    constexpr Real XINIT = -3;                  // Coordenada inicial da malha
+    constexpr Real LENGTH = 4;                 // Comprimento da malha
+    constexpr unsigned NNOS = 11;               // Numero de nos
+    constexpr unsigned NNOSSERIAL = 1000;      // Limite para usar versao serial
 
     if (NNOS < 2) {
         std::cerr << "Erro: Numero de nos deve ser >= 2\n";
@@ -116,40 +117,40 @@ auto CriarGeradorAleatorio(const Real& _xInit, const Real& _xMax) -> std::functi
  * @param _xInit Coordenada inicial do dominio
  * @param _length Comprimento total do dominio
  */
-void GerarMalhaSerial(VetorReal& _xNo, const Real& _xInit, const Real& _length) {
+void GerarMalhaSerial   (   VetorReal&      _xNo, 
+                            const Real&     _xInit, 
+                            const Real& _length) {
+    
     const Real xCenter = _xInit + _length / 2.0;
-    auto aleatorio = CriarGeradorAleatorio(_xInit, xCenter);
-
+    auto aleatorio = CriarGeradorAleatorio(_xInit, _xInit + _length); // Corrigido o intervalo
+    
     _xNo.front() = _xInit;
     _xNo.back() = _xInit + _length;
 
-    // Preenche primeira metade aleatoriamente
+    const int totalNodes = _xNo.size();
+    const bool isEven = (totalNodes % 2 == 0);
+    const int halfNodes = isEven ? (totalNodes / 2 - 1) : ((totalNodes - 1) / 2);
+
     auto PreencherAleatorio = [&](auto& elemento) {
         elemento = aleatorio();
     };
-
-    const int halfNodes = (_xNo.size() % 2 == 0) ? 
-        (_xNo.size() / 2 - 1) : ((_xNo.size() - 1) / 2);
     
-    std::for_each   (   std::next(_xNo.begin()), 
-                        std::next(_xNo.begin(), 
-                        halfNodes + 1), 
-                        PreencherAleatorio);
+    std::for_each(std::next(_xNo.begin()), 
+                 std::next(_xNo.begin(), halfNodes + 1),
+                 PreencherAleatorio);
 
-    // Cria simetria
-    const Real dx = _xNo.back() + _xInit;
-    for (int i = 1; i < halfNodes; ++i) {
-        _xNo[_xNo.size() - 1 - i] = dx - _xNo[i];
+    for (int i = 1; i <= halfNodes; ++i) {  
+        _xNo[totalNodes - 1 - i] = 2 * xCenter - _xNo[i]; 
     }
 
-    // Se numero impar de nos, define o no central
-    if (_xNo.size() % 2 != 0) {
+    if (!isEven) {
         _xNo[halfNodes] = xCenter;
     }
     
     std::sort(  std::next(_xNo.begin()), 
                 std::prev(_xNo.end()));
 }
+
 
 /**
  * @brief Versao paralela da geracao de malha simetrica
@@ -158,57 +159,56 @@ void GerarMalhaSerial(VetorReal& _xNo, const Real& _xInit, const Real& _length) 
  * @param _xInit Coordenada inicial do dominio
  * @param _length Comprimento total do dominio
  */
-void GerarMalhaParalela (   VetorReal& _xNo, 
-                            const Real& _xInit, 
-                            const Real& _length) {
+void GerarMalhaParalela (   VetorReal&      _xNo, 
+                            const Real&     _xInit, 
+                            const Real&     _length) {
+ 
     const Real xCenter = _xInit + _length / 2.0;
-    
-    // Gerador thread-safe
-    thread_local auto aleatorio = CriarGeradorAleatorio(_xInit, xCenter);
+    auto aleatorio = CriarGeradorAleatorio(_xInit, xCenter);
 
-    auto PreencherAleatorio = [](auto& elemento) {
-        elemento = aleatorio();
-    };
-    
     _xNo.front() = _xInit;
     _xNo.back() = _xInit + _length;
 
-    const int halfNodes = (_xNo.size() % 2 == 0) ? 
-        (_xNo.size() / 2 - 1) : ((_xNo.size() - 1) / 2);
+    const int totalNodes = _xNo.size();
+    const bool isEven   = (totalNodes % 2 == 0);
+    const int halfNodes = isEven ? (totalNodes / 2 - 1) : ((totalNodes - 1) / 2);
 
-    // Preenche primeira metade em paralelo
-    std::for_each   (   std::execution::par,
-                        std::next(_xNo.begin()),
-                        std::next(_xNo.begin(), 
-                        halfNodes + 1),
+    auto first = std::next(_xNo.begin());
+    auto last = std::next(_xNo.begin(), halfNodes + 1);
+
+    auto PreencherAleatorio = [&](auto& elemento) {
+        elemento = aleatorio();
+    };
+    
+    std::for_each   (   std::execution::par, 
+                        first, 
+                        last, 
                         PreencherAleatorio);
 
-//const Real dx = _xNo.back() + _xInit;
-//auto first = _xNo.begin();
-//auto last = _xNo.begin() + _xNo.size()/2;
-//auto rfirst = _xNo.rbegin();
-//
-//// Função lambda separada como variável
-//auto apply_symmetry = [dx, rfirst](const Real&) mutable {
-//    return dx - *rfirst++;
-//};
-//
-//std::transform(
-//    std::execution::par,
-//    first,
-//    last,
-//    first,
-//    apply_symmetry  // Usando a lambda definida separadamente
-//);
-//
-//    // Define no central se necessario
-//    if (_xNo.size() % 2 != 0) {
-//        _xNo[halfNodes] = xCenter;
-//    }
-////
-////    std::sort(std::execution::par, _xNo.begin(), _xNo.end());
-////
+    const Real dx = _xNo.back() + _xInit;
+    
+    auto indices = std::views::iota(1, halfNodes + (isEven ? 1 : 0));
+    
+    auto CriarSimetria = [&](int i) {
+        _xNo[totalNodes - 1 - i] = _xNo.back() + _xInit - _xNo[i];
+    };
+
+    
+    std::for_each   (   std::execution::par, 
+                        indices.begin(), 
+                        indices.end(),
+                        CriarSimetria);
+
+    if (!isEven) {
+        _xNo[halfNodes] = xCenter;
+    }
+
+    std::sort   (   std::execution::par, 
+                    std::next(_xNo.begin()), 
+                    std::prev(_xNo.end()));
+    
 }
+
 
 /**
  * @brief Imprime os resultados formatados
@@ -248,7 +248,7 @@ void ImprimirResultados(const VetorReal& _xNo,
                   << std::setw(20) << xCenter - valor << "\n";
     };
 
-    unsigned contador = 0;
+    unsigned contador(0);
     for (auto no : _xNo) {
         ImprimirNo(contador++, no);
     }
