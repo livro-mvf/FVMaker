@@ -43,14 +43,14 @@ template <typename GridType>
 class UniformityAnalyser1D : public GridAnalyser<GridType>
 {
 public:
-    explicit UniformityAnalyser1D(const GridType& grid)
-        : GridAnalyser<GridType>(grid) {}
+    explicit UniformityAnalyser1D(const GridType& _grid)
+        : GridAnalyser<GridType>(_grid) {}
 
     /* --------------------------------------------------------------------- */
     /** @brief Executa a análise (cálculo do CV). */
     void analyse() override
     {
-        const auto& dx = this->grid_.GetDFace();   // vetor Δx pronto
+        const auto& dx = this->grid.GetDFace();   // vetor Δx pronto
         const std::size_t N = dx.size();
         if (N == 0) { cv_ = 0.0; return; }
 
@@ -72,8 +72,8 @@ public:
     void print(std::ostream& os) const override
     {
         os << std::fixed << std::setprecision(6)
-           << "Uniformity Analysis (1D Grid)\n"
-           << " - Coefficient of Variation (Δx): " << cv_;
+           << "Analise de uniformidade (1D Grid): "
+           << "Coeficiente de variacao (Δx): " << cv_;
     }
 
 private:

@@ -45,21 +45,21 @@ GRID_NAMESPACE_OPEN    // abre: namespace fvm { namespace grd {
 template <typename GridType>
 class SmoothnessAnalyser1D : public GridAnalyser<GridType> {
 public:
-    explicit SmoothnessAnalyser1D(const GridType& grid)
-        : GridAnalyser<GridType>(grid), smoothness_(Real(0)) {}
+    explicit SmoothnessAnalyser1D(const GridType& _grid)
+        : GridAnalyser<GridType>(_grid), smoothness_(Real(0)) {}
 
     /// Threshold de volumes acima do qual usar paralelismo
     static constexpr std::size_t ParallelThreshold = 10000;
 
     /// Executa a escolha entre análise sequencial ou paralela
     void analyse() override {
-        const auto& dx = this->grid_.GetDFace();
+        const auto& dx = this->grid.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
             smoothness_ = Real(0);
             return;
         }
-        if (this->grid_.NVol() > ParallelThreshold) {
+        if (this->grid.NVol() > ParallelThreshold) {
             analyseParallel(dx);
         } else {
             analyseSequential(dx);
@@ -69,13 +69,13 @@ public:
     /// Impressão formatada – usado pelo operator<<.
     void print(std::ostream& os) const override {
         os << std::fixed << std::setprecision(6)
-           << "Smoothness Analysis (1D Grid)\n"
-           << " - Max relative Δx change: " << smoothness_;
+           << "Analise de suavidade (1D Grid): "
+           << " Maxima variacao de Δx: " << smoothness_;
     }
 
 private:
     /// Cálculo sequencial da suavidade
-    void analyseSequential(const std::vector<Real>& dx) {
+    void analyseSequential(const VecReal& dx) {
         Real max_rel{0};
         const std::size_t N = dx.size();
         for (std::size_t i = 0; i + 1 < N; ++i) {
@@ -87,7 +87,7 @@ private:
     }
 
     /// Cálculo paralelo da suavidade usando transform_reduce
-    void analyseParallel(const std::vector<Real>& dx) {
+    void analyseParallel(const VecReal& dx) {
         smoothness_ = std::transform_reduce(
             std::execution::par,
             dx.begin(), dx.end() - 1,

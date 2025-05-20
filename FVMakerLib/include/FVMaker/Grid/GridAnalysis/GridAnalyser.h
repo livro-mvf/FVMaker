@@ -39,7 +39,7 @@ public:
      * 
      * @param grid Referência à malha a ser analisada.
      */
-    explicit GridAnalyser(const GridType& grid) : grid_(grid) {}
+    explicit GridAnalyser(const GridType& _grid) : grid(_grid) {}
 
     /**
      * @brief Método abstrato que executa a análise.
@@ -77,7 +77,7 @@ public:
     }
 
 protected:
-    const GridType& grid_;  ///< Referência constante à malha analisada
+    const GridType& grid;  ///< Referência constante à malha analisada
 };
 
 GRID_NAMESPACE_CLOSE

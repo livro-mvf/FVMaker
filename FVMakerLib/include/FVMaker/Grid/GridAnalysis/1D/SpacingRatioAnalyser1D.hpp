@@ -43,12 +43,12 @@ template <typename GridType>
 class SpacingRatioAnalyser1D : public GridAnalyser<GridType>
 {
 public:
-    explicit SpacingRatioAnalyser1D(const GridType& grid)
-        : GridAnalyser<GridType>(grid), max_ratio_(0.0) {}
+    explicit SpacingRatioAnalyser1D(const GridType& _grid)
+        : GridAnalyser<GridType>(_grid), max_ratio_(0.0) {}
 
     /// Executa a análise de razão de espaçamentos.
     void analyse() override {
-        const auto& dx = this->grid_.GetDFace();
+        const auto& dx = this->grid.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
             max_ratio_ = 0.0;

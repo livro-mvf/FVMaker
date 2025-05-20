@@ -9,7 +9,8 @@
 
 #pragma once
 
-// ==============================================================================
-// INCLUDE IMPLEMENTAÇÃO TEMPLATE
-// ==============================================================================
-#include <FVMaker/Grid/GridAnalysis/CellSizeAnalyser1D.hpp>
+//==============================================================================
+// Includes implementação do template
+//==============================================================================
+
+#include <FVMaker/Grid/GridAnalysis/1D/CellSizeAnalyser1D.hpp>

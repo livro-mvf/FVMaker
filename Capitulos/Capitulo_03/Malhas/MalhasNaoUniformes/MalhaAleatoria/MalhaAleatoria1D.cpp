@@ -68,10 +68,8 @@
                                                ///< da malha aleatória
 #include <FVMAKER/Grid/GridPattern/CellCentered.h>
 #include <FVMAKER/Grid/GridPattern/FaceCentered.h>
-#include <FVMAKER/Grid/GridAnalysis/CellSizeAnalyser1D.h>
-#include <FVMAKER/Grid/GridAnalysis/SmoothnessAnalyser1D.h>
-#include <FVMAKER/Grid/GridAnalysis/UniformityAnalyser1D.h>
-#include <FVMaker/Grid/GridAnalysis/SpacingRatioAnalyser1D.h>
+#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>
+#include <FVMAKER/Grid/GridAnalysis/GridReport.h>
 
 using fvm::grd::CellCentered;
 using fvm::grd::FaceCentered;
@@ -140,6 +138,13 @@ int main() {
     //  Análise da malha com os analisadores desenvolvidos
     //==============================================================================
 
+fvm::grd::GridReport<RandomGrid1D<CellCentered>> relatorio(ug1D);
+
+    relatorio.analyse();        // roda todos os analisadores 1D
+    std::cout << relatorio;     // mostra o resultado agregado
+
+
+/*
     std::cout << "\n";
     fvm::grd::CellSizeAnalyser1D< RandomGrid1D<CellCentered> > analyser_dx(ug1D);
     analyser_dx.analyse();
@@ -158,7 +163,7 @@ int main() {
     analyser_ratio.analyse();
     std::cout << analyser_ratio << std::endl;
 
-
+*/
     //==============================================================================
     //     Fim do programa
     //==============================================================================
