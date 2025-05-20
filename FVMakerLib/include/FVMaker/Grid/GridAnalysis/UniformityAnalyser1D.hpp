@@ -50,7 +50,7 @@ public:
     /** @brief Executa a análise (cálculo do CV). */
     void analyse() override
     {
-        const auto& dx = this->grid_.DFaceCoordinate();   // vetor Δx pronto
+        const auto& dx = this->grid_.GetDFace();   // vetor Δx pronto
         const std::size_t N = dx.size();
         if (N == 0) { cv_ = 0.0; return; }
 

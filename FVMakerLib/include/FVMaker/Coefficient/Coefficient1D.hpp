@@ -36,7 +36,7 @@ const int MYSIZE= LSIZE - 35;
     std::vector<std::size_t> indices(N);
     std::iota(indices.begin(), indices.end(), 0);
 
-auto xCentro = _coeff1D.Grid().CentreCoordinate();
+auto xCentro = _coeff1D.Grid().GetCentre();
 auto Print = [&](const std::size_t& i)
 {
     std::stringstream ss;

@@ -1,40 +1,36 @@
-
 //==============================================================================
 // Nome        : AbstractGrid.h
-// Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.0
-// Descrição   : Classe base para todas as classes de geração de malhas.
-//               Define a interface comum para as classes derivadas de malhas
-//               1D, 2D, 3D.
+// Autor       : Joao Flavio Vieira de Vasconcellos
+// Versao      : 1.0
+// Descricao   : Classe base para todas as classes de geracao de malhas
 //
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
-// da licença, ou (a seu critério) qualquer versão posterior.
+// Este programa e software livre: voce pode redistribui-lo e/ou
+// modifica-lo sob os termos da Licenca Publica Geral GNU, versao 3
+// ou qualquer versao posterior.
 //
-// Este programa é distribuído na esperança de que seja útil, mas SEM
-// QUALQUER GARANTIA; sem mesmo a garantia implícita de
-// COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO.
-// Consulte a Licença Pública Geral GNU para mais detalhes.
+// Este programa e distribuido na esperanca de que seja util,
+// mas SEM QUALQUER GARANTIA; sem mesmo a garantia implicita de
+// COMERCIABILIDADE ou ADEQUACAO A UM DETERMINADO PROPOSITO.
+// Consulte a Licenca Publica Geral GNU para mais detalhes.
 //
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
+// Voce deve ter recebido uma copia da Licenca Publica Geral GNU
+// junto com este programa. Se nao, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
 #pragma once
 
 /**
  * @file AbstractGrid.h
- * @brief Classe base para geração de malhas na biblioteca FVMaker.
+ * @brief Classe base para geracao de malhas na biblioteca FVMaker
+ * @defgroup Grid Classes de Malha
  *
- * Esta classe fornece uma interface comum para classes derivadas de malhas
- * (1D, 2D, 3D, etc.). As classes derivadas devem implementar a lógica
- * específica para geração e armazenamento das coordenadas.
+ * Define a interface comum para classes derivadas de malhas (1D, 2D, 3D, etc.)
+ * que serao utilizadas nas simulacoes numericas.
  *
- * @author João Flávio Vasconcellos
- * @date 2025
+ * @author Joao Flavio Vasconcellos
+ * @version 1.0
+ * @date 2025-05-20
  * @copyright GNU General Public License v3.0
- *
- * @ingroup Grid
  */
 
 //==============================================================================
@@ -44,44 +40,71 @@
 #include <FVMaker/Misc/Type.h>
 
 //==============================================================================
-// Abertura do namespace FVMaker::AbstractGrid
+// Abertura do namespace FVMaker::Grid
 //==============================================================================
 GRID_NAMESPACE_OPEN
 
 /**
  * @class AbstractGrid
- * @brief Classe base abstrata para geração de malhas (1D, 2D, 3D, etc.).
+ * @brief Classe base abstrata para geracao de malhas
+ * @tparam TypePattern Tipo do padrao de discretizacao (ex: CellCentered)
  *
- * Esta classe define uma interface comum para todas as malhas da biblioteca.
- * As classes derivadas devem implementar a lógica para gerar e armazenar
- * as coordenadas específicas.
+ * Esta classe define a interface comum para todas as malhas da biblioteca.
+ * As classes derivadas devem implementar a logica especifica para geracao
+ * e armazenamento das coordenadas.
+ *
+ * @ingroup Grid
  */
 template<typename TypePattern>
 class AbstractGrid {
-
 public:
-    /** @brief Construtor padrão. */
+    //==========================================================================
+    // Construtores/Destrutores
+    //==========================================================================
+    
+    /**
+     * @brief Construtor padrao
+     */
     AbstractGrid() noexcept = default;
     
-    /** @brief Construtor de cópia. */
+    /**
+     * @brief Construtor de copia
+     */
     AbstractGrid(const AbstractGrid&) noexcept = default;
     
-    /** @brief Destrutor virtual. */
+    /**
+     * @brief Destrutor virtual
+     */
     virtual ~AbstractGrid() noexcept = default;
     
-    /** @brief Construtor de movimento deletado. */
+    /**
+     * @brief Construtor de movimento deletado
+     */
     AbstractGrid(AbstractGrid&&) = delete;
     
-    /** @brief Operador de atribuição de cópia deletado. */
+    //==========================================================================
+    // Operadores
+    //==========================================================================
+    
+    /**
+     * @brief Operador de atribuicao de copia deletado
+     */
     AbstractGrid& operator=(const AbstractGrid&) = delete;
     
-    /** @brief Operador de atribuição de movimento deletado. */
+    /**
+     * @brief Operador de atribuicao de movimento deletado
+     */
     AbstractGrid& operator=(AbstractGrid&&) = delete;
     
-    /** @brief Verifica se a grade está vazia. */
+    //==========================================================================
+    // Interface Publica
+    //==========================================================================
+    
+    /**
+     * @brief Verifica se a grade esta vazia
+     * @return true se a grade nao contem elementos
+     */
     [[nodiscard]] virtual bool empty() const = 0;
 };
-
-#include <FVMaker/Grid/AbstractGrid.hpp>
 
 GRID_NAMESPACE_CLOSE

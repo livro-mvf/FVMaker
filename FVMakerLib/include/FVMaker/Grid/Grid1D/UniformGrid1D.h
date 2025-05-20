@@ -1,90 +1,150 @@
+//==============================================================================
+// Nome        : UniformGrid1D.h
+// Autor       : Joao Flavio Vieira de Vasconcellos
+// Versao      : 2.0
+// Descricao   : Classe para geracao de malha uniforme 1D
+//
+// Este programa e software livre: voce pode redistribui-lo e/ou
+// modifica-lo sob os termos da Licenca Publica Geral GNU, versao 3
+// ou qualquer versao posterior.
+//
+// Este programa e distribuido na esperanca de que seja util,
+// mas SEM QUALQUER GARANTIA; sem mesmo a garantia implicita de
+// COMERCIABILIDADE ou ADEQUACAO A UM DETERMINADO PROPOSITO.
+// Consulte a Licenca Publica Geral GNU para mais detalhes.
+//
+// Voce deve ter recebido uma copia da Licenca Publica Geral GNU
+// junto com este programa. Se nao, veja <https://www.gnu.org/licenses/>.
+//==============================================================================
+
 #pragma once
 
-//==============================================================================
-// Name        : UniformGrid1D.h
-// Author      : Joao Flavio Vieira de Vasconcellos
-// Version     : 1.0
-// Description : Classe para gera��o de malha uniforme
-//
-// Copyright   : Copyright (C) <2024>  Joao Flavio Vasconcellos
-//                                      (jflavio at iprj.uerj.br)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//==============================================================================
+/**
+ * @file UniformGrid1D.h
+ * @brief Classe para geracao de malha uniforme unidimensional
+ * @ingroup Grid1D
+ *
+ * Implementa uma malha 1D com espacamento constante entre volumes,
+ * utilizando o ParallelControl para gerenciamento de execucao paralela.
+ *
+ * @author Joao Flavio Vasconcellos
+ * @version 2.0
+ * @date 2025-05-20
+ * @copyright GNU General Public License v3.0
+ */
 
 //==============================================================================
-// Includes da biblioteca FVMaker
+// Includes da FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/AbstractGrid1D.h>
-#include <FVMAKER/Grid/GridPattern/CellCentered.h>
+#include <FVMaker/Grid/Grid1D/AbstractGrid1D.h>
+#include <FVMaker/Grid/GridPattern/CellCentered.h>
 
 
 GRID_NAMESPACE_OPEN
 
-
+/**
+ * @class UniformGrid1D
+ * @brief Malha uniforme unidimensional
+ *
+ * Gera uma malha com espacamento constante entre volumes, utilizando
+ * politicas de execucao paralela configuraveis via ParallelControl.
+ *
+ * @tparam CellCentered Padrao de discretizacao centrado nas celulas
+ */
 class UniformGrid1D : public AbstractGrid1D<CellCentered> {
-
 public:
+    //==========================================================================
+    // Tipo Publico
+    //==========================================================================
+    using DataType = Real;  ///< Tipo base para calculos numericos
 
-    using DataType = Real;  // Define DataType para que GridDim e Is1DGrid funcionem corretamente
+    //==========================================================================
+    // Construtores/Destrutores
+    //==========================================================================
     
-//==============================================================================
-// Construtores e destrutora
-//==============================================================================
-    
-public:
-    
+    /**
+     * @brief Construtor padrao
+     */
     UniformGrid1D() noexcept = default;
-    UniformGrid1D (const int&, const Real&, const Real& = 0.0);
-    UniformGrid1D(const UniformGrid1D& _copia) noexcept
-        : AbstractGrid1D(*_copia.Clone()){};
+    
+    /**
+     * @brief Construtor completo
+     * @param nVol Numero de volumes
+     * @param length Comprimento total da malha
+     * @param xIni Coordenada inicial (padrao = 0.0)
+     */
+    UniformGrid1D(const int& nVol, const Real& length, const Real& xIni = 0.0);
+    
+    /**
+     * @brief Construtor de copia
+     */
+    UniformGrid1D(const UniformGrid1D&) noexcept;
+    
+    /**
+     * @brief Destrutor
+     */
     virtual ~UniformGrid1D() noexcept override = default;
-
+    
+    /**
+     * @brief Construtor de movimento deletado
+     */
     UniformGrid1D(UniformGrid1D&&) = delete;
     
-//==============================================================================
-// Sobrecarga de operadores
-//==============================================================================
+    //==========================================================================
+    // Operadores
+    //==========================================================================
     
-public:
-    
+    /**
+     * @brief Operador de atribuicao de copia deletado
+     */
     UniformGrid1D& operator=(const UniformGrid1D&) = delete;
+    
+    /**
+     * @brief Operador de atribuicao de movimento deletado
+     */
     UniformGrid1D& operator=(UniformGrid1D&&) = delete;
     
-//==============================================================================
-// Funções Virtuais
-//==============================================================================
+    //==========================================================================
+    // Interface Publica
+    //==========================================================================
     
-public:
+    /**
+     * @brief Cria uma copia da malha
+     * @return Ponteiro unico para a copia
+     */
+    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<CellCentered>> Clone() const override;
     
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<CellCentered>> Clone() const;
-    [[nodiscard]] virtual bool GeraFaces ();
-    [[nodiscard]] virtual bool GeraCentros ();
+    /**
+     * @brief Gera as coordenadas das faces
+     * @return true se gerado com sucesso
+     *
+     * Utiliza a politica de execucao configurada no ParallelControl
+     */
+    [[nodiscard]] virtual bool GeraFaces() override;
     
-//==============================================================================
-// Funções 
-//==============================================================================
-
-private :
-        
-    [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
-    [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
-    [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
-
+    /**
+     * @brief Gera as coordenadas dos centros
+     * @return true se gerado com sucesso
+     *
+     * Utiliza a politica de execucao configurada no ParallelControl
+     */
+    [[nodiscard]] virtual bool GeraCentros() override;
+    
+private:
+    
+    //==========================================================================
+    // Implementacao
+    //==========================================================================
+    
+    /**
+     * @brief Gera as coordenadas usando a politica atual
+     * @param _coords Vetor de coordenadas a ser preenchido
+     * @param _offset Offset para posicionamento (0.0 para faces, 0.5 para centros)
+     */
+    void GeraCoordenadas(VecReal* _coords, const Real& _offset);
 };
 
-
-
 GRID_NAMESPACE_CLOSE
+
+//#include <FVMaker/Grid/Grid1D/UniformGrid1D.hpp>

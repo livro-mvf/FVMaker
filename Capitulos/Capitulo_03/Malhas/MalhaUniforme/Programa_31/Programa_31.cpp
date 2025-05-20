@@ -31,7 +31,7 @@ int main() {
     fvm::grd::UniformGrid1D ug1D(nVol, length, xInit);
     std::cout << ug1D << "\n";
 
-    const auto& xCentro = ug1D.CentreCoordinate();
+    const auto& xCentro = ug1D.GetCentre();
     std::cout << "\nCoordenadas do centro da malha\n";
     for (auto xC : xCentro) {
         std::cout << xC << "\n";

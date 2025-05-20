@@ -1,92 +1,100 @@
 //==============================================================================
-// Includes da biblioteca FVMaker
+// Nome        : UniformGrid1D.cpp
+// Autor       : Joao Flavio Vieira de Vasconcellos
+// Versao      : 2.0
+// Descricao   : Implementacao da classe UniformGrid1D
+//
+// Este programa e software livre: voce pode redistribui-lo e/ou
+// modifica-lo sob os termos da Licenca Publica Geral GNU, versao 3
+// ou qualquer versao posterior.
+//
+// Este programa e distribuido na esperanca de que seja util,
+// mas SEM QUALQUER GARANTIA; sem mesmo a garantia implicita de
+// COMERCIABILIDADE ou ADEQUACAO A UM DETERMINADO PROPOSITO.
+// Consulte a Licenca Publica Geral GNU para mais detalhes.
+//
+// Voce deve ter recebido uma copia da Licenca Publica Geral GNU
+// junto com este programa. Se nao, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
+
+
+//==============================================================================
+// Includes da FVMaker
+//==============================================================================
+
 #include <FVMaker/Grid/Grid1D/UniformGrid1D.h>
+#include <FVMaker/Misc/ParallelControl.h>
+
 
 GRID_NAMESPACE_OPEN
-        
 
-UniformGrid1D :: UniformGrid1D (    const int&          _nVol
-                                ,   const Real&         _length
-                                ,   const Real&         _xIni
-                                ) : AbstractGrid1D<CellCentered>(_nVol, _length, _xIni)
+//==============================================================================
+// Construtores
+//==============================================================================
+
+UniformGrid1D::UniformGrid1D    (   const int&      _nVol, 
+                                    const Real&     _length, 
+                                    const Real&     _xIni)
+                    : AbstractGrid1D<CellCentered>(_nVol, _length, _xIni) 
 {
-    
-auto flag =    this->typePattern_->BuildMesh(this);
-}
-        
-std::unique_ptr<AbstractGrid1D<CellCentered>> UniformGrid1D::Clone() const {
-        return std::make_unique<UniformGrid1D>(*this);
+    this->typePattern_ = std::make_shared<CellCentered>();
+    auto flag = this->typePattern_->BuildMesh(this);
 }
 
-bool UniformGrid1D::GeraFaces() {
-
-    if (NVol() < 10000) return GeraMalhaSequencial(&this->xFace_);
-    return GeraMalhaParalelo(&this->xFace_); 
-
+UniformGrid1D::UniformGrid1D(const UniformGrid1D& _copia) noexcept
+    : AbstractGrid1D<CellCentered>(_copia) 
+{
+    this->typePattern_ = std::make_shared<CellCentered>(*_copia.typePattern_);
 }
 
-bool UniformGrid1D:: GeraCentros() {
-    return false; 
+//==============================================================================
+// Metodos Publicos
+//==============================================================================
+
+std::unique_ptr<AbstractGrid1D<CellCentered>> UniformGrid1D::Clone() const 
+{
+    return std::make_unique<UniformGrid1D>(*this);
 }
 
-bool UniformGrid1D :: GeraMalhaSequencial (VecReal* _coord) {
-
-const Real DX(Length()/ NVol());    
-auto Uniforme = [DX] (const Real& soma) { return soma + DX; };
-
-    (*_coord)[0] = xIni_;
-    std::transform  (   _coord->begin()
-                    ,   _coord->end() - 1
-                    ,   _coord->begin() + 1
-                    ,   Uniforme
-                    );  
+bool UniformGrid1D::GeraFaces() 
+{
+    GeraCoordenadas(&this->xFace_, 0.0);
     return true;
 }
-bool UniformGrid1D :: GeraMalhaParalelo (VecReal* _coord){
-    
-    if (NVol() > 100000) return GeraMalhaSIMD(_coord);
-    
-const Real DX(Length()/ NVol()); 
 
-const Real xIniLocal = xIni_;
-auto Uniforme = [DX, xIniLocal] (const std::size_t& i) { return i * DX + xIniLocal;};
-
-std::vector<std::size_t> indices(NVol() + 1);
-    std::iota   (   std::begin(indices)
-                ,   std::end(indices)
-                , 0
-                ); 
-
-    std::transform  (   std::execution::par
-                    ,   std::begin(indices)
-                    ,   std::end(indices)
-                    ,   _coord->begin()
-                    ,   Uniforme
-                    );   
+bool UniformGrid1D::GeraCentros() 
+{
+    GeraCoordenadas(&this->xCentro_, 0.5);
     return true;
 }
-bool UniformGrid1D :: GeraMalhaSIMD (VecReal* _coord){
+
+//==============================================================================
+// Implementacao dos Metodos Privados
+//==============================================================================
+
+void UniformGrid1D::GeraCoordenadas(VecReal* _coords, const Real& _offset) 
+{
+    const Real dx = this->Length() / this->NVol();
+    const Real x0 = this->XInit();
     
+    // Preenche as coordenadas base
+    _coords->resize(this->NVol() + (_offset == 0.0 ? 1 : 0));
+    std::iota(_coords->begin(), _coords->end(), 0.0);
     
-const Real DX(Length() / NVol()); 
+    // Aplica transformacao usando a politica do ParallelControl
 
-const Real xIniLocal = xIni_;
-auto Uniforme = [DX, xIniLocal] (const std::size_t& i) { return i * DX + xIniLocal;};
+    auto GeraCoordenadas =  [=](Real& _val) {
+                _val = x0 + (_val + _offset) * dx;
+    };
 
-std::vector<std::size_t> indices(NVol() + 1);
-    std::iota   (   std::begin(indices)
-                ,   std::end(indices)
-                , 0
-                ); 
-
-    std::transform  (   std::execution::par_unseq
-                    ,   std::begin(indices)
-                    ,   std::end(indices)
-                    ,   _coord->begin()
-                    ,   Uniforme
-                    );
-    return true;
+    ParallelControl::for_each   (   _coords->begin(), 
+                                    _coords->end(),
+                                    GeraCoordenadas);
+    
+    // Calcula distancias se for uma operacao de faces
+    if (!this->CalculaDistancias()) {
+        throw std::runtime_error("Falha ao calcular distancias");
+    }
 }
 
 GRID_NAMESPACE_CLOSE

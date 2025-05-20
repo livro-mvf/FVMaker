@@ -1,5 +1,3 @@
-#pragma once
-
 //==============================================================================
 // Nome        : GridPattern.h
 // Autor       : João Flávio Vieira de Vasconcellos
@@ -22,6 +20,8 @@
 // com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
+#pragma once
+
 //==============================================================================
 // Includes da biblioteca padrão do C++
 //==============================================================================
@@ -40,14 +40,11 @@ template<typename TypePattern>
 class AbstractGrid1D;
 
 /**
- * @brief Classe base para padrões de malha.
+ * @class AbstractGridPattern
+ * @brief Classe base abstrata para padrões de malha
  *
- * Esta classe define a interface que todos os padrões de malha devem
- * implementar. Ela permite que o código que a utiliza trabalhe de forma
- * genérica com diferentes padrões, chamando métodos comuns a todos eles.
- *
- * Cada padrão concreto, como FaceCentered ou CellCentered, deve herdar
- * de GridPattern e implementar os métodos aqui definidos.
+ * Define a interface comum para todos os padrões de malha (FaceCentered, CellCentered, etc.)
+ * Inclui um atributo offset_ configurável para controle preciso do posicionamento.
  */
 class AbstractGridPattern
 {
@@ -55,20 +52,14 @@ class AbstractGridPattern
 // Construtores/Destrutora
 //==============================================================================
 public:
-
     /**
-     * @brief Construtor padrão.
-     *
-     * Inicializa offset_ com 0.5.
+     * @brief Construtor padrão (offset = 0.5)
      */
     AbstractGridPattern() noexcept = default;
 
     /**
-     * @brief Construtor que permite definir o offset.
-     *
-     * @param offset Valor que define a fração de deslocamento ao calcular
-     *               centros ou faces, dependendo do padrão concreto.
-     *               Padrão tipicamente é 0.5.
+     * @brief Construtor com offset customizado
+     * @param offset Valor do offset (0.0 a 1.0)
      */
     explicit AbstractGridPattern(const Real& offset) noexcept
         : offset_{offset}
@@ -83,26 +74,22 @@ public:
 // Sobrecarga de operadores
 //==============================================================================
 public:
-
     AbstractGridPattern& operator=(const AbstractGridPattern&) = delete;
     AbstractGridPattern& operator=(AbstractGridPattern&&) = delete;
 
 //==============================================================================
-// Atributo offset e seus métodos de acesso
+// Atributo offset e métodos de acesso
 //==============================================================================
 protected:
-
     /**
-     * @brief Fração de deslocamento usada pelos padrões que calculam
-     *        centros ou faces de forma não exatamente centralizada.
-     *        O valor padrão é 0.5 (meio do intervalo).
+     * @brief Valor do offset para posicionamento (padrão: 0.5)
      */
     Real offset_{0.5};
 
 public:
-
     /**
-     * @brief Retorna o valor atual de offset.
+     * @brief Obtém o valor atual do offset
+     * @return Valor do offset
      */
     Real offset() const noexcept
     {
@@ -110,9 +97,8 @@ public:
     }
 
     /**
-     * @brief Define um novo valor de offset.
-     *
-     * @param newOffset Novo valor para o deslocamento.
+     * @brief Define um novo valor para o offset
+     * @param newOffset Novo valor (0.0 a 1.0)
      */
     void setOffset(const Real& newOffset) noexcept
     {
@@ -123,33 +109,28 @@ public:
 // Funções virtuais
 //==============================================================================
 public:
-
     /**
-     * @brief Constrói a malha 1D (via Grid1D) de acordo com este padrão.
-     *
-     * @param grid Ponteiro único para um Grid1D<GridPattern> que será preenchido
-     *             com as coordenadas calculadas (faces, centros, etc).
-     * @return true se a malha foi construída com sucesso, false em caso contrário.
+     * @brief Constrói a malha em um Grid1D
+     * @tparam T Tipo do padrão de malha
+     * @param grid Ponteiro para o Grid1D a ser construído
+     * @return true se bem-sucedido, false caso contrário
      */
     template <typename T>
     [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const {return true;};
 
 //==============================================================================
-// Funções puramente virtuais
+// Funções puramente virtuas
 //==============================================================================
 public:
-
     /**
-     * @brief Cria uma cópia (clone) deste objeto GridPattern.
-     *
-     * @return Um std::shared_ptr para a nova instância clonada.
+     * @brief Cria uma cópia do objeto
+     * @return shared_ptr para a nova instância
      */
     [[nodiscard]] virtual std::shared_ptr<AbstractGridPattern> Clone() const = 0;
 
     /**
-     * @brief Retorna o tipo do padrão de malha.
-     *
-     * Exemplos: "FaceCentered", "CellCentered".
+     * @brief Obtém o nome do padrão de malha
+     * @return String com o nome do padrão
      */
     [[nodiscard]] virtual std::string TipoPadraoMalha() const = 0;
 };

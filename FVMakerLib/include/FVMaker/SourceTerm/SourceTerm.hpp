@@ -38,7 +38,7 @@ const int MYSIZE= LSIZE - 15;
     std::vector<std::size_t> indices(N);
     std::iota(indices.begin(), indices.end(), 0);
 
-auto xCentro = _source.Grid().CentreCoordinate();
+auto xCentro = _source.Grid().GetCentre();
 
 auto Print = [&](const std::size_t& i)
 {
@@ -85,7 +85,7 @@ bool SourceTerm<T> :: EvaluateSourceFunction () {
     std::vector<std::size_t> indices(N);
     std::iota(indices.begin(), indices.end(), 0);
     
-const auto& xc    = this->grid_.CentreCoordinate();  // vetor de centros
+const auto& xc    = this->grid_.GetCentre();  // vetor de centros
 
 auto CalculaFuncao = [&] (const size_t& i) {
     return this->sourceFunction_->Fx(xc[i]);

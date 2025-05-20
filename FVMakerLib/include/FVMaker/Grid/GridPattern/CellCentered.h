@@ -1,5 +1,3 @@
-#pragma once
-
 //==============================================================================
 // Nome        : CellCentered.h
 // Autor       : João Flávio Vieira de Vasconcellos
@@ -20,11 +18,7 @@
 // com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
-//==============================================================================
-// Includes da biblioteca padrão do C++
-//==============================================================================
-#include <iostream>
-#include <string>
+#pragma once
 
 //==============================================================================
 // Includes da biblioteca FVMaker
@@ -34,11 +28,11 @@
 GRID_NAMESPACE_OPEN
 
 /**
- * @brief Padrão de malha CellCentered.
+ * @class CellCentered
+ * @brief Implementação do padrão de malha com volumes centrados
  *
- * Implementa a lógica específica para um padrão de malha
- * em que o volume é centrado, calculando as coordenadas dos centros
- * com base nas faces.
+ * Calcula as coordenadas dos centros com base nas posições das faces,
+ * utilizando um offset configurável para controle preciso do posicionamento.
  */
 class CellCentered : public AbstractGridPattern
 {
@@ -47,37 +41,21 @@ class CellCentered : public AbstractGridPattern
 //==============================================================================
 public:
     /**
-     * @brief Construtor padrão de CellCentered.
-     *
-     * Utiliza o construtor padrão da classe base (offset_ = 0.5).
+     * @brief Construtor padrão (offset = 0.5)
      */
     CellCentered() noexcept = default;
 
     /**
-     * @brief Construtor que permite definir o offset para o cálculo do centro.
-     *
-     * @param offset Valor que determina a fração de deslocamento no posicionamento
-     *               dos centros (0.5 = centro exato entre duas faces).
+     * @brief Construtor com offset customizado
+     * @param _offset Valor do offset para posicionamento (0.5 = centro exato)
      */
-    explicit CellCentered(double offset) noexcept
-        : AbstractGridPattern(offset)
+    explicit CellCentered(const Real& _offset) noexcept
+        : AbstractGridPattern(_offset)
     {
     }
 
-    /**
-     * @brief Construtor de cópia (default).
-     */
     CellCentered(const CellCentered&) noexcept = default;
-
-    /**
-     * @brief Destrutor (default).
-     */
     ~CellCentered() noexcept override = default;
-
-    /**
-     * @brief Construtor de movimento é deletado para evitar problemas de cópia
-     *        da classe base.
-     */
     CellCentered(CellCentered&&) = delete;
 
 //==============================================================================
@@ -92,43 +70,41 @@ public:
 //==============================================================================
 public:
     /**
-     * @brief Constrói a malha em um Grid1D<GridPattern> de forma cell-centered.
-     *
-     * @param grid Ponteiro único para o Grid1D que será preenchido.
-     * @return true caso a malha seja construída com sucesso, false caso contrário.
+     * @brief Constrói a malha no padrão CellCentered
+     * @tparam T Tipo do grid
+     * @param _grid Ponteiro para o grid a ser construído
+     * @return true se bem-sucedido, false caso contrário
      */
     template <typename T>
-    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
+    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>* _grid) const;
 
 //==============================================================================
-// Funções puramente virtuais (implementadas aqui)
+// Funções puramente virtuais (implementadas)
 //==============================================================================
 public:
     /**
-     * @brief Cria uma cópia (clone) deste objeto.
-     *
-     * @return std::shared_ptr<GridPattern> apontando para uma nova instância.
+     * @brief Cria uma cópia do objeto
+     * @return shared_ptr para a nova instância
      */
     [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
 
     /**
-     * @brief Retorna o tipo do padrão de malha.
-     *
-     * @return "Volume Centrado" (em português).
+     * @brief Obtém o nome do padrão de malha
+     * @return "Volume Centrado"
      */
     std::string TipoPadraoMalha() const override;
 };
 
+// Implementação do template
 template <typename T>
-bool CellCentered::BuildMesh(AbstractGrid1D<T> *grid) const
+bool CellCentered::BuildMesh(AbstractGrid1D<T>* _grid) const
 {
-
-bool flag = grid->GeraFaces();
-auto ptrXFace =  grid->AddressxFace();
-    (*ptrXFace)[0] =  grid->XInit();
-    (*ptrXFace)[grid->NVol()] = grid->XInit() + grid->Length();
-    flag = flag && grid->CalculaCentros(offset_);
-    flag = flag && grid->CalculaDistancias();
+    bool flag = _grid->GeraFaces();
+    auto ptrXFace = _grid->AddressxFace();
+    (*ptrXFace)[0] = _grid->XInit();
+    (*ptrXFace)[_grid->NVol()] = _grid->XInit() + _grid->Length();
+    flag = flag && _grid->CalculaCentros(offset_);
+    flag = flag && _grid->CalculaDistancias();
     return flag;
 }
 

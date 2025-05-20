@@ -53,7 +53,7 @@ public:
 
     /// Executa a escolha entre análise sequencial ou paralela
     void analyse() override {
-        const auto& dx = this->grid_.DFaceCoordinate();
+        const auto& dx = this->grid_.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
             smoothness_ = Real(0);

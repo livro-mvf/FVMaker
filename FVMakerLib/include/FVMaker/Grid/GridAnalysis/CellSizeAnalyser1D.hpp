@@ -49,7 +49,7 @@ public:
     /// Executa a análise do vetor Δx fornecido pela malha
     void analyse() override
     {
-        const auto& dx = this->grid_.DFaceCoordinate();  // já pronto
+        const auto& dx = this->grid_.GetDFace();  // já pronto
         if (dx.empty()) return;
 
         dx_min_ = *std::min_element(dx.begin(), dx.end());

@@ -116,27 +116,11 @@ public:
     [[nodiscard]] inline Real XEnd () const {return xIni_ + length_;};
 
     
-    [[nodiscard]] inline const VecReal& FaceCoordinate() const {return xFace_;}  // Retorna ref para o original  
-    [[nodiscard]] inline const VecReal& CentreCoordinate() const {return xCentro_;}  // Retorna ref para o original  
-    [[nodiscard]] inline const VecReal& DFaceCoordinate() const {return dxFace_;}  // Retorna ref para o original  
-    [[nodiscard]] inline const VecReal& DCentreCoordinate() const {return dxCentro_;}  // Retorna ref para o original  
+    [[nodiscard]] inline const VecReal& GetFace() const {return xFace_;}  // Retorna ref para o original  
+    [[nodiscard]] inline const VecReal& GetCentre() const {return xCentro_;}  // Retorna ref para o original  
+    [[nodiscard]] inline const VecReal& GetDFace() const {return dxFace_;}  // Retorna ref para o original  
+    [[nodiscard]] inline const VecReal& GetDCentre() const {return dxCentro_;}  // Retorna ref para o original  
     
-//    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCFaceCoordinate() const {return std::make_unique<const VecReal>(xFace_);};
-//    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCCentreCoordinate() const {return std::make_unique<const VecReal>(xCentro_);};
-//    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCDXFace() const {return std::make_unique<const VecReal>(dxFace_);};
-//    [[nodiscard]] inline std::unique_ptr<const VecReal> PtrUCDXCentre() const {return std::make_unique<const VecReal>(dxCentro_);};
-//
-//    [[nodiscard]] inline std::unique_ptr<VecReal> PtrUFaceCoordinate() {return std::make_unique<VecReal>(xFace_);};
-//    [[nodiscard]] inline std::unique_ptr<VecReal> PtrUCentreCoordinate() {return std::make_unique<VecReal>(xCentro_);};
-//
-//    [[nodiscard]] inline std::shared_ptr<const VecReal> PtrSCFaceCoordinate() const {return std::make_shared<const VecReal>(xFace_);};
-//    [[nodiscard]] inline std::shared_ptr<const VecReal> PtrSCCentreCoordinate() const {return std::make_shared<const VecReal>(xCentro_);};
-//    [[nodiscard]] inline std::shared_ptr<const VecReal> PtrSCDXFace() const {return std::make_shared<const VecReal>(dxFace_);};
-//    [[nodiscard]] inline std::shared_ptr<const VecReal> PtrSCDXCentre() const {return std::make_shared<const VecReal>(dxCentro_);};
-//
-//    [[nodiscard]] inline std::shared_ptr<VecReal> PtrSFaceCoordinate() {return std::make_shared<VecReal>(xFace_);};
-//    [[nodiscard]] inline std::shared_ptr<VecReal> PtrSCentreCoordinate() {return std::make_shared<VecReal>(xCentro_);};
-
     [[nodiscard]] inline VecReal* AddressxFace() {return &xFace_;};
     [[nodiscard]] inline const VecReal* AddressxFace() const {return &xFace_;};
     

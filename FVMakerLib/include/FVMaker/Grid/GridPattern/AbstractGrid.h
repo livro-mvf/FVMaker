@@ -30,57 +30,57 @@
  * específica para geração e armazenamento das coordenadas.
  *
  * @author João Flávio Vasconcellos
- * @date 2025
+ * @date 2025-05-20   
  * @copyright GNU General Public License v3.0
  *
- * @ingroup Grid
+ * @note Todas as classes derivadas devem implementar o método empty()   
  */
 
 //==============================================================================
-// Includes do C++
+// Includes da biblioteca FVMaker
 //==============================================================================
+
 #include <FVMaker/Misc/Namespace.h>
 #include <FVMaker/Misc/Type.h>
 
-//==============================================================================
-// Abertura do namespace FVMaker::AbstractGrid
-//==============================================================================
 GRID_NAMESPACE_OPEN
 
 /**
  * @class AbstractGrid
  * @brief Classe base abstrata para geração de malhas (1D, 2D, 3D, etc.).
  *
- * Esta classe define uma interface comum para todas as malhas da biblioteca.
- * As classes derivadas devem implementar a lógica para gerar e armazenar
- * as coordenadas específicas.
+ * @tparam TypePattern Tipo do padrão de malha (FaceCentered, CellCentered, etc.)
  */
 template<typename TypePattern>
 class AbstractGrid {
-
+    
+//==============================================================================
+// Construtores/Destrutora
+//==============================================================================
 public:
-    /** @brief Construtor padrão. */
+
     AbstractGrid() noexcept = default;
-    
-    /** @brief Construtor de cópia. */
     AbstractGrid(const AbstractGrid&) noexcept = default;
-    
-    /** @brief Destrutor virtual. */
     virtual ~AbstractGrid() noexcept = default;
-    
-    /** @brief Construtor de movimento deletado. */
     AbstractGrid(AbstractGrid&&) = delete;
     
-    /** @brief Operador de atribuição de cópia deletado. */
-    AbstractGrid& operator=(const AbstractGrid&) = delete;
+//==============================================================================
+// Sobrecarga de operadores
+//==============================================================================
+public:
     
-    /** @brief Operador de atribuição de movimento deletado. */
+    AbstractGrid& operator=(const AbstractGrid&) = delete;
     AbstractGrid& operator=(AbstractGrid&&) = delete;
     
-    /** @brief Verifica se a grade está vazia. */
+//==============================================================================
+// Funções puramente virtuais
+//==============================================================================
+public:    
+    /**
+     * @brief Verifica se a grade está vazia
+     * @return true se a grade estiver vazia, false caso contrário
+     */
     [[nodiscard]] virtual bool empty() const = 0;
 };
-
-#include <FVMaker/Grid/AbstractGrid.hpp>
 
 GRID_NAMESPACE_CLOSE

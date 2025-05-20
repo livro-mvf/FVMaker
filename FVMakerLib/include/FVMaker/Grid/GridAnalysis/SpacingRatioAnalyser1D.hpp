@@ -48,7 +48,7 @@ public:
 
     /// Executa a análise de razão de espaçamentos.
     void analyse() override {
-        const auto& dx = this->grid_.DFaceCoordinate();
+        const auto& dx = this->grid_.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
             max_ratio_ = 0.0;

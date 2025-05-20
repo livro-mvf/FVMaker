@@ -83,9 +83,9 @@ bool Diffusion<T>::ComputeCoefficient1D()
     auto& aE = this->aE_;
     auto& aW = this->aW_;
 
-    const auto& xf    = this->grid_.FaceCoordinate();    // vetor de faces
-    const auto& xc    = this->grid_.CentreCoordinate();  // vetor de centros
-    const auto& dxc   = this->grid_.DCentreCoordinate();          // comprimento dos volumes
+    const auto& xf    = this->grid_.GetFace();    // vetor de faces
+    const auto& xc    = this->grid_.GetCentre();  // vetor de centros
+    const auto& dxc   = this->grid_.GetDCentre();          // comprimento dos volumes
     const auto& coeff = *this->coeffPtr_->VectorCoeff();       // coeficientes
     
     std::vector<std::size_t> indices(N > 3 ? N - 2 : 0);
