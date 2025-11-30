@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(Capitulo_02)
+project(Capitulos)
 
-# Definir o padrão C++ para C++20
+# Exigir C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Busca recursiva de TODOS os arquivos .cpp em Capitulo_02 e suas subpastas
+# Busca recursiva de TODOS os arquivos .cpp dentro de Capitulos/*
 file(GLOB_RECURSE EXAMPLES_SRC CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
 )
@@ -13,7 +13,7 @@ file(GLOB_RECURSE EXAMPLES_SRC CONFIGURE_DEPENDS
 if(NOT EXAMPLES_SRC)
     message(WARNING "Nenhum arquivo fonte .cpp foi encontrado em ${CMAKE_CURRENT_SOURCE_DIR}")
 else()
-    message(STATUS "Arquivos encontrados em Capitulo_02: ${EXAMPLES_SRC}")
+    message(STATUS "Arquivos encontrados em Capitulos: ${EXAMPLES_SRC}")
 endif()
 
 foreach(EXAMPLE ${EXAMPLES_SRC})
@@ -21,8 +21,9 @@ foreach(EXAMPLE ${EXAMPLES_SRC})
     add_executable(${EXAMPLE_NAME} ${EXAMPLE})
     target_link_libraries(${EXAMPLE_NAME} PRIVATE FVMaker)
 
-    # Obtém o diretório do arquivo fonte
+    # Obtém o diretório onde o arquivo fonte está localizado
     get_filename_component(SRC_DIR ${EXAMPLE} PATH)
+    # Define a pasta "bin" local (dentro do diretório do arquivo fonte)
     set_target_properties(${EXAMPLE_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${SRC_DIR}/bin"
     )

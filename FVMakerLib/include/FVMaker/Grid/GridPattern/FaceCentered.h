@@ -1,131 +1,88 @@
-#pragma once
-
 //==============================================================================
 // Nome        : FaceCentered.h
-// Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Classe FaceCentered, um padrão de malha que herda de GridPattern,
-//               atualizada para permitir a definição de um offset.
+// Autor       : Joao Flavio Vieira de Vasconcellos
+// Versao      : 1.1
+// Descricao   : Classe FaceCentered, um padrao de malha que herda de GridPattern,
+//               atualizado para permitir a definicao de um offset.
 //
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
-// da licença, ou (a seu critério) qualquer versão posterior.
+// Este programa e software livre: voce pode redistribui-lo e/ou
+// modifica-lo sob os termos da Licenca Publica Geral GNU, versao 3
+// da licenca, ou (a seu criterio) qualquer versao posterior.
 //
-// Este programa é distribuído na esperança de que seja útil, mas SEM
-// QUALQUER GARANTIA; sem mesmo a garantia implícita de COMERCIABILIDADE
-// ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Consulte a Licença Pública
+// Este programa e distribuido na esperanca de que seja util, mas SEM
+// QUALQUER GARANTIA; sem mesmo a garantia implicita de COMERCIABILIDADE
+// ou ADEQUACAO A UM DETERMINADO PROPOSITO. Consulte a Licenca Publica
 // Geral GNU para mais detalhes.
 //
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
+// Voce deve ter recebido uma copia da Licenca Publica Geral GNU junto
+// com este programa. Caso contrario, veja <https://www.gnu.org/licenses/>.
 //==============================================================================
 
-//==============================================================================
-// Includes da biblioteca padrão do C++
-//==============================================================================
-#include <string>
+#pragma once
 
-//==============================================================================
-// Includes da biblioteca FVMaker
-//==============================================================================
+/**
+ * @file FaceCentered.h
+ * @brief Implementacao do padrao de malha com faces centradas
+ * @ingroup GridPattern
+ *
+ * Calcula as coordenadas das faces com base nas posicoes dos centros,
+ * utilizando um offset configuravel para controle preciso do posicionamento.
+ * Integra com ParallelControl para operacoes paralelas quando disponivel.
+ *
+ * @author Joao Flavio Vasconcellos
+ * @version 1.1
+ * @date 2025-05-20
+ * @copyright GNU General Public License v3.0
+ */
+
 #include <FVMaker/Grid/GridPattern/AbstractGridPattern.h>
+#include <FVMaker/Misc/ParallelControl.h>
 
 GRID_NAMESPACE_OPEN
 
 /**
- * @brief Padrão de malha FaceCentered.
+ * @class FaceCentered
+ * @brief Implementacao do padrao de malha com faces centradas
  *
- * Implementa a lógica específica para um padrão de malha
- * centrado nas faces, calculando as coordenadas das faces
- * com base em posições de centros.
+ * Este padrao calcula as coordenadas das faces das celulas com base nas
+ * posicoes dos centros, utilizando um offset configuravel. O valor padrao do
+ * offset e 0.5, resultando em um posicionamento central exato entre os centros.
+ *
+ * @note Utiliza ParallelControl para operacoes paralelas na construcao da malha
+ * @note Padrao frequentemente usado em esquemas de diferencas finitas
+ *
+ * @ingroup GridPattern
  */
 class FaceCentered : public AbstractGridPattern
 {
-//==============================================================================
-// Construtores/Destrutora
-//==============================================================================
 public:
-    /**
-     * @brief Construtor padrão de FaceCentered.
-     *
-     * Utiliza o construtor padrão da classe base (offset_ = 0.5).
-     */
     FaceCentered() noexcept = default;
-
-    /**
-     * @brief Construtor que permite definir o offset para o cálculo das faces.
-     *
-     * @param offset Valor que determina a fração de deslocamento ao posicionar
-     *               as faces (0.5 = meio exato entre dois centros).
-     */
-    explicit FaceCentered(double offset) noexcept
-        : AbstractGridPattern(offset)
-    {
-    }
-
-    /**
-     * @brief Construtor de cópia (default).
-     */
+    explicit FaceCentered(double offset) noexcept;
     FaceCentered(const FaceCentered&) noexcept = default;
-
-    /**
-     * @brief Destrutor (default).
-     */
     ~FaceCentered() noexcept override = default;
-
-    /**
-     * @brief Construtor de movimento deletado para evitar problemas de cópia
-     *        da classe base.
-     */
     FaceCentered(FaceCentered&&) = delete;
 
-//==============================================================================
-// Sobrecarga de operadores
-//==============================================================================
-public:
     FaceCentered& operator=(const FaceCentered&) = delete;
     FaceCentered& operator=(FaceCentered&&) = delete;
 
-//==============================================================================
-// Funções virtuais
-//==============================================================================
-public:
-    /**
-     * @brief Constrói a malha em um Grid1D<GridPattern> de forma face-centered.
-     *
-     * @param grid Ponteiro único para o Grid1D que será preenchido.
-     * @return true caso a malha seja construída com sucesso, false caso contrário.
-     */
+//    template <typename T>
+//    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
+    
     template <typename T>
-    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
+    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T> *grid) const
+    {
+        
+        if (!grid->GeraCentros()) return false;
+        if (!grid->CalculaFaces(offset_)) return false;
+        if (!grid->CalculaDistancias()) return false;
+        
+        return true;
+        
+    }    
+    
 
-//==============================================================================
-// Funções puramente virtuais (implementadas aqui)
-//==============================================================================
-public:
-    /**
-     * @brief Cria uma cópia (clone) deste objeto.
-     *
-     * @return std::shared_ptr<GridPattern> apontando para uma nova instância.
-     */
     [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
-
-    /**
-     * @brief Retorna o tipo do padrão de malha.
-     *
-     * @return "Face Centrada".
-     */
     std::string TipoPadraoMalha() const override;
 };
-
-
-template <typename T>
-bool FaceCentered::BuildMesh(AbstractGrid1D<T> *grid) const
-{
-bool flag = grid->GeraCentros();
-    flag = flag && grid->CalculaFaces(offset_);
-    flag = flag && grid->CalculaDistancias();
-    return flag;
-}
 
 GRID_NAMESPACE_CLOSE
