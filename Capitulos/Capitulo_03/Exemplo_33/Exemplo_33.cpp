@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------
-// Exemplo_32.cpp
+// Exemplo_33.cpp
 //------------------------------------------------------------------------------
 // Programa de exemplo para demonstração do método de diferenças finitas
-// na geração de malhas unidimensionais com progressão geométrica.
+// na geração de malhas unidimensionais com distribuição exponencial.
 //
-// Este programa é uma versão simplificada e didática que mostra os conceitos
-// fundamentais da geração de malhas sem dependências externas complexas.
+// Este programa implementa a formulação exponencial para concentração de nós
+// em uma extremidade do domínio, conforme exemplo do livro.
 //
 // Autor: João Flávio Vieira de Vasconcellos
 // Versão: 1.0.0
@@ -14,21 +14,35 @@
 //------------------------------------------------------------------------------
 
 /**
- * @file Exemplo_32.cpp
- * @brief Exemplo didático de geração de malha unidimensional
+ * @file Exemplo_33.cpp
+ * @brief Exemplo didático de geração de malha unidimensional exponencial
  * 
  * Este programa demonstra o uso do método de diferenças finitas para
  * gerar uma malha unidimensional com espaçamento variável segundo uma
- * progressão geométrica.
+ * distribuição exponencial, concentrando nós em uma extremidade.
+ * 
+ * Equação implementada:
+ * x_i = x_I + L * (exp(β·i) - 1) / (exp(β·(N-1)) - 1)
+ * 
+ * Onde:
+ * - x_I: coordenada inicial do domínio
+ * - L: comprimento total do domínio
+ * - β: parâmetro de concentração (β > 0)
+ * - N: número total de nós
+ * - i: índice do nó (0 ≤ i ≤ N-1)
+ * 
+ * Características:
+ * - β → 0: recupera malha uniforme
+ * - β grande: concentra nós na extremidade inicial (x = x_I)
  * 
  * Objetivos pedagógicos:
- * 1. Demonstrar o conceito de progressão geométrica em malhas
- * 2. Mostrar a implementação de algoritmos sequenciais e paralelos
- * 3. Ilustrar boas práticas de documentação em C++
- * 4. Apresentar técnicas de validação de entrada
+ * 1. Demonstrar distribuição exponencial em malhas
+ * 2. Mostrar transição suave entre malhas uniformes e concentradas
+ * 3. Ilustrar boas práticas de programação numérica
+ * 4. Apresentar validação rigorosa de parâmetros
  * 
  * Referência: Livro "Solução Numérica de Equações Diferenciais - 
- *              O Método de Volumes Finitos"
+ *              O Método de Volumes Finitos" (Exemplo 2.2)
  * 
  * @copyright Copyright (c) 2024
  * @license GNU GPL v3
@@ -38,10 +52,14 @@
 // Seção 1: Inclusões Necessárias
 //------------------------------------------------------------------------------
 
+#include <algorithm>    // Para algoritmos numéricos
 #include <chrono>       // Para medir tempo de execução
+#include <cmath>        // Para funções matemáticas (exp, fabs)
 #include <execution>    // Para execução paralela  
 #include <iomanip>      // Para formatação de saída
 #include <iostream>     // Para entrada/saída padrão
+#include <limits>       // Para limites numéricos
+#include <stdexcept>    // Para exceções padrão
 #include <vector>       // Para vetores dinâmicos
 
 //------------------------------------------------------------------------------
@@ -92,6 +110,24 @@ using VetorReal = std::vector<Real>;
  */
 #define BUILD_TIME __TIME__
 
+/**
+ * @def EPSILON
+ * @brief Tolerância para comparações numéricas
+ */
+constexpr Real EPSILON = 1.0e-12;
+
+/**
+ * @def LIMITE_PARALELO
+ * @brief Limite de nós para ativar paralelização
+ */
+constexpr unsigned LIMITE_PARALELO = 10000;
+
+/**
+ * @def LIMITE_IMPRESSAO
+ * @brief Limite de nós para impressão completa
+ */
+constexpr unsigned LIMITE_IMPRESSAO = 10;
+
 //------------------------------------------------------------------------------
 // Seção 3: Protótipos de Funções
 //------------------------------------------------------------------------------
@@ -102,146 +138,171 @@ using VetorReal = std::vector<Real>;
 void ImprimirVersao();
 
 /**
- * @brief Calcula potência inteira de forma eficiente
- * 
- * @param base Número base
- * @param expoente Expoente inteiro não negativo
- * @return Real base^expoente
- */
- [[nodiscard]] Real PotenciaInteira(const Real& base, const int& expoente) noexcept;
-
-/**
- * @brief Valida os parâmetros de entrada da malha
+ * @brief Valida os parâmetros de entrada da malha exponencial
  * 
  * @param x_inicio Coordenada inicial
  * @param comprimento Comprimento total do domínio
- * @param razao Razão da progressão geométrica
+ * @param beta Parâmetro de concentração exponencial
  * @param n_nos Número de nós
  * @throws std::invalid_argument Se algum parâmetro for inválido
  */
-void ValidarParametros  (   [[maybe_unused]] const Real&    x_inicio
-                        ,   const Real&                     comprimento
-                        ,   const Real&                     razao
-                        ,   const unsigned&                 n_nos
-                        );
+void ValidarParametrosExponencial(
+    [[maybe_unused]] const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+);
 
 /**
- * @brief Calcula malha usando algoritmo sequencial
+ * @brief Calcula fator de normalização para a distribuição exponencial
+ * 
+ * @param beta Parâmetro de concentração
+ * @param n_nos Número de nós
+ * @return Real Fator de normalização D = exp(β·(N-1)) - 1
+ * 
+ * @note Implementação robusta para valores extremos de β
+ */
+[[nodiscard]] Real CalcularFatorNormalizacao(
+    const Real& beta,
+    const unsigned& n_nos
+) noexcept;
+
+/**
+ * @brief Calcula coordenada de um nó específico usando fórmula exponencial
+ * 
+ * @param x_inicio Coordenada inicial
+ * @param comprimento Comprimento total
+ * @param beta Parâmetro de concentração
+ * @param indice Índice do nó (0 ≤ i ≤ N-1)
+ * @param fator_norm Fator de normalização pré-calculado
+ * @return Real Coordenada x_i do nó
+ * 
+ * @note Função pura e livre de efeitos colaterais
+ */
+[[nodiscard]] Real CalcularCoordenadaExponencial(
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& indice,
+    const Real& fator_norm
+) noexcept;
+
+/**
+ * @brief Calcula malha exponencial usando algoritmo sequencial
  * 
  * @param coordenadas Vetor para armazenar coordenadas (pré-alocado)
  * @param x_inicio Coordenada inicial
  * @param comprimento Comprimento total
- * @param razao Razão da progressão
+ * @param beta Parâmetro de concentração
  * @param n_nos Número de nós
  */
-void CalcularMalhaSequencial    (   VetorReal& coordenadas
-                                ,   const Real& x_inicio
-                                ,   const Real& comprimento
-                                ,   const Real& razao
-                                ,   const unsigned& n_nos
-                               );
-
+void CalcularMalhaExponencialSequencial(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+);
 
 /**
- * @brief Calcula malha usando algoritmo paralelo (C++17)
+ * @brief Calcula malha exponencial usando algoritmo paralelo (C++17)
  * 
  * @param coordenadas Vetor para armazenar coordenadas (pré-alocado)
  * @param x_inicio Coordenada inicial
  * @param comprimento Comprimento total
- * @param razao Razão da progressão
+ * @param beta Parâmetro de concentração
  * @param n_nos Número de nós
  */
-void CalcularMalhaParalelo  (   VetorReal& coordenadas
-                            ,   const Real& x_inicio
-                            ,   const Real& comprimento
-                            ,   const Real& razao
-                            ,   const unsigned& n_nos
-                            );
+void CalcularMalhaExponencialParalelo(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+);
 
 /**
- * @brief Seleciona automaticamente o melhor algoritmo
+ * @brief Seleciona automaticamente o melhor algoritmo baseado no tamanho
  * 
  * @param coordenadas Vetor para armazenar coordenadas
  * @param x_inicio Coordenada inicial
  * @param comprimento Comprimento total
- * @param razao Razão da progressão
+ * @param beta Parâmetro de concentração
  * @param n_nos Número de nós
  * @return std::string Nome do algoritmo usado
  */
-std::string CalcularMalhas  (   VetorReal& coordenadas,
-                                const Real& x_inicio,
-                                const Real& comprimento,
-                                const Real& razao,
-                                const unsigned& n_nos
-                            );
+std::string CalcularMalhaExponencial(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+);
 
 /**
- * @brief Imprime os resultados formatados
+ * @brief Imprime os resultados formatados da malha exponencial
  * 
  * @param coordenadas Vetor de coordenadas calculadas
  * @param x_inicio Coordenada inicial
  * @param comprimento Comprimento total
- * @param razao Razão da progressão
+ * @param beta Parâmetro de concentração
  * @param n_nos Número de nós
  * @param algoritmo Nome do algoritmo usado
  * @param tempo_ms Tempo de execução em milissegundos
  */
-void ImprimirResultados (   const VetorReal& coordenadas
-                        ,   const Real& x_inicio
-                        ,    const Real& comprimento
-                        ,    const Real& razao
-                        ,    const unsigned& n_nos
-                        ,    const std::string& algoritmo
-                        ,    const Real& tempo_ms
-                        ); 
+void ImprimirResultadosExponencial(
+    const VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos,
+    const std::string& algoritmo,
+    const Real& tempo_ms
+);
 
 //------------------------------------------------------------------------------
 // Seção 4: Função Principal
 //------------------------------------------------------------------------------
 
 int main() {
-
-//------------------------------------------------------------------------------
-// Inicio da execução
-//------------------------------------------------------------------------------
+    
+    //--------------------------------------------------------------------------
+    // Inicio da execução
+    //--------------------------------------------------------------------------
     ImprimirVersao();
     
-//------------------------------------------------------------------------------
-// Parâmetros da Malha de Exemplo
-//------------------------------------------------------------------------------
-
-constexpr Real X_INICIO = 0.0;     // Coordenada inicial do domínio
-constexpr Real COMPRIMENTO = 4.0;  // Comprimento total do domínio
-constexpr Real RAZAO = 1.05;       // Razão da progressão geométrica
-constexpr unsigned N_NOS = 11;     // Número de nós da malha
+    //--------------------------------------------------------------------------
+    // Parâmetros da Malha de Exemplo (Caso β = 1.0)
+    //--------------------------------------------------------------------------
+    constexpr Real X_INICIO = 0.0;     // Coordenada inicial do domínio
+    constexpr Real COMPRIMENTO = 1.0;  // Comprimento total do domínio
+    constexpr Real BETA = 1.0;         // Parâmetro de concentração
+    constexpr unsigned N_NOS = 11;     // Número de nós da malha
     
-//------------------------------------------------------------------------------
-// Validação dos Parâmetros
-//------------------------------------------------------------------------------
-    
+    //--------------------------------------------------------------------------
+    // Validação dos Parâmetros
+    //--------------------------------------------------------------------------
     try {
-        ValidarParametros(X_INICIO, COMPRIMENTO, RAZAO, N_NOS);
-        std::cout << "  Parâmetros validados com sucesso\n";
+        ValidarParametrosExponencial(X_INICIO, COMPRIMENTO, BETA, N_NOS);
+        std::cout << "  ✓ Parâmetros validados com sucesso\n";
     } catch (const std::exception& e) {
-        std::cerr << "  Erro na validação: " << e.what() << "\n";
+        std::cerr << "  ✗ Erro na validação: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
     
-//------------------------------------------------------------------------------
-// Preparação do Vetor de Coordenadas
-//------------------------------------------------------------------------------
-VetorReal coordenadas(N_NOS);
+    //--------------------------------------------------------------------------
+    // Preparação do Vetor de Coordenadas
+    //--------------------------------------------------------------------------
+    VetorReal coordenadas(N_NOS);
     
-//------------------------------------------------------------------------------
-// Cálculo da Malha com Medição de Tempo
-//------------------------------------------------------------------------------
-auto inicio = std::chrono::high_resolution_clock::now();
+    //--------------------------------------------------------------------------
+    // Cálculo da Malha com Medição de Tempo
+    //--------------------------------------------------------------------------
+    auto inicio = std::chrono::high_resolution_clock::now();
     
-std::string algoritmo_usado = CalcularMalhas(coordenadas,
-                                                           X_INICIO,
-                                                           COMPRIMENTO,
-                                                           RAZAO,
-                                                           N_NOS);
+    std::string algoritmo_usado = CalcularMalhaExponencial(
+        coordenadas, X_INICIO, COMPRIMENTO, BETA, N_NOS
+    );
     
     auto fim = std::chrono::high_resolution_clock::now();
     auto duracao = std::chrono::duration_cast<std::chrono::microseconds>(fim - inicio);
@@ -259,22 +320,18 @@ std::string algoritmo_usado = CalcularMalhas(coordenadas,
     Real coordenada_final_esperada = X_INICIO + COMPRIMENTO;
     Real erro = std::abs(coordenadas.back() - coordenada_final_esperada);
     
-    if (erro > 1e-10) {
-        std::cerr << "  Aviso: Possível erro no cálculo. "
+    if (erro > EPSILON) {
+        std::cerr << "  ⚠ Aviso: Possível erro no cálculo. "
                   << "Diferença: " << erro << "\n";
     }
     
     //--------------------------------------------------------------------------
     // Impressão dos Resultados
     //--------------------------------------------------------------------------
-    ImprimirResultados  (   coordenadas
-                        ,   X_INICIO
-                        ,   COMPRIMENTO
-                        ,   RAZAO
-                        ,   N_NOS
-                        ,   algoritmo_usado
-                        ,   tempo_ms
-                        );
+    ImprimirResultadosExponencial(
+        coordenadas, X_INICIO, COMPRIMENTO, BETA, N_NOS,
+        algoritmo_usado, tempo_ms
+    );
     
     return EXIT_SUCCESS;
 }
@@ -284,11 +341,11 @@ std::string algoritmo_usado = CalcularMalhas(coordenadas,
 //==============================================================================
 
 void ImprimirVersao() {
- 
- const int size(80);   
+    const int size(80);   
     std::cout << "\n\n";
     std::cout << std::string(size, '-') << std::endl;    
-    std::cout << "  Exemplo 32: Geração de Malha Unidimensional para Diferenças Finitas\n";
+    std::cout << "  Exemplo 33: Geração de Malha Unidimensional Exponencial\n";
+    std::cout << "  (Concentração de nós em uma extremidade)\n";
     std::cout << "  Versão: " << VERSION_MAJOR 
               << "." 
               << VERSION_MINOR << "." << VERSION_PATCH << "\n";
@@ -298,43 +355,12 @@ void ImprimirVersao() {
     std::cout << std::string(size, '-') << std::endl << "\n";    
 }
 
-Real PotenciaInteira    (   const Real& _base
-                        ,   const int& _expoente
-                        )   noexcept {
-
-    // Caso base: expoente negativo ou zero
-    if (_expoente < 0) return 0.0;
-    if (_expoente == 0) return 1.0;
-    if (_base == 0.0) return 0.0;
-    
-    // Algoritmo de exponenciação binária (eficiente)
-    Real resultado = 1.0;
-    Real base(_base);
-    int  expoente(_expoente);
-
-
-    while (expoente > 0) {
-        // Se o expoente é ímpar, multiplica pelo fator atual
-        if (expoente % 2 == 1) {
-            resultado *= base;
-        }
-        
-        // Eleva a base ao quadrado
-        base *= base;
-        
-        // Divide o expoente por 2
-        expoente /= 2;
-    }
-    
-    return resultado;
-}
-
-void ValidarParametros  (   [[maybe_unused]] const Real&        x_inicio
-                        ,   const Real&                         comprimento
-                        ,   const Real&                         razao
-                        ,   const unsigned&                     n_nos
-                        ) {
-    
+void ValidarParametrosExponencial(
+    [[maybe_unused]] const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+) {
     // Valida número de nós
     if (n_nos < 2) {
         throw std::invalid_argument("Número de nós deve ser pelo menos 2");
@@ -345,121 +371,158 @@ void ValidarParametros  (   [[maybe_unused]] const Real&        x_inicio
         throw std::invalid_argument("Comprimento deve ser positivo");
     }
     
-    // Valida razão
-    if (razao <= 0.0) {
-        throw std::invalid_argument("Razão deve ser positiva");
+    // Valida parâmetro beta
+    if (beta < 0.0) {
+        throw std::invalid_argument("β deve ser não-negativo (β ≥ 0)");
     }
-    
-    if (razao == 1.0) {
-        throw std::invalid_argument("Razão não pode ser 1.0 (malha uniforme)");
-    }    
     
     // Valida se os cálculos numéricos são seguros
     if (n_nos > 1000000) {
         throw std::invalid_argument("Número de nós muito grande para exemplo");
     }
     
-    // Valida se a razão não causará overflow
-    if (razao > 1000.0 && n_nos > 100) {
-        throw std::invalid_argument("Razão muito grande pode causar overflow");
+    // Valida se beta não causará overflow na exponencial
+    if (beta > 100.0 && n_nos > 1000) {
+        throw std::invalid_argument(
+            "β muito grande pode causar overflow em exp(β·(N-1))"
+        );
     }
-
+    
+    // Caso especial: β = 0 resulta em malha uniforme (é permitido)
+    if (std::abs(beta) < EPSILON) {
+        std::cout << "  Nota: β ≈ 0, malha será aproximadamente uniforme\n";
+    }
 }
 
-void CalcularMalhaSequencial    (   VetorReal& coordenadas
-                                ,   const Real& x_inicio
-                                ,   const Real& comprimento
-                                ,   const Real& razao
-                                ,   const unsigned& n_nos
-                                ) {
+Real CalcularFatorNormalizacao(
+    const Real& beta,
+    const unsigned& n_nos
+) noexcept {
+    // Caso β = 0: retorna (N-1) para evitar divisão por zero
+    if (std::abs(beta) < EPSILON) {
+        return static_cast<Real>(n_nos - 1);
+    }
+    
+    // Calcula D = exp(β·(N-1)) - 1
+    Real expoente = beta * static_cast<Real>(n_nos - 1);
+    
+    // Proteção contra overflow
+    if (expoente > 700.0) {  // exp(700) ≈ 10^304, próximo ao limite do double
+        std::cerr << "  ⚠ Aviso: exp(β·(N-1)) muito grande, possível perda de precisão\n";
+    }
+    
+    return std::exp(expoente) - 1.0;
+}
 
-    // Passo 1: Calcula o incremento inicial (delta)
-    // Fórmula: Δ = L * (r - 1) / (r^(N-1) - 1)
-    Real delta = comprimento * (razao - 1.0) / 
-                 (PotenciaInteira(razao, n_nos - 1) - 1.0);
+Real CalcularCoordenadaExponencial(
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& indice,
+    const Real& fator_norm
+) noexcept {
+    // Caso β = 0: fórmula uniforme x_i = x_I + L·i/(N-1)
+    if (std::abs(beta) < EPSILON) {
+        Real fator = static_cast<Real>(indice) / static_cast<Real>(fator_norm);
+        return x_inicio + comprimento * fator;
+    }
     
-    // Passo 2: Gera as coordenadas sequencialmente
-    Real x_atual = x_inicio;
+    // Fórmula exponencial: x_i = x_I + L·(exp(β·i) - 1)/D
+    Real expoente = beta * static_cast<Real>(indice);
+    Real numerador = std::exp(expoente) - 1.0;
     
+    return x_inicio + comprimento * (numerador / fator_norm);
+}
+
+void CalcularMalhaExponencialSequencial(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+) {
+    // Pré-calcula fator de normalização (evita recalcular para cada nó)
+    Real fator_norm = CalcularFatorNormalizacao(beta, n_nos);
+    
+    // Calcula coordenadas sequencialmente
     for (unsigned i = 0; i < n_nos; ++i) {
-        coordenadas[i] = x_atual;
-        x_atual += delta;
-        delta *= razao;  // Progressão geométrica
+        coordenadas[i] = CalcularCoordenadaExponencial(
+            x_inicio, comprimento, beta, i, fator_norm
+        );
     }
 }
 
-void CalcularMalhaParalela      (   VetorReal& coordenadas
-                                ,   const Real& x_inicio
-                                ,   const Real& comprimento
-                                ,   const Real& razao
-                                ,   const unsigned& n_nos
-                                ) {
-    // Passo 1: Cria vetor de incrementos individuais
-    VetorReal incrementos(n_nos);
-    incrementos[0] = 0.0;  // Primeiro nó não tem incremento
+void CalcularMalhaExponencialParalelo(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+) {
+    // Pré-calcula fator de normalização
+    Real fator_norm = CalcularFatorNormalizacao(beta, n_nos);
     
-    // Calcula o incremento inicial
-    Real delta = comprimento * (razao - 1.0) / 
-                 (PotenciaInteira(razao, n_nos - 1) - 1.0);
-    
-    // Preenche os incrementos seguindo a progressão geométrica
-    for (unsigned i = 1; i < n_nos; ++i) {
-        incrementos[i] = delta;
-        delta *= razao;
+    // Cria vetor de índices
+    std::vector<unsigned> indices(n_nos);
+    for (unsigned i = 0; i < n_nos; ++i) {
+        indices[i] = i;
     }
     
-    // Passo 2: Soma cumulativa paralela dos incrementos
-    std::inclusive_scan(std::execution::par,
-                       incrementos.begin(),
-                       incrementos.end(),
-                       incrementos.begin());
-    
-    // Passo 3: Soma a coordenada inicial a todos os elementos
-    std::transform(std::execution::par,
-                  incrementos.begin(),
-                  incrementos.end(),
-                  coordenadas.begin(),
-                  [x_inicio](Real inc) { return x_inicio + inc; });
+    // Calcula coordenadas em paralelo usando transform
+    std::transform(
+        std::execution::par,
+        indices.begin(),
+        indices.end(),
+        coordenadas.begin(),
+        [x_inicio, comprimento, beta, fator_norm](unsigned i) {
+            return CalcularCoordenadaExponencial(
+                x_inicio, comprimento, beta, i, fator_norm
+            );
+        }
+    );
 }
 
-std::string CalcularMalhas  (    VetorReal&  coordenadas
-                            ,    const Real& x_inicio
-                            ,    const Real& comprimento
-                            ,    const Real& razao
-                            ,    const unsigned& n_nos
-                            ) {
-    // Limite para usar paralelização (ajustável)
-    constexpr unsigned LIMITE_PARALELO = 10000;
-    
+std::string CalcularMalhaExponencial(
+    VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos
+) {
     if (n_nos >= LIMITE_PARALELO) {
         std::cout << "  Usando algoritmo paralelo (" << n_nos 
                   << " nós >= " << LIMITE_PARALELO << ")\n";
-        CalcularMalhaParalela(coordenadas, x_inicio, comprimento, razao, n_nos);
+        CalcularMalhaExponencialParalelo(
+            coordenadas, x_inicio, comprimento, beta, n_nos
+        );
         return "Paralelo (C++17 Execution Policies)";
     } else {
         std::cout << "  Usando algoritmo sequencial (" << n_nos 
                   << " nós < " << LIMITE_PARALELO << ")\n";
-        CalcularMalhaSequencial(coordenadas, x_inicio, comprimento, razao, n_nos);
+        CalcularMalhaExponencialSequencial(
+            coordenadas, x_inicio, comprimento, beta, n_nos
+        );
         return "Sequencial (Loop Tradicional)";
     }
 }
 
-void ImprimirResultados (   const VetorReal& coordenadas
-                        ,   const Real& x_inicio
-                        ,    const Real& comprimento
-                        ,    const Real& razao
-                        ,    const unsigned& n_nos
-                        ,    const std::string& algoritmo
-                        ,    const Real& tempo_ms
-                        ) {
+void ImprimirResultadosExponencial(
+    const VetorReal& coordenadas,
+    const Real& x_inicio,
+    const Real& comprimento,
+    const Real& beta,
+    const unsigned& n_nos,
+    const std::string& algoritmo,
+    const Real& tempo_ms
+) {
+    const int size(80);   
+    
     //--------------------------------------------------------------------------
     // Cabeçalho dos Resultados
     //--------------------------------------------------------------------------
-
- const int size(80);   
     std::cout << "\n\n";
     std::cout << std::string(size, '-') << std::endl;   
-    std::cout << "  RESULTADOS DA SIMULAÇÃO\n";
+    std::cout << "  RESULTADOS DA SIMULAÇÃO - MALHA EXPONENCIAL\n";
     std::cout << std::string(size, '-') << std::endl;   
     
     //--------------------------------------------------------------------------
@@ -467,13 +530,13 @@ void ImprimirResultados (   const VetorReal& coordenadas
     //--------------------------------------------------------------------------
     std::cout << "\n    PARÂMETROS DA MALHA:\n";
     std::cout << std::string(size, '-') << std::endl;   
-    std::cout << std::fixed << std::setprecision(3);
-    std::cout << "  Coordenada inicial (xInicio): " << std::setw(10) << x_inicio << "\n";
-    std::cout << "  Comprimento total (L):        " << std::setw(10) << comprimento << "\n";
-    std::cout << "  Razão geométrica (r):         " << std::setw(10) << razao << "\n";
-    std::cout << "  Número de nós (N):            " << std::setw(10) << n_nos << "\n";
-    std::cout << "  Algoritmo usado:              " << std::setw(10) << algoritmo << "\n";
-    std::cout << "  Tempo de cálculo:             " << std::setw(10) << tempo_ms << " ms\n";
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "  Coordenada inicial (x_I):     " << std::setw(14) << x_inicio << "\n";
+    std::cout << "  Comprimento total (L):        " << std::setw(14) << comprimento << "\n";
+    std::cout << "  Parâmetro de concentração (β):" << std::setw(14) << beta << "\n";
+    std::cout << "  Número de nós (N):            " << std::setw(14) << n_nos << "\n";
+    std::cout << "  Algoritmo usado:              " << std::setw(14) << algoritmo << "\n";
+    std::cout << "  Tempo de cálculo:             " << std::setw(14) << tempo_ms << " ms\n";
     std::cout << std::string(size, '-') << std::endl;   
     
     //--------------------------------------------------------------------------
@@ -482,56 +545,82 @@ void ImprimirResultados (   const VetorReal& coordenadas
     if (n_nos >= 2) {
         Real menor_espacamento = coordenadas[1] - coordenadas[0];
         Real maior_espacamento = coordenadas[n_nos-1] - coordenadas[n_nos-2];
-        Real razao_espacamentos = maior_espacamento / menor_espacamento;
+        Real razao_espacamentos = (menor_espacamento > EPSILON) ? 
+                                  maior_espacamento / menor_espacamento : 
+                                  std::numeric_limits<Real>::infinity();
         
         std::cout << "\n    ESTATÍSTICAS DA MALHA:\n";
         std::cout << std::string(size, '-') << std::endl;   
-        std::cout << std::scientific << std::setprecision(4);
-        std::cout << "  Menor espaçamento:    " << std::setw(12) << menor_espacamento << "\n";
-        std::cout << "  Maior espaçamento:    " << std::setw(12) << maior_espacamento << "\n";
-        std::cout << "  Razão (maior/menor):  " << std::setw(12) << razao_espacamentos << "\n";
-        std::cout << "  Esperado (r^(N-2)):   " << std::setw(12) 
-                  << PotenciaInteira(razao, n_nos-2) << "\n";
+        std::cout << std::scientific << std::setprecision(6);
+        std::cout << "  Menor espaçamento:         " << std::setw(14) << menor_espacamento << "\n";
+        std::cout << "  Maior espaçamento:         " << std::setw(14) << maior_espacamento << "\n";
+        std::cout << "  Razão (maior/menor):       " << std::setw(14) << razao_espacamentos << "\n";
+        std::cout << "  Espaçamento médio:         " << std::setw(14) << comprimento/(n_nos-1) << "\n";
         std::cout << std::string(size, '-') << std::endl;   
     }
     
     //--------------------------------------------------------------------------
-    // Coordenadas dos Nós (limitado para não poluir a saída)
+    // Coordenadas dos Nós
     //--------------------------------------------------------------------------
     std::cout << "\n    COORDENADAS DOS " << n_nos << " NÓS:\n";
     std::cout << std::string(size, '-') << std::endl;   
     
-    // Mostra apenas os primeiros e últimos 3 nós se houver muitos
-    const unsigned LIMITE_IMPRESSAO = 10;
-    
+    // Mostra apenas os primeiros e últimos nós se houver muitos
     if (n_nos <= LIMITE_IMPRESSAO) {
         // Mostra todos os nós
-        std::cout << std::setw(6) << "Nó" << std::setw(20) << "Coordenada (x)" << "\n";
-        std::cout << std::string(26, '-') << "\n";
+        std::cout << std::setw(6) << "Nó (i)" << std::setw(20) << "Coordenada (x_i)" 
+                  << std::setw(20) << "Espaçamento (Δx_i)" << "\n";
+        std::cout << std::string(46, '-') << "\n";
         
-        std::cout << std::scientific << std::setprecision(8);
+        std::cout << std::scientific << std::setprecision(10);
         for (unsigned i = 0; i < n_nos; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
+            std::cout << std::setw(6) << i;
+            std::cout << std::setw(20) << coordenadas[i];
+            
+            if (i > 0) {
+                Real espacamento = coordenadas[i] - coordenadas[i-1];
+                std::cout << std::setw(20) << espacamento;
+            } else {
+                std::cout << std::setw(20) << "---";
+            }
+            std::cout << "\n";
         }
     } else {
         // Mostra apenas os primeiros e últimos nós
-        std::cout << std::setw(6) << "Nó" << std::setw(20) << "Coordenada (x)" << "\n";
-        std::cout << std::string(26, '-') << "\n";
+        std::cout << std::setw(6) << "Nó (i)" << std::setw(20) << "Coordenada (x_i)" 
+                  << std::setw(20) << "Espaçamento (Δx_i)" << "\n";
+        std::cout << std::string(46, '-') << "\n";
         
-        std::cout << std::scientific << std::setprecision(8);
+        std::cout << std::scientific << std::setprecision(10);
         
         // Primeiros 3 nós
         for (unsigned i = 0; i < 3; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
+            std::cout << std::setw(6) << i;
+            std::cout << std::setw(20) << coordenadas[i];
+            
+            if (i > 0) {
+                Real espacamento = coordenadas[i] - coordenadas[i-1];
+                std::cout << std::setw(20) << espacamento;
+            } else {
+                std::cout << std::setw(20) << "---";
+            }
+            std::cout << "\n";
         }
-        std::cout << std::setw(6) << "..." << std::setw(20) << "..." << "\n";
+        std::cout << std::setw(6) << "..." << std::setw(20) << "..." 
+                  << std::setw(20) << "..." << "\n";
         
         // Últimos 3 nós
         for (unsigned i = n_nos-3; i < n_nos; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
+            std::cout << std::setw(6) << i;
+            std::cout << std::setw(20) << coordenadas[i];
+            
+            if (i > 0) {
+                Real espacamento = coordenadas[i] - coordenadas[i-1];
+                std::cout << std::setw(20) << espacamento;
+            } else {
+                std::cout << std::setw(20) << "---";
+            }
+            std::cout << "\n";
         }
         
         std::cout << "\n    Mostrando apenas primeiros e últimos 3 nós ";
@@ -552,12 +641,38 @@ void ImprimirResultados (   const VetorReal& coordenadas
     std::cout << "    Valor esperado:    " << x_inicio + comprimento << "\n";
     std::cout << "    Erro absoluto:     " << erro_final << "\n";
     
-    if (erro_final < 1e-10) {
-        std::cout << "    Status:            Cálculo preciso\n";
+    if (erro_final < EPSILON) {
+        std::cout << "    Status:            ✓ Cálculo preciso\n";
     } else if (erro_final < 1e-6) {
-        std::cout << "    Status:            Pequeno erro numérico\n";
+        std::cout << "    Status:            ⚠ Pequeno erro numérico\n";
     } else {
-        std::cout << "    Status:            Possível erro no algoritmo\n";
+        std::cout << "    Status:            ✗ Possível erro no algoritmo\n";
+    }
+    
+    std::cout << std::string(size, '-') << std::endl;   
+    
+    //--------------------------------------------------------------------------
+    // Análise do Comportamento
+    //--------------------------------------------------------------------------
+    std::cout << "\n    ANÁLISE DO COMPORTAMENTO (β = " << beta << "):\n";
+    std::cout << std::string(size, '-') << std::endl;   
+    
+    if (beta < 0.1) {
+        std::cout << "  - Malha quase uniforme (β → 0)\n";
+        std::cout << "  - Espaçamentos aproximadamente constantes\n";
+        std::cout << "  - Útil para domínios homogêneos\n";
+    } else if (beta < 1.0) {
+        std::cout << "  - Concentração moderada na extremidade inicial\n";
+        std::cout << "  - Transição suave entre espaçamentos\n";
+        std::cout << "  - Ideal para camadas limites suaves\n";
+    } else if (beta < 5.0) {
+        std::cout << "  - Forte concentração na extremidade inicial\n";
+        std::cout << "  - Grande variação nos espaçamentos\n";
+        std::cout << "  - Adequado para altos gradientes iniciais\n";
+    } else {
+        std::cout << "  - Concentração extrema na extremidade inicial\n";
+        std::cout << "  - Primeiro espaçamento muito pequeno\n";
+        std::cout << "  - Útil para simulação de fenômenos de fronteira\n";
     }
     
     std::cout << std::string(size, '-') << std::endl;   
@@ -567,11 +682,10 @@ void ImprimirResultados (   const VetorReal& coordenadas
     //--------------------------------------------------------------------------
     std::cout << "\n    CONCEITOS DEMONSTRADOS:\n";
     std::cout << std::string(size, '-') << std::endl;   
-    std::cout << "    1. Progressão geométrica em malhas\n";
-    std::cout << "    2. Método de diferenças finitas\n";
-    std::cout << "    3. Seleção automática de algoritmos\n";
-    std::cout << "    4. Paralelização com C++17\n";
-    std::cout << "    5. Validação de resultados\n";
+    std::cout << "    1. Distribuição exponencial em malhas\n";
+    std::cout << "    2. Fórmula: x_i = x_I + L·[exp(β·i) - 1]/[exp(β·(N-1)) - 1]\n";
+    std::cout << "    3. Transição β → 0 recupera malha uniforme\n";
+    std::cout << "    4. β grande concentra nós em x = x_I\n";
+    std::cout << "    5. Robustez numérica para casos extremos\n";
     std::cout << std::string(size, '-') << std::endl;   
-
 }
