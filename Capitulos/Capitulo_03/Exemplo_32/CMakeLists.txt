@@ -1,105 +1,65 @@
-#==============================================================================
-# Configuracao CMake para Programa_21 - Malha de Diferenças Finitas 1D
-# Versao: 1.0
-# Data: 2024-06-20
-# Otimizado para desempenho e execucao paralela
-#==============================================================================
-
+# CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
+project(Exemplo32 VERSION 1.0.0 LANGUAGES CXX)
 
-#==============================================================================
-# Configuracao Basica do Projeto
-#==============================================================================
-
-project(Programa_21
-    VERSION 1.0
-    DESCRIPTION "Programa para calculo de coordenadas de nos em malha 1D usando progressao geometrica"
-    LANGUAGES CXX
-)
-
-#==============================================================================
-# Configuracao do Compilador
-#==============================================================================
-
-set(CMAKE_CXX_STANDARD 20)
+# Configurações padrão
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#==============================================================================
-# Diretorios e Nomes
-#==============================================================================
+# Opção para habilitar paralelismo
+option(ENABLE_PARALLEL "Habilitar execução paralela (requer TBB)" ON)
 
-set(EXECUTABLE_NAME "Programa_21")
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(BIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+# Verificar TBB se paralelismo habilitado
+if(ENABLE_PARALLEL)
+    find_package(TBB QUIET)
+    if(TBB_FOUND)
+        message(STATUS "TBB encontrada: paralelismo habilitado")
+        set(USE_PARALLEL 1)
+    else()
+        message(WARNING "TBB não encontrada. Paralelismo desabilitado.")
+        set(USE_PARALLEL 0)
+        set(ENABLE_PARALLEL OFF)
+    endif()
+else()
+    set(USE_PARALLEL 0)
+    message(STATUS "Paralelismo desabilitado pelo usuário")
+endif()
 
-file(MAKE_DIRECTORY ${BIN_DIR})
+# Criar executável
+add_executable(Exemplo_32 Exemplo_32.cpp)
 
-#==============================================================================
-# Configuracao de Fontes
-#==============================================================================
-
-file(GLOB_RECURSE SOURCE_FILES
-    "${SRC_DIR}/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Programa_21.cpp"
-)
-
-#==============================================================================
-# Configuracao do Executavel
-#==============================================================================
-
-add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
-
-target_include_directories(${EXECUTABLE_NAME} PRIVATE
-    ${INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-#==============================================================================
-# Otimizacoes de Compilacao
-#==============================================================================
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE
-        -O3
-        -march=native
-        -flto
-        -fopenmp
+# Configurações baseadas nas opções
+if(ENABLE_PARALLEL AND TBB_FOUND)
+    target_link_libraries(Exemplo_32 PUBLIC TBB::tbb)
+    target_compile_definitions(Exemplo_32 PRIVATE 
+        ENABLE_PARALLEL=1
+        USE_PARALLEL=1
     )
-    target_link_options(${EXECUTABLE_NAME} PRIVATE -fopenmp)
-elseif(MSVC)
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE
-        /O2
-        /GL
-        /arch:AVX2
-        /openmp
+else()
+    target_compile_definitions(Exemplo_32 PRIVATE 
+        ENABLE_PARALLEL=0
+        USE_PARALLEL=0
     )
 endif()
 
-#==============================================================================
-# Configuracao de Saida
-#==============================================================================
-
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
+# Flags de compilação
+target_compile_options(Exemplo_32 PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wno-unused-parameter
 )
 
-#==============================================================================
-# Alvos Personalizados
-#==============================================================================
+# Instalação
+install(TARGETS Exemplo_32 DESTINATION bin)
 
-add_custom_target(run_${EXECUTABLE_NAME}
-    COMMAND ${EXECUTABLE_NAME}
-    WORKING_DIRECTORY ${BIN_DIR}
-    DEPENDS ${EXECUTABLE_NAME}
-    COMMENT "Executando ${EXECUTABLE_NAME}"
-)
-
-#==============================================================================
-# Mensagens de Status
-#==============================================================================
-
-message(STATUS "Configuracao completa para ${EXECUTABLE_NAME}")
-message(STATUS "Compilador: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "Flags de otimizacao ativadas")
+# Mensagem final
+message(STATUS "----------------------------------------")
+message(STATUS "Configuração do Exemplo 32:")
+message(STATUS "  Versão: ${PROJECT_VERSION}")
+message(STATUS "  Paralelismo: ${ENABLE_PARALLEL}")
+if(ENABLE_PARALLEL)
+    message(STATUS "  TBB: ${TBB_VERSION}")
+endif()
+message(STATUS "----------------------------------------")
