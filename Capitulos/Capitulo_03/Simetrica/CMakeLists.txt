@@ -1,119 +1,65 @@
-#==============================================================================
-# Configuracao CMake para Programa_23 - Malha de Volumes Finitos 1D
-# Versao: 1.0
-# Data: 2024-06-20
-# Otimizado para desempenho e execucao paralela
-#==============================================================================
-
+# CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
+project(Simetrica VERSION 1.0.0 LANGUAGES CXX)
 
-#==============================================================================
-# Configuracao Basica do Projeto
-#==============================================================================
-
-project(Programa_23
-    VERSION 1.0
-    DESCRIPTION "Programa para geracao de malha aleatoria unidimensional"
-    LANGUAGES CXX
-)
-
-#==============================================================================
-# Configuracao do Compilador
-#==============================================================================
-
-set(CMAKE_CXX_STANDARD 20)
+# Configurações padrão
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#==============================================================================
-# Diretorios e Nomes
-#==============================================================================
+# Opção para habilitar paralelismo
+option(ENABLE_PARALLEL "Habilitar execução paralela (requer TBB)" ON)
 
-set(EXECUTABLE_NAME "Programa_23")
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(BIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
-file(MAKE_DIRECTORY ${BIN_DIR})
-
-#==============================================================================
-# Configuracao de Fontes
-#==============================================================================
-
-file(GLOB_RECURSE SOURCE_FILES
-    "${SRC_DIR}/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Programa_23.cpp"
-)
-
-# Verificacao explicita do arquivo principal
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Programa_23.cpp")
-    message(FATAL_ERROR "Arquivo principal Programa_23.cpp nao encontrado")
+# Verificar TBB se paralelismo habilitado
+if(ENABLE_PARALLEL)
+    find_package(TBB QUIET)
+    if(TBB_FOUND)
+        message(STATUS "TBB encontrada: paralelismo habilitado")
+        set(USE_PARALLEL 1)
+    else()
+        message(WARNING "TBB não encontrada. Paralelismo desabilitado.")
+        set(USE_PARALLEL 0)
+        set(ENABLE_PARALLEL OFF)
+    endif()
+else()
+    set(USE_PARALLEL 0)
+    message(STATUS "Paralelismo desabilitado pelo usuário")
 endif()
 
-#==============================================================================
-# Configuracao do Executavel
-#==============================================================================
+# Criar executável
+add_executable(Simetrica Simetrica.cpp)
 
-add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
-
-target_include_directories(${EXECUTABLE_NAME} PRIVATE
-    ${INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-#==============================================================================
-# Otimizacoes e Paralelismo
-#==============================================================================
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE
-        -O3
-        -march=native
-        -flto
-        -fopenmp
+# Configurações baseadas nas opções
+if(ENABLE_PARALLEL AND TBB_FOUND)
+    target_link_libraries(Simetrica PUBLIC TBB::tbb)
+    target_compile_definitions(Simetrica PRIVATE 
+        ENABLE_PARALLEL=1
+        USE_PARALLEL=1
     )
-    target_link_options(${EXECUTABLE_NAME} PRIVATE -fopenmp)
-elseif(MSVC)
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE
-        /O2
-        /GL
-        /arch:AVX2
-        /openmp
+else()
+    target_compile_definitions(Simetrica PRIVATE 
+        ENABLE_PARALLEL=0
+        USE_PARALLEL=0
     )
 endif()
 
-find_package(TBB REQUIRED)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE TBB::tbb)
-
-#==============================================================================
-# Configuracao de Saida
-#==============================================================================
-
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
-    OUTPUT_NAME "${EXECUTABLE_NAME}"
+# Flags de compilação
+target_compile_options(Simetrica PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wno-unused-parameter
 )
 
-#==============================================================================
-# Alvos Personalizados
-#==============================================================================
+# Instalação
+install(TARGETS Simetrica DESTINATION bin)
 
-add_custom_target(run_${EXECUTABLE_NAME}
-    COMMAND ${EXECUTABLE_NAME}
-    WORKING_DIRECTORY ${BIN_DIR}
-    DEPENDS ${EXECUTABLE_NAME}
-    COMMENT "Executando ${EXECUTABLE_NAME}"
-)
-
-# Limpeza personalizada
-set_property(DIRECTORY PROPERTY
-    ADDITIONAL_MAKE_CLEAN_FILES ${BIN_DIR}
-)
-
-#==============================================================================
-# Mensagens de Status
-#==============================================================================
-
-message(STATUS "Configuracao completa para ${EXECUTABLE_NAME}")
-message(STATUS "Compilador: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "Flags de otimizacao ativadas")
+# Mensagem final
+message(STATUS "----------------------------------------")
+message(STATUS "Configuração do Malha Simétrica:")
+message(STATUS "  Versão: ${PROJECT_VERSION}")
+message(STATUS "  Paralelismo: ${ENABLE_PARALLEL}")
+if(ENABLE_PARALLEL)
+    message(STATUS "  TBB: ${TBB_VERSION}")
+endif()
+message(STATUS "----------------------------------------")
