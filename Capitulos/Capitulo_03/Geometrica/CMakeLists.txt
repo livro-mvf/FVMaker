@@ -1,6 +1,6 @@
 # CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
-project(Exemplo32 VERSION 1.0.0 LANGUAGES CXX)
+project(Geometrica VERSION 1.0.0 LANGUAGES CXX)
 
 # Configurações padrão
 set(CMAKE_CXX_STANDARD 17)
@@ -27,24 +27,24 @@ else()
 endif()
 
 # Criar executável
-add_executable(Exemplo_32 Exemplo_32.cpp)
+add_executable(Geometrica Geometrica.cpp)
 
 # Configurações baseadas nas opções
 if(ENABLE_PARALLEL AND TBB_FOUND)
-    target_link_libraries(Exemplo_32 PUBLIC TBB::tbb)
-    target_compile_definitions(Exemplo_32 PRIVATE 
+    target_link_libraries(Geometrica PUBLIC TBB::tbb)
+    target_compile_definitions(Geometrica PRIVATE 
         ENABLE_PARALLEL=1
         USE_PARALLEL=1
     )
 else()
-    target_compile_definitions(Exemplo_32 PRIVATE 
+    target_compile_definitions(Geometrica PRIVATE 
         ENABLE_PARALLEL=0
         USE_PARALLEL=0
     )
 endif()
 
 # Flags de compilação
-target_compile_options(Exemplo_32 PRIVATE
+target_compile_options(Geometrica PRIVATE
     -Wall
     -Wextra
     -Wpedantic
@@ -52,11 +52,11 @@ target_compile_options(Exemplo_32 PRIVATE
 )
 
 # Instalação
-install(TARGETS Exemplo_32 DESTINATION bin)
+install(TARGETS Geometrica DESTINATION bin)
 
 # Mensagem final
 message(STATUS "----------------------------------------")
-message(STATUS "Configuração do Exemplo 32:")
+message(STATUS "Configuração do Exemplo da Malha Geometrica:")
 message(STATUS "  Versão: ${PROJECT_VERSION}")
 message(STATUS "  Paralelismo: ${ENABLE_PARALLEL}")
 if(ENABLE_PARALLEL)

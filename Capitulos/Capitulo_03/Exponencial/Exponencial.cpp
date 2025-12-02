@@ -246,7 +246,7 @@ std::string CalcularMalhaExponencial(
  * @param algoritmo Nome do algoritmo usado
  * @param tempo_ms Tempo de execução em milissegundos
  */
-void ImprimirResultadosExponencial(
+void ImprimirResultados(
     const VetorReal& coordenadas,
     const Real& x_inicio,
     const Real& comprimento,
@@ -324,9 +324,14 @@ int main() {
     //--------------------------------------------------------------------------
     // Impressão dos Resultados
     //--------------------------------------------------------------------------
-    ImprimirResultadosExponencial(
-        coordenadas, X_INICIO, COMPRIMENTO, BETA, N_NOS,
-        algoritmo_usado, tempo_ms
+    ImprimirResultados(
+            coordenadas, 
+            X_INICIO, 
+            COMPRIMENTO, 
+            BETA, 
+            N_NOS,
+            algoritmo_usado, 
+            tempo_ms
     );
     
     return EXIT_SUCCESS;
@@ -502,7 +507,7 @@ std::string CalcularMalhaExponencial(
     }
 }
 
-void ImprimirResultadosExponencial(
+void ImprimirResultados(
     const VetorReal& coordenadas,
     const Real& x_inicio,
     const Real& comprimento,

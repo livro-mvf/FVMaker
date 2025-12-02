@@ -502,36 +502,62 @@ void ImprimirResultados (   const VetorReal& coordenadas
     std::cout << std::string(size, '-') << std::endl;   
     
     // Mostra apenas os primeiros e últimos 3 nós se houver muitos
-    const unsigned LIMITE_IMPRESSAO = 10;
+    const unsigned LIMITE_IMPRESSAO = 25;
     
-    if (n_nos <= LIMITE_IMPRESSAO) {
+       if (n_nos <= LIMITE_IMPRESSAO) {
         // Mostra todos os nós
-        std::cout << std::setw(6) << "Nó" << std::setw(20) << "Coordenada (x)" << "\n";
-        std::cout << std::string(26, '-') << "\n";
+        std::cout << std::scientific << std::setprecision(10) << std::right;
+
+        std::cout   << std::setw(7) << "Nó" 
+                    << std::setw(20) << "Coordenada" 
+                    << std::setw(21) << "Espaçamento" 
+                    << "\n";
+        std::cout << std::string(46, '-') << "\n";
         
-        std::cout << std::scientific << std::setprecision(8);
-        for (unsigned i = 0; i < n_nos; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
-        }
+
+        std::cout << std::setw(6) << 0 
+                  << std::setw(20) << coordenadas[0] 
+                  << std::setw(21) << "---\n";
+
+// Imprime as linhas restantes (nós 1 até n_nos-1) em um loop limpo
+for (unsigned i = 1; i < n_nos; ++i) {
+    Real espacamento = coordenadas[i] - coordenadas[i-1];
+    std::cout << std::setw(6) << i
+              << std::setw(20) << coordenadas[i]
+              << std::setw(20) << espacamento << "\n";
+}
     } else {
         // Mostra apenas os primeiros e últimos nós
-        std::cout << std::setw(6) << "Nó" << std::setw(20) << "Coordenada (x)" << "\n";
-        std::cout << std::string(26, '-') << "\n";
+        std::cout << std::scientific << std::setprecision(10) << std::right;
+
+        std::cout   << std::setw(7) << "Nó" 
+                    << std::setw(20) << "Coordenada" 
+                    << std::setw(21) << "Espaçamento" 
+                    << "\n";
+        std::cout << std::string(46, '-') << "\n";
         
-        std::cout << std::scientific << std::setprecision(8);
+
+        std::cout << std::setw(6) << 0 
+                  << std::setw(20) << coordenadas[0] 
+                  << std::setw(21) << "---\n";
         
         // Primeiros 3 nós
-        for (unsigned i = 0; i < 3; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
+        for (unsigned i = 1; i < 3; ++i) {
+            Real espacamento = coordenadas[i] - coordenadas[i-1];
+            std::cout << std::setw(6) << i
+                    << std::setw(20) << coordenadas[i]
+                    << std::setw(20) << espacamento << "\n";
         }
-        std::cout << std::setw(6) << "..." << std::setw(20) << "..." << "\n";
+
+        std::cout << std::setw(6) << "..." << std::setw(20) << "..." 
+                  << std::setw(20) << "..." << "\n";
         
         // Últimos 3 nós
         for (unsigned i = n_nos-3; i < n_nos; ++i) {
-            std::cout << std::setw(6) << i+1 
-                      << std::setw(20) << coordenadas[i] << "\n";
+            Real espacamento = coordenadas[i] - coordenadas[i-1];
+            std::cout << std::setw(6) << i
+                    << std::setw(20) << coordenadas[i]
+                    << std::setw(20) << espacamento << "\n";
         }
         
         std::cout << "\n    Mostrando apenas primeiros e últimos 3 nós ";
