@@ -45,13 +45,10 @@
 
 #include <algorithm>    // Para algoritmos de ordenação e geração
 #include <chrono>       // Para medir tempo de execução
-#include <cmath>        // Para funções matemáticas (fabs)
 #include <execution>    // Para execução paralela  
 #include <iomanip>      // Para formatação de saída
 #include <iostream>     // Para entrada/saída padrão
-#include <limits>       // Para limites numéricos
 #include <random>       // Para geração de números aleatórios
-#include <stdexcept>    // Para exceções padrão
 #include <vector>       // Para vetores dinâmicos
 
 //------------------------------------------------------------------------------
