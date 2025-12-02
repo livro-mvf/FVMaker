@@ -1,6 +1,6 @@
 # CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
-project(Exponencial VERSION 1.0.0 LANGUAGES CXX)
+project(Aleatoria VERSION 1.0.0 LANGUAGES CXX)
 
 # Configurações padrão
 set(CMAKE_CXX_STANDARD 17)
@@ -27,24 +27,24 @@ else()
 endif()
 
 # Criar executável
-add_executable(Exponencial Exponencial.cpp)
+add_executable(Aleatoria Aleatoria.cpp)
 
 # Configurações baseadas nas opções
 if(ENABLE_PARALLEL AND TBB_FOUND)
-    target_link_libraries(Exponencial PUBLIC TBB::tbb)
-    target_compile_definitions(Exponencial PRIVATE 
+    target_link_libraries(Aleatoria PUBLIC TBB::tbb)
+    target_compile_definitions(Aleatoria PRIVATE 
         ENABLE_PARALLEL=1
         USE_PARALLEL=1
     )
 else()
-    target_compile_definitions(Exponencial PRIVATE 
+    target_compile_definitions(Aleatoria PRIVATE 
         ENABLE_PARALLEL=0
         USE_PARALLEL=0
     )
 endif()
 
 # Flags de compilação
-target_compile_options(Exponencial PRIVATE
+target_compile_options(Aleatoria PRIVATE
     -Wall
     -Wextra
     -Wpedantic
@@ -52,11 +52,11 @@ target_compile_options(Exponencial PRIVATE
 )
 
 # Instalação
-install(TARGETS Exponencial DESTINATION bin)
+install(TARGETS Aleatoria DESTINATION bin)
 
 # Mensagem final
 message(STATUS "----------------------------------------")
-message(STATUS "Configuração do Malha Exponencial:")
+message(STATUS "Configuração do Malha Aleatória:")
 message(STATUS "  Versão: ${PROJECT_VERSION}")
 message(STATUS "  Paralelismo: ${ENABLE_PARALLEL}")
 if(ENABLE_PARALLEL)
