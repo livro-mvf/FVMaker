@@ -1,6 +1,6 @@
 # CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
-project(Exemplo33 VERSION 1.0.0 LANGUAGES CXX)
+project(Exemplo34 VERSION 1.0.0 LANGUAGES CXX)
 
 # Configurações padrão
 set(CMAKE_CXX_STANDARD 17)
@@ -27,24 +27,24 @@ else()
 endif()
 
 # Criar executável
-add_executable(Exemplo_33 Exemplo_33.cpp)
+add_executable(Exemplo_34 Exemplo_34.cpp)
 
 # Configurações baseadas nas opções
 if(ENABLE_PARALLEL AND TBB_FOUND)
-    target_link_libraries(Exemplo_33 PUBLIC TBB::tbb)
-    target_compile_definitions(Exemplo_33 PRIVATE 
+    target_link_libraries(Exemplo_34 PUBLIC TBB::tbb)
+    target_compile_definitions(Exemplo_34 PRIVATE 
         ENABLE_PARALLEL=1
         USE_PARALLEL=1
     )
 else()
-    target_compile_definitions(Exemplo_33 PRIVATE 
+    target_compile_definitions(Exemplo_34 PRIVATE 
         ENABLE_PARALLEL=0
         USE_PARALLEL=0
     )
 endif()
 
 # Flags de compilação
-target_compile_options(Exemplo_33 PRIVATE
+target_compile_options(Exemplo_34 PRIVATE
     -Wall
     -Wextra
     -Wpedantic
@@ -52,11 +52,11 @@ target_compile_options(Exemplo_33 PRIVATE
 )
 
 # Instalação
-install(TARGETS Exemplo_33 DESTINATION bin)
+install(TARGETS Exemplo_34 DESTINATION bin)
 
 # Mensagem final
 message(STATUS "----------------------------------------")
-message(STATUS "Configuração do Exemplo 33:")
+message(STATUS "Configuração do Exemplo 34:")
 message(STATUS "  Versão: ${PROJECT_VERSION}")
 message(STATUS "  Paralelismo: ${ENABLE_PARALLEL}")
 if(ENABLE_PARALLEL)
