@@ -64,12 +64,12 @@
 //      Inclusões da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/RandomGrid1D.h>  ///< Definição da classe RandomGrid1D para geração
+#include <FVMaker/Grid/Grid1D/randomGrid1D.h>  ///< Definição da classe RandomGrid1D para geração
                                                ///< da malha aleatória
-#include <FVMAKER/Grid/GridPattern/CellCentered.h>
-#include <FVMAKER/Grid/GridPattern/FaceCentered.h>
-#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>
-#include <FVMAKER/Grid/GridAnalysis/GridReport.h>
+#include <FVMaker/Grid/GridPattern/cellCentered.h>
+#include <FVMaker/Grid/GridPattern/faceCentered.h>
+#include <FVMaker/Grid/Grid1D/uniformGrid1D.h>
+#include <FVMaker/Grid/GridAnalysis/gridReport.h>
 
 using fvm::grd::CellCentered;
 using fvm::grd::FaceCentered;

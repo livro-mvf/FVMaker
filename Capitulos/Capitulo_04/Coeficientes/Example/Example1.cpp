@@ -33,7 +33,7 @@
  * 
  * @details
  * Este programa demonstra como gerar uma malha uniforme unidimensional para o método dos volumes finitos
- * utilizando a classe UniformGrid1D da biblioteca FVMaker.
+ * utilizando a classe uniformGrid1D da biblioteca FVMaker.
  * 
  * A malha é definida pelos seguintes parâmetros:
  *  - Comprimento total do domínio.
@@ -42,7 +42,7 @@
  * 
  * O fluxo do programa é o seguinte:
  *  1. Configura os parâmetros de entrada e exibe-os formatadamente.
- *  2. Gera a malha uniforme utilizando a classe UniformGrid1D.
+ *  2. Gera a malha uniforme utilizando a classe uniformGrid1D.
  *  3. Imprime as coordenadas dos nós resultantes.
  *    ```
  * 
@@ -60,12 +60,12 @@
 //      Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMaker/BoundaryCondition/BoundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
-#include <FVMaker/BoundaryCondition/Dirichlet.h>        ///< Definição da classe Dirichlet para as condições de contorno
-#include <FVMaker/BoundaryCondition/Neumann.h>          ///< Definição da classe Neumann para as condições de contorno
-#include <FVMaker/Coefficient/Coefficient1D.h>          ///< Definição da classe Coefficient para os coeficientes unidimensional da equação diferencial
-#include <FVMAKER/Equation/Diffusion.h>                 ///< Definição da classe Diffusion para o termo de difusao
-#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h>          ///< Definição da classe UniformGrid1D para geração da malha uniforme
+#include <FVMaker/BoundaryCondition/boundaryCondition.h>        ///< Definição da classe Dirichlet para as condições de contorno
+#include <FVMaker/BoundaryCondition/dirichlet.h>        ///< Definição da classe Dirichlet para as condições de contorno
+#include <FVMaker/BoundaryCondition/neumann.h>          ///< Definição da classe Neumann para as condições de contorno
+#include <FVMaker/Coefficient/coefficient1D.h>          ///< Definição da classe Coefficient para os coeficientes unidimensional da equação diferencial
+#include <FVMaker/Equation/diffusion.h>                 ///< Definição da classe Diffusion para o termo de difusao
+#include <FVMaker/Grid/Grid1D/uniformGrid1D.h>          ///< Definição da classe uniformGrid1D para geração da malha uniforme
 
 
 //==============================================================================
@@ -75,7 +75,7 @@
 /**
  * @brief Função principal que gera e exibe uma malha uniforme unidimensional.
  * 
- * A função define os parâmetros de configuração da malha, gera a malha utilizando a classe UniformGrid1D,
+ * A função define os parâmetros de configuração da malha, gera a malha utilizando a classe uniformGrid1D,
  * e imprime os dados de entrada e a malha resultante formatadamente na saída padrão.
  * 
  * @return int Código de saída do programa. Retorna EXIT_SUCCESS se a execução for bem-sucedida.
@@ -107,7 +107,7 @@ int main() {
 //      Geração e exibição da malha uniforme
 //==============================================================================
 
-    fvm::grd::UniformGrid1D ug1D(nVol, length, xInit);
+    fvm::grd::uniformGrid1D ug1D(nVol, length, xInit);
     std::cout << ug1D << "\n";
 
 //==============================================================================
@@ -117,13 +117,13 @@ int main() {
     fvm::Dirichlet      cc_w(1);
     fvm::Neumann        cc_e(0);
  
-    fvm::BoundaryConditions<fvm::grd::UniformGrid1D>       bc1D = makeBC<fvm::grd::UniformGrid1D>(cc_w, cc_e);
+    fvm::BoundaryConditions<fvm::grd::uniformGrid1D>       bc1D = makeBC<fvm::grd::uniformGrid1D>(cc_w, cc_e);
 
 //==============================================================================
 //      Definicao das condições de contorno
 //==============================================================================
     
-    fvm::Coefficient1D<fvm::grd::UniformGrid1D>          coeff(ug1D);
+    fvm::Coefficient1D<fvm::grd::uniformGrid1D>          coeff(ug1D);
     std::cout <<  coeff << "\n\n";
 
 
@@ -132,7 +132,7 @@ int main() {
 //==============================================================================
 
     
-fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);       
+fvm::Function<fvm::grd::uniformGrid1D>        fx(ug1D);       
 auto TermoFonte = [] (const Real& _x) -> fvm::PairData { 
     return fvm::PairData(_x * _x, 0);
 };
@@ -145,7 +145,7 @@ auto TermoFonte = [] (const Real& _x) -> fvm::PairData {
 //      Definicao dos coeficientes do sistema de equações lineares
 //==============================================================================
     
-    fvm::Diffusion<fvm::grd::UniformGrid1D>    eq_diff(ug1D, coeff, bc1D, &fx);
+    fvm::Diffusion<fvm::grd::uniformGrid1D>    eq_diff(ug1D, coeff, bc1D, &fx);
     bool flag = eq_diff.ComputeCoefficient();
     
     

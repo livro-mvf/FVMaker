@@ -33,7 +33,7 @@
  * 
  * @details
  * Este programa demonstra como gerar uma malha uniforme unidimensional para o método dos volumes finitos
- * utilizando a classe UniformGrid1D da biblioteca FVMaker.
+ * utilizando a classe uniformGrid1D da biblioteca FVMaker.
  * 
  * A malha é definida pelos seguintes parâmetros:
  *  - Comprimento total do domínio.
@@ -42,7 +42,7 @@
  * 
  * O fluxo do programa é o seguinte:
  *  1. Configura os parâmetros de entrada e exibe-os formatadamente.
- *  2. Gera a malha uniforme utilizando a classe UniformGrid1D.
+ *  2. Gera a malha uniforme utilizando a classe uniformGrid1D.
  *  3. Imprime as coordenadas dos nós resultantes.
  *    ```
  * 
@@ -60,8 +60,8 @@
 //      Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/UniformGrid1D.h> ///< Definição da classe UniformGrid1D para geração da malha uniforme
-#include <FVMAKER/Utilities/Function.h>
+#include <FVMaker/Grid/Grid1D/uniformGrid1D.h> ///< Definição da classe uniformGrid1D para geração da malha uniforme
+#include <FVMaker/Utilities/function.h>
 
 //==============================================================================
 //      Função principal
@@ -70,7 +70,7 @@
 /**
  * @brief Função principal que gera e exibe uma malha uniforme unidimensional.
  * 
- * A função define os parâmetros de configuração da malha, gera a malha utilizando a classe UniformGrid1D,
+ * A função define os parâmetros de configuração da malha, gera a malha utilizando a classe uniformGrid1D,
  * e imprime os dados de entrada e a malha resultante formatadamente na saída padrão.
  * 
  * @return int Código de saída do programa. Retorna EXIT_SUCCESS se a execução for bem-sucedida.
@@ -102,7 +102,7 @@ int main() {
 //      Geração e exibição da malha uniforme
 //==============================================================================
 
-    fvm::grd::UniformGrid1D ug1D(nVol, length, xInit);
+    fvm::grd::uniformGrid1D ug1D(nVol, length, xInit);
     std::cout << ug1D << "\n";
 
 
@@ -111,7 +111,7 @@ int main() {
 //==============================================================================
 
     
-fvm::Function<fvm::grd::UniformGrid1D>        fx(ug1D);   
+fvm::Function<fvm::grd::uniformGrid1D>        fx(ug1D);   
     
 auto TermoFonte = [] (const Real&) -> fvm::PairData { 
     return fvm::PairData(1,2);

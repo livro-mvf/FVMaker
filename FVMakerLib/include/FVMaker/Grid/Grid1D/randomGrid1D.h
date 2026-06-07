@@ -1,12 +1,14 @@
 #pragma once
 
+#pragma once
+
 //==============================================================================
-// Name        : RMGrid1D.h
+// Name        : RandomGrid1D.h
 // Author      : Joao Flavio Vieira de Vasconcellos
 // Version     : 1.0
-// Description : Classe para gera��o de malha uniforme
+// Description : Classe para geracao de malha aleatoria (distribuicao uniforme)
 //
-// Copyright   : Copyright (C) <2024>  Joao Flavio Vasconcellos
+// Copyright   : Copyright (C) <2025>  Joao Flavio Vasconcellos
 //                                      (jflavio at iprj.uerj.br)
 //
 // This program is free software: you can redistribute it and/or modify
@@ -24,18 +26,14 @@
 //==============================================================================
 
 //==============================================================================
-// Includes da biblioteca FVMaker
+//      Includes da Biblioteca FVMaker
 //==============================================================================
-
 #include <FVMaker/Grid/Grid1D/abstractGrid1D.h>
-#include <FVMaker/Grid/GridPattern/cellCentered.h>
-
 
 GRID_NAMESPACE_OPEN
 
-
-template <typename T>
-class RMGrid1D : public AbstractGrid1D<T> {
+template<typename TypePattern>
+class RandomGrid1D : public AbstractGrid1D<TypePattern> {
 
 public:
 
@@ -47,13 +45,13 @@ public:
     
 public:
     
-    RMGrid1D() noexcept = default;
-    RMGrid1D (const Real&, const int&, const Real&,  const Real& = 0.0);
-    RMGrid1D (const RMGrid1D& _copia) noexcept
-        : AbstractGrid1D<T>(*_copia.Clone()){};
-    virtual ~RMGrid1D() noexcept override = default;
-
-    RMGrid1D(RMGrid1D&&) = delete;
+    RandomGrid1D() noexcept = default;
+    RandomGrid1D (const int&, const Real&, const Real& = 0.0);
+    RandomGrid1D(const RandomGrid1D& _copia) noexcept
+        : AbstractGrid1D<TypePattern>(*_copia.Clone()){};
+    virtual ~RandomGrid1D() noexcept override = default;
+//
+    RandomGrid1D(RandomGrid1D&&) = delete;
     
 //==============================================================================
 // Sobrecarga de operadores
@@ -61,8 +59,8 @@ public:
     
 public:
     
-    RMGrid1D& operator=(const RMGrid1D&) = delete;
-    RMGrid1D& operator=(RMGrid1D&&) = delete;
+    RandomGrid1D& operator=(const RandomGrid1D&) = delete;
+    RandomGrid1D& operator=(RandomGrid1D&&) = delete;
     
 //==============================================================================
 // Funções Virtuais
@@ -70,10 +68,10 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<T>> Clone() const;
+    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<TypePattern>> Clone() const;
     [[nodiscard]] virtual bool GeraFaces ();
     [[nodiscard]] virtual bool GeraCentros ();
-    
+//    
 //==============================================================================
 // Funções 
 //==============================================================================
@@ -83,18 +81,23 @@ private :
     [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
     [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
     [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
-    [[nodiscard]] Real Funcao (const Real&) const;
 
-//==============================================================================
-// Dados da classe 
-//==============================================================================
-
-private:
-
-Real    beta_= 1.001;
-Real    auxiBeta_;
-static  constexpr Real ALPHA_ = 0.5;
 };
+
+//============================================================================== 
+//   typedef    
+//============================================================================== 
+
+template<typename TypePattern>
+using SharedRandomGrid1D = std::shared_ptr<RandomGrid1D<TypePattern>>;
+template<typename TypePattern>
+using SharedConstRandomGrid1D = std::shared_ptr<RandomGrid1D<TypePattern> const>;
+template<typename TypePattern>
+using UniqueRandomGrid1D = std::unique_ptr<RandomGrid1D<TypePattern>>;
+template<typename TypePattern>
+using UniqueConstRandomGrid1D = std::unique_ptr<RandomGrid1D<TypePattern> const>;
+
+
 GRID_NAMESPACE_CLOSE
 
-#include <FVMaker/Grid/Grid1D/RMGrid1D.hpp>
+#include <FVMaker/Grid/Grid1D/randomGrid1D.hpp>

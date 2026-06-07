@@ -61,9 +61,9 @@
 //      Includes da Biblioteca FVMaker
 //==============================================================================
 
-#include <FVMAKER/Grid/Grid1D/RMGrid1D.h> ///< Definição da classe RMGrid para geração da malha nao uniforme
-#include <FVMAKER/Grid/GridPattern/CellCentered.h>
-#include <FVMAKER/Grid/GridPattern/FaceCentered.h>
+#include <FVMaker/Grid/Grid1D/RMGrid1D.h> ///< Definição da classe RMGrid para geração da malha nao uniforme
+#include <FVMaker/Grid/GridPattern/cellCentered.h>
+#include <FVMaker/Grid/GridPattern/faceCentered.h>
 
 using fvm::grd::CellCentered;
 using fvm::grd::FaceCentered;
