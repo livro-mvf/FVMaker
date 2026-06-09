@@ -1,0 +1,13 @@
+include_guard()
+
+set(FVM_PRIVATE_DEPENDENCIES)
+
+if(FVM_ENABLE_TBB)
+    find_package(TBB REQUIRED COMPONENTS tbb)
+    list(APPEND FVM_PRIVATE_DEPENDENCIES TBB::tbb)
+endif()
+
+if(FVM_ENABLE_OPENMP)
+    find_package(OpenMP REQUIRED COMPONENTS CXX)
+    list(APPEND FVM_PRIVATE_DEPENDENCIES OpenMP::OpenMP_CXX)
+endif()
