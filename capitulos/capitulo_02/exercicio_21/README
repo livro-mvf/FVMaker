@@ -1,0 +1,25 @@
+# Exercício Computacional 2.2: Malha 1D Uniforme
+
+Este programa implementa a classe `Malha1D`, que representa uma malha unidimensional uniforme. O código foi desenvolvido como material de apoio para o livro sobre o Método de Volumes Finitos, com foco na aplicação de princípios de encapsulamento, validação rigorosa de pré-condições e cálculo de geometrias básicas para discretização.
+
+## Funcionalidades
+
+- **Construção segura**: O construtor valida as precondições (`xmin < xmax` e `N > 0`) e rejeita entradas inconsistentes lançando `std::invalid_argument`.
+- **Cálculo de geometria**: Calcula automaticamente o tamanho de cada volume de controle ($\Delta x$).
+- **Consultas de coordenadas**: Fornece acesso às coordenadas dos centros (`centro(i)`) e das faces (`face(i)`) dos volumes.
+- **Tratamento de limites**: Lança `std::out_of_range` ao tentar acessar índices de volumes ou faces fora dos intervalos válidos `[0, N)` e `[0, N]`, respectivamente.
+- **Suíte de testes embutida**: O programa principal executa uma série de testes para validar o comportamento da classe, incluindo testes de valores esperados e de lançamento de exceções.
+
+## Pré-requisitos
+
+O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário um compilador compatível com C++17 ou superior (devido ao uso de atributos como `[[nodiscard]]`).
+
+- Compilador: `g++`, `clang++` ou MSVC.
+- Padrão: C++17 ou superior.
+
+## Compilação e Execução
+
+Para compilar o programa a partir do arquivo-fonte (assumindo que o arquivo se chama `exercicio_2_2.cpp`):
+
+```bash
+g++ -std=c++17 -O2 -Wall -Wextra exercicio_2_2.cpp -o malha1d
