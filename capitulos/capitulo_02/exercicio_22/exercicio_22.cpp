@@ -56,11 +56,8 @@
 //==============================================================================
 
 #include <cmath>
-#include <cstddef>
 #include <iomanip>
 #include <iostream>
-#include <stdexcept>
-#include <string>
 
 //==============================================================================
 // Tipo real usado no programa
