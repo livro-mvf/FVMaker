@@ -1,5 +1,5 @@
 //==============================================================================
-// SPDX-FileCopyrightText: 2026 Author Name
+// SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
 //==============================================================================
 // AVISO LEGAL / LEGAL DISCLAIMER
@@ -8,7 +8,9 @@
 // O código-fonte é fornecido sob a licença MIT, no estado em que se encontra
 // ("as is"). Embora nos esforcemos para garantir o rigor matemático e a
 // correção das implementações, a natureza da computação científica implica
-// que inconsistências pontuais possam ocorrer. Caso identifique algum erro,
+// que inconsistências pontuais possam ocorrer. 
+//
+// Caso identifique algum erro,
 // comportamento inesperado, ou tenha sugestões de aprimoramento, seremos
 // imensamente gratos se nos puder contactar através do e-mail
 // livromvf@gmail.com. A sua contribuição é inestimável para o aperfeiçoamento
@@ -18,7 +20,9 @@
 // The source code is provided under the MIT Licence, on an "as is" basis.
 // Whilst we endeavour to ensure mathematical rigour and correctness in the
 // C++ implementations, the nature of scientific computing implies that
-// occasional inconsistencies or errors may arise. Should you identify any
+// occasional inconsistencies or errors may arise. 
+//
+// Should you identify any
 // bugs, unexpected behaviour, or have suggestions for improvement, we would
 // be most grateful if you could reach out to us at livromvf@gmail.com.
 // Your feedback is invaluable to the continuous refinement of this textbook
@@ -26,35 +30,23 @@
 //==============================================================================
 
 //==============================================================================
-// Exercicio Computacional 2.1
-// Refatoracao da funcao da abertura - Regra do Trapezio
+// Exercicio Computacional 2.2
+// Implementacao da classe Malha1D uniforme
 //
-// Este programa refatora a funcao calc original, que implementava a regra do
-// trapezio para integracao numerica. A versao original tinha varios problemas:
-//
-// - Nomenclatura obscura (calc, h, s, n)
-// - Dependencia de funcao f global
-// - Ausencia de documentacao
-// - Falta de protecao contra n = 0
-//
-// A versao refatorada aplica os principios de Codigo Limpo da Secao 2.2:
-//
-// - Nomes descritivos que explicam o proposito
-// - Funcao de integracao recebe a funcao integranda como parametro
-// - Documentacao completa explicando o que, como e por que
-// - Validacao defensiva das entradas
-//
-// O programa calcula integrais definidas usando a regra do trapezio composta:
-//
-// integral de f(x) em [a, b] ~ (delta_x / 2) * [f(x0) + 2 f(x1) + ... + f(xn)]
-//
-// onde delta_x = (b - a) / n e x_i = a + i * delta_x.
+// Este programa implementa a classe Malha1D, que representa uma malha
+// unidimensional uniforme seguindo o principio do encapsulamento.
 //
 // Dados do problema:
-// a, limite inferior de integracao.
-// b, limite superior de integracao.
-// n, numero de subintervalos, com n > 0.
-// f, funcao a ser integrada.
+// xmin, coordenada inicial do dominio.
+// xmax, coordenada final do dominio.
+// N, numero de volumes de controle, com N > 0.
+//
+// A classe guarda os tres valores fundamentais e oferece, por meio de uma
+// interface publica enxuta, consultas a esses valores, o calculo do tamanho
+// de cada volume (∆x) e a coordenada do centro do i-esimo volume.
+//
+// O construtor valida as pre-condicoes e rejeita entradas inconsistentes
+// (N <= 0 ou xmax <= xmin) lancando std::invalid_argument.
 //
 // O codigo e autocontido e nao depende da biblioteca em desenvolvimento.
 //==============================================================================
@@ -65,7 +57,6 @@
 
 #include <cmath>
 #include <cstddef>
-#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -78,41 +69,277 @@
 using Real = double;
 
 //==============================================================================
-// Declaracoes das funcoes
+// Classe Malha1D
 //==============================================================================
 
-// Calcula a integral definida de uma funcao usando a regra do trapezio composta.
-[[nodiscard]] inline Real calcular_integral_trapezio(
+class Malha1D
+{
+public:
+    inline Malha1D(
+        Real xmin,
+        Real xmax,
+        std::size_t numero_volumes
+    );
+
+    [[nodiscard]] inline Real xmin() const noexcept;
+    [[nodiscard]] inline Real xmax() const noexcept;
+    [[nodiscard]] inline std::size_t numero_volumes() const noexcept;
+    [[nodiscard]] inline Real tamanho_volume() const noexcept;
+    [[nodiscard]] inline Real centro(std::size_t indice) const;
+    [[nodiscard]] inline Real face(std::size_t indice) const;
+
+private:
+    Real m_xmin;
+    Real m_xmax;
+    std::size_t m_numero_volumes;
+    Real m_tamanho_volume;
+
+    static inline void validar(
+        Real xmin,
+        Real xmax,
+        std::size_t numero_volumes
+    );
+};
+
+//==============================================================================
+// Implementacao dos metodos da classe
+//==============================================================================
+
+inline Malha1D::Malha1D(
+    Real xmin,
+    Real xmax,
+    std::size_t numero_volumes
+)
+{
+    validar(xmin, xmax, numero_volumes);
+
+    m_xmin = xmin;
+    m_xmax = xmax;
+    m_numero_volumes = numero_volumes;
+    m_tamanho_volume = (xmax - xmin) / static_cast<Real>(numero_volumes);
+}
+
+[[nodiscard]] inline Real Malha1D::xmin() const noexcept
+{
+    return m_xmin;
+}
+
+[[nodiscard]] inline Real Malha1D::xmax() const noexcept
+{
+    return m_xmax;
+}
+
+[[nodiscard]] inline std::size_t Malha1D::numero_volumes() const noexcept
+{
+    return m_numero_volumes;
+}
+
+[[nodiscard]] inline Real Malha1D::tamanho_volume() const noexcept
+{
+    return m_tamanho_volume;
+}
+
+[[nodiscard]] inline Real Malha1D::centro(std::size_t indice) const
+{
+    if (indice >= m_numero_volumes) {
+        throw std::out_of_range("Indice do volume fora do intervalo [0, N).");
+    }
+
+    return m_xmin
+        + (static_cast<Real>(indice) + Real{0.5}) * m_tamanho_volume;
+}
+
+[[nodiscard]] inline Real Malha1D::face(std::size_t indice) const
+{
+    if (indice > m_numero_volumes) {
+        throw std::out_of_range("Indice da face fora do intervalo [0, N].");
+    }
+
+    return m_xmin + static_cast<Real>(indice) * m_tamanho_volume;
+}
+
+inline void Malha1D::validar(
+    Real xmin,
+    Real xmax,
+    std::size_t numero_volumes
+)
+{
+    if (!std::isfinite(xmin)) {
+        throw std::invalid_argument("xmin deve ser finito.");
+    }
+
+    if (!std::isfinite(xmax)) {
+        throw std::invalid_argument("xmax deve ser finito.");
+    }
+
+    if (numero_volumes == 0) {
+        throw std::invalid_argument(
+            "O numero de volumes deve ser maior que zero."
+        );
+    }
+
+    if (!(xmax > xmin)) {
+        throw std::invalid_argument(
+            "xmax deve ser estritamente maior que xmin."
+        );
+    }
+}
+
+//==============================================================================
+// Funcoes auxiliares de teste
+//==============================================================================
+
+inline void imprimir_malha(const Malha1D& malha)
+{
+    std::cout << std::fixed << std::setprecision(6);
+
+    std::cout << "Malha 1D uniforme\n";
+    std::cout << "=================\n";
+    std::cout << "xmin            = " << malha.xmin() << '\n';
+    std::cout << "xmax            = " << malha.xmax() << '\n';
+    std::cout << "N               = " << malha.numero_volumes() << '\n';
+    std::cout << "∆x              = " << malha.tamanho_volume() << '\n';
+    std::cout << '\n';
+
+    std::cout << std::setw(6) << "i"
+              << std::setw(16) << "face_esq"
+              << std::setw(16) << "centro"
+              << std::setw(16) << "face_dir"
+              << '\n';
+
+    for (std::size_t i = 0; i < malha.numero_volumes(); ++i) {
+        std::cout << std::setw(6) << i
+                  << std::setw(16) << malha.face(i)
+                  << std::setw(16) << malha.centro(i)
+                  << std::setw(16) << malha.face(i + 1)
+                  << '\n';
+    }
+
+    std::cout << '\n';
+}
+
+[[nodiscard]] inline bool aproximadamente_igual(
     Real a,
     Real b,
-    std::size_t numero_subintervalos,
-    std::function<Real(Real)> funcao_integranda
-);
+    Real tolerancia = Real{1e-12}
+)
+{
+    return std::abs(a - b) <= tolerancia;
+}
 
-// Imprime os dados iniciais da execucao.
-inline void imprimir_dados_iniciais(
-    Real a,
-    Real b,
-    std::size_t numero_subintervalos,
-    const std::string& descricao_funcao
-);
+inline bool testar_valor(
+    const std::string& descricao,
+    Real obtido,
+    Real esperado
+)
+{
+    const bool passou = aproximadamente_igual(obtido, esperado);
 
-// Imprime o resultado do calculo da integral.
-inline void imprimir_resultado(
-    Real integral_aproximada,
-    Real integral_exata,
-    const std::string& descricao_funcao
-);
+    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
+              << descricao << '\n';
+
+    if (!passou) {
+        std::cout << std::fixed << std::setprecision(12)
+                  << "  obtido   = " << obtido << '\n'
+                  << "  esperado = " << esperado << '\n';
+    }
+
+    return passou;
+}
+
+inline bool testar_excecao_construcao(
+    const std::string& descricao,
+    Real xmin,
+    Real xmax,
+    std::size_t numero_volumes
+)
+{
+    bool excecao_lancada = false;
+
+    try {
+        Malha1D malha(xmin, xmax, numero_volumes);
+        (void)malha;
+    } catch (const std::invalid_argument&) {
+        excecao_lancada = true;
+    } catch (...) {
+        excecao_lancada = false;
+    }
+
+    std::cout << (excecao_lancada ? "[PASSOU] " : "[FALHOU] ")
+              << descricao << '\n';
+
+    if (!excecao_lancada) {
+        std::cout
+            << "  A construcao deveria ter lancado std::invalid_argument.\n";
+    }
+
+    return excecao_lancada;
+}
+
+inline bool testar_excecao_indice(
+    const std::string& descricao,
+    const Malha1D& malha,
+    std::size_t indice_fora
+)
+{
+    bool excecao_lancada = false;
+
+    try {
+        (void)malha.centro(indice_fora);
+    } catch (const std::out_of_range&) {
+        excecao_lancada = true;
+    } catch (...) {
+        excecao_lancada = false;
+    }
+
+    std::cout << (excecao_lancada ? "[PASSOU] " : "[FALHOU] ")
+              << descricao << '\n';
+
+    if (!excecao_lancada) {
+        std::cout << "  A consulta deveria ter lancado std::out_of_range.\n";
+    }
+
+    return excecao_lancada;
+}
 
 //==============================================================================
-// Funcoes de teste com integrais conhecidas
+// Mensagem final didatica
 //==============================================================================
 
-inline Real funcao_constante(Real /* x */) { return Real{1.0}; }
-inline Real funcao_linear(Real x) { return x; }
-inline Real funcao_quadratica(Real x) { return x * x; }
-inline Real funcao_seno(Real x) { return std::sin(x); }
-inline Real funcao_exponencial(Real x) { return std::exp(x); }
+inline void imprimir_mensagem_final()
+{
+    constexpr int size = 80;
+
+    std::cout << "\nAplicacoes e recomendacoes\n";
+    std::cout << std::string(size, '=') << '\n';
+    std::cout << "1. A classe Malha1D organiza os dados fundamentais ";
+    std::cout << "da malha uniforme.\n";
+    std::cout << "2. O encapsulamento evita acesso direto aos detalhes ";
+    std::cout << "internos da malha.\n";
+    std::cout << "3. A validacao no construtor impede a criacao de ";
+    std::cout << "malhas inconsistentes.\n";
+    std::cout << "4. As funcoes centro(i) e face(i) fornecem uma ";
+    std::cout << "interface simples e segura.\n";
+    std::cout << "5. Este modelo e adequado como base para ";
+    std::cout << "discretizacoes em volumes finitos.\n";
+    std::cout << std::string(size, '=') << '\n';
+
+    std::cout << "\nConceitos demonstrados\n";
+    std::cout << std::string(size, '=') << '\n';
+    std::cout << "1. Definicao de uma classe para representar uma ";
+    std::cout << "malha unidimensional.\n";
+    std::cout << "2. Uso de atributos privados e metodos publicos ";
+    std::cout << "de consulta.\n";
+    std::cout << "3. Calculo do tamanho uniforme de cada volume ";
+    std::cout << "de controle.\n";
+    std::cout << "4. Calculo das coordenadas das faces e dos centros ";
+    std::cout << "dos volumes.\n";
+    std::cout << "5. Lancamento de excecoes para parametros e ";
+    std::cout << "indices invalidos.\n";
+    std::cout << "6. Uso de testes simples para verificar valores ";
+    std::cout << "esperados.\n";
+    std::cout << std::string(size, '=') << '\n';
+}
 
 //==============================================================================
 // Programa principal
@@ -121,181 +348,164 @@ inline Real funcao_exponencial(Real x) { return std::exp(x); }
 int main()
 {
     try {
-        std::cout << std::fixed << std::setprecision(12);
+        std::cout << "Exercicio Computacional 2.2\n";
+        std::cout << "Implementacao da Malha1D uniforme\n";
+        std::cout << "==================================\n\n";
 
-        std::cout << "Regra do Trapezio - Versao Refatorada\n";
-        std::cout << "======================================\n\n";
+        unsigned testes_passaram = 0;
+        unsigned testes_total = 0;
 
-        //======================================================================
-        // Caso de teste 1: Funcao constante
-        //======================================================================
+        std::cout << "Teste 1: Malha com 4 volumes em [0, 1]\n";
+        std::cout << "=======================================\n";
         {
-            const Real a = 0.0;
-            const Real b = 1.0;
-            const std::size_t n = 10;
-            const std::string descricao = "f(x) = 1";
-            const Real integral_exata = 1.0;
+            Malha1D malha(Real{0.0}, Real{1.0}, 4);
+            imprimir_malha(malha);
 
-            imprimir_dados_iniciais(a, b, n, descricao);
-            const Real integral_aproximada = calcular_integral_trapezio(a, b, n, funcao_constante);
-            imprimir_resultado(integral_aproximada, integral_exata, descricao);
+            testes_total += 7;
+
+            if (testar_valor("xmin", malha.xmin(), 0.0)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("xmax", malha.xmax(), 1.0)) {
+                ++testes_passaram;
+            }
+
+            if (
+                testar_valor(
+                    "N",
+                    static_cast<Real>(malha.numero_volumes()),
+                    4.0
+                )
+            ) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("∆x", malha.tamanho_volume(), 0.25)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("centro(0)", malha.centro(0), 0.125)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("centro(3)", malha.centro(3), 0.875)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("face(4)", malha.face(4), 1.0)) {
+                ++testes_passaram;
+            }
         }
 
-        //======================================================================
-        // Caso de teste 2: Funcao linear
-        //======================================================================
-        {
-            const Real a = 0.0;
-            const Real b = 1.0;
-            const std::size_t n = 10;
-            const std::string descricao = "f(x) = x";
-            const Real integral_exata = 0.5;
+        std::cout << '\n';
 
-            imprimir_dados_iniciais(a, b, n, descricao);
-            const Real integral_aproximada = calcular_integral_trapezio(a, b, n, funcao_linear);
-            imprimir_resultado(integral_aproximada, integral_exata, descricao);
+        std::cout << "Teste 2: Malha com 5 volumes em [-2, 3]\n";
+        std::cout << "========================================\n";
+        {
+            Malha1D malha(Real{-2.0}, Real{3.0}, 5);
+            imprimir_malha(malha);
+
+            testes_total += 4;
+
+            if (testar_valor("∆x", malha.tamanho_volume(), 1.0)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("centro(0)", malha.centro(0), -1.5)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("centro(2)", malha.centro(2), 0.5)) {
+                ++testes_passaram;
+            }
+
+            if (testar_valor("centro(4)", malha.centro(4), 2.5)) {
+                ++testes_passaram;
+            }
         }
 
-        //======================================================================
-        // Caso de teste 3: Funcao quadratica
-        //======================================================================
-        {
-            const Real a = 0.0;
-            const Real b = 1.0;
-            const std::size_t n = 100;
-            const std::string descricao = "f(x) = x^2";
-            const Real integral_exata = 1.0 / 3.0;
+        std::cout << '\n';
 
-            imprimir_dados_iniciais(a, b, n, descricao);
-            const Real integral_aproximada = calcular_integral_trapezio(a, b, n, funcao_quadratica);
-            imprimir_resultado(integral_aproximada, integral_exata, descricao);
+        std::cout << "Testes de validacao (pre-condicoes da construcao)\n";
+        std::cout << "=================================================\n";
+        testes_total += 3;
+
+        if (
+            testar_excecao_construcao(
+                "N = 0 deve ser rejeitado",
+                0.0,
+                1.0,
+                0
+            )
+        ) {
+            ++testes_passaram;
         }
 
-        //======================================================================
-        // Caso de teste 4: Funcao seno
-        //======================================================================
-        {
-            const Real a = 0.0;
-            const Real b = 3.14159265358979323846; // pi
-            const std::size_t n = 100;
-            const std::string descricao = "f(x) = sen(x)";
-            const Real integral_exata = 2.0;
-
-            imprimir_dados_iniciais(a, b, n, descricao);
-            const Real integral_aproximada = calcular_integral_trapezio(a, b, n, funcao_seno);
-            imprimir_resultado(integral_aproximada, integral_exata, descricao);
+        if (
+            testar_excecao_construcao(
+                "xmax < xmin deve ser rejeitado",
+                1.0,
+                0.0,
+                5
+            )
+        ) {
+            ++testes_passaram;
         }
 
-        //======================================================================
-        // Caso de teste 5: Funcao exponencial
-        //======================================================================
-        {
-            const Real a = 0.0;
-            const Real b = 1.0;
-            const std::size_t n = 1000;
-            const std::string descricao = "f(x) = e^x";
-            const Real integral_exata = std::exp(1.0) - 1.0;
-
-            imprimir_dados_iniciais(a, b, n, descricao);
-            const Real integral_aproximada = calcular_integral_trapezio(a, b, n, funcao_exponencial);
-            imprimir_resultado(integral_aproximada, integral_exata, descricao);
+        if (
+            testar_excecao_construcao(
+                "xmax == xmin deve ser rejeitado",
+                1.0,
+                1.0,
+                5
+            )
+        ) {
+            ++testes_passaram;
         }
 
-        return 0;
+        std::cout << '\n';
+
+        std::cout << "Testes de validacao (indices fora do intervalo)\n";
+        std::cout << "===============================================\n";
+        {
+            Malha1D malha(Real{0.0}, Real{1.0}, 4);
+            testes_total += 2;
+
+            if (
+                testar_excecao_indice(
+                    "centro(4) em malha de N=4 deve falhar",
+                    malha,
+                    4
+                )
+            ) {
+                ++testes_passaram;
+            }
+
+            if (
+                testar_excecao_indice(
+                    "centro(100) deve falhar",
+                    malha,
+                    100
+                )
+            ) {
+                ++testes_passaram;
+            }
+        }
+
+        std::cout << '\n';
+
+        std::cout << "Resumo\n";
+        std::cout << "======\n";
+        std::cout << "Testes aprovados: " << testes_passaram
+                  << " de " << testes_total << '\n';
+
+        imprimir_mensagem_final();
+
+        return (testes_passaram == testes_total) ? 0 : 1;
 
     } catch (const std::exception& erro) {
-        std::cerr << "Erro: " << erro.what() << '\n';
+        std::cerr << "Erro inesperado: " << erro.what() << '\n';
         return 1;
     }
-}
-
-//==============================================================================
-// Calculo da integral pela regra do trapezio
-//==============================================================================
-
-[[nodiscard]] inline Real calcular_integral_trapezio(
-    Real a,
-    Real b,
-    std::size_t numero_subintervalos,
-    std::function<Real(Real)> funcao_integranda
-)
-{
-    if (numero_subintervalos == 0) {
-        throw std::invalid_argument(
-            "O numero de subintervalos deve ser maior que zero."
-        );
-    }
-
-    if (!std::isfinite(a)) {
-        throw std::invalid_argument(
-            "O limite inferior de integracao deve ser finito."
-        );
-    }
-
-    if (!std::isfinite(b)) {
-        throw std::invalid_argument(
-            "O limite superior de integracao deve ser finito."
-        );
-    }
-
-    const Real tamanho_subintervalo =
-        (b - a) / static_cast<Real>(numero_subintervalos);
-
-    Real soma = 0.5 * (funcao_integranda(a) + funcao_integranda(b));
-
-    for (std::size_t i = 1; i < numero_subintervalos; ++i) {
-        const Real x_i = a + static_cast<Real>(i) * tamanho_subintervalo;
-        soma += funcao_integranda(x_i);
-    }
-
-    const Real integral = soma * tamanho_subintervalo;
-
-    return integral;
-}
-
-//==============================================================================
-// Impressao dos dados iniciais
-//==============================================================================
-
-inline void imprimir_dados_iniciais(
-    Real a,
-    Real b,
-    std::size_t numero_subintervalos,
-    const std::string& descricao_funcao
-)
-{
-    std::cout << "Dados do problema\n";
-    std::cout << "-----------------\n";
-    std::cout << "Funcao              : " << descricao_funcao << '\n';
-    std::cout << "Limite inferior (a) : " << a << '\n';
-    std::cout << "Limite superior (b) : " << b << '\n';
-    std::cout << "Subintervalos (n)   : " << numero_subintervalos << '\n';
-    std::cout << '\n';
-}
-
-//==============================================================================
-// Impressao do resultado
-//==============================================================================
-
-inline void imprimir_resultado(
-    Real integral_aproximada,
-    Real integral_exata,
-    const std::string& descricao_funcao
-)
-{
-    (void)descricao_funcao; 
-
-    std::cout << "Resultado\n";
-    std::cout << "---------\n";
-    std::cout << "Integral aproximada : " << integral_aproximada << '\n';
-    std::cout << "Integral exata      : " << integral_exata << '\n';
-
-    const Real erro_absoluto = std::abs(integral_aproximada - integral_exata);
-    const Real erro_relativo = (integral_exata != Real{0.0})
-        ? erro_absoluto / std::abs(integral_exata)
-        : erro_absoluto;
-
-    std::cout << "Erro absoluto       : " << erro_absoluto << '\n';
-    std::cout << "Erro relativo       : " << erro_relativo << '\n';
-    std::cout << '\n';
 }
