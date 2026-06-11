@@ -76,6 +76,9 @@ function(set_target_optimizations target)
                 $<$<CONFIG:Release>:-O3>
                 $<$<CONFIG:RelWithDebInfo>:-O2>
                 $<$<CONFIG:MinSizeRel>:-Os>
+                $<$<CONFIG:Profile>:-O3>
+                $<$<CONFIG:Profile>:-g>
+                $<$<CONFIG:Profile>:-fno-omit-frame-pointer>
                 $<$<CONFIG:Debug>:-O0>
                 $<$<CONFIG:Debug>:-g3>
                 $<$<CONFIG:Debug>:-fno-omit-frame-pointer>
@@ -86,6 +89,7 @@ function(set_target_optimizations target)
                 PRIVATE
                     $<$<CONFIG:Release>:-march=native>
                     $<$<CONFIG:RelWithDebInfo>:-march=native>
+                    $<$<CONFIG:Profile>:-march=native>
             )
         endif()
     endif()
@@ -96,6 +100,8 @@ function(set_target_optimizations target)
                 $<$<CONFIG:Release>:/O2>
                 $<$<CONFIG:RelWithDebInfo>:/O2>
                 $<$<CONFIG:MinSizeRel>:/O1>
+                $<$<CONFIG:Profile>:/O2>
+                $<$<CONFIG:Profile>:/Zi>
                 $<$<CONFIG:Debug>:/Od>
                 $<$<CONFIG:Debug>:/Zi>
         )

@@ -3,12 +3,15 @@ include_guard()
 option(BUILD_TESTS "Build test targets" OFF)
 option(BUILD_EXAMPLES "Build example targets" OFF)
 option(BUILD_BOOK "Build book/chapter targets" ON)
+option(BUILD_PERFORMANCE "Build performance/profiling targets" OFF)
+option(BUILD_DOCUMENTATION "Build Sphinx documentation targets" OFF)
 
 option(FVM_ENABLE_TBB "Enable Intel TBB support" ON)
 option(FVM_ENABLE_OPENMP "Enable OpenMP support" OFF)
 option(FVM_ENABLE_IPO "Enable IPO/LTO for release-like builds" ON)
 option(FVM_ENABLE_NATIVE_OPTIMIZATION "Enable -march=native on GNU-like compilers" ON)
 option(FVM_ENABLE_NDEBUG "Define NDEBUG explicitly for release-like builds" OFF)
+option(FVM_ENABLE_GPROF "Build performance targets with gprof instrumentation" OFF)
 option(FVM_BUILD_SHARED "Build FVMaker as a shared library" OFF)
 
 set(FVM_ALLOWED_BUILD_TYPES
@@ -16,6 +19,7 @@ set(FVM_ALLOWED_BUILD_TYPES
     Release
     RelWithDebInfo
     MinSizeRel
+    Profile
 )
 
 if(NOT CMAKE_CONFIGURATION_TYPES)

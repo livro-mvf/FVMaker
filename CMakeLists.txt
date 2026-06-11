@@ -23,6 +23,8 @@ include(ConfigTargets)
 include(ConfigExamples)
 include(ConfigLivro)
 include(ConfigTests)
+include(ConfigPerformance)
+include(ConfigDocs)
 
 set(FVM_RUN_ALL_TARGETS)
 
@@ -36,6 +38,10 @@ endif()
 
 if(TARGET run_all_tests)
     list(APPEND FVM_RUN_ALL_TARGETS run_all_tests)
+endif()
+
+if(TARGET run_all_performance)
+    list(APPEND FVM_RUN_ALL_TARGETS run_all_performance)
 endif()
 
 if(FVM_RUN_ALL_TARGETS)

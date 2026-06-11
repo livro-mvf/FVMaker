@@ -1,0 +1,36 @@
+// ----------------------------------------------------------------------------
+// File: Types.h
+// Project: FVMaker
+// Version: 0.1.0
+// Description: Defines fundamental scalar, index and integer aliases used by
+//              the FVMaker core.
+// Author: FVMaker Team
+// License: GPL-3.0-or-later
+// ----------------------------------------------------------------------------
+
+#pragma once
+
+// ----------------------------------------------------------------------------
+// C++ standard library includes
+// ----------------------------------------------------------------------------
+#include <cstddef>
+#include <cstdint>
+
+namespace fvm {
+
+using Real = double;
+
+using Index = std::ptrdiff_t;
+using Size = std::size_t;
+
+using Int8 = std::int8_t;
+using Int16 = std::int16_t;
+using Int32 = std::int32_t;
+using Int64 = std::int64_t;
+
+using UInt8 = std::uint8_t;
+using UInt16 = std::uint16_t;
+using UInt32 = std::uint32_t;
+using UInt64 = std::uint64_t;
+
+}  // namespace fvm

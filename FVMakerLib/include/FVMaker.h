@@ -52,8 +52,11 @@
 //==============================================================================
 
 #include <FVMaker/Misc/type.h>
+#include <FVMaker/Core/Version.h>
 
 FVMAKER_NAMESPACE_OPEN
+
+[[nodiscard]] const char* version() noexcept;
 
 /**
  * @class FVMaker
