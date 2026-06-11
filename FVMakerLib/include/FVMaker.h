@@ -53,6 +53,11 @@
 
 #include <FVMaker/Misc/type.h>
 #include <FVMaker/Core/Version.h>
+#include <FVMaker/ErrorHandling/ErrorCatalog.h>
+#include <FVMaker/ErrorHandling/ErrorCodes.h>
+#include <FVMaker/ErrorHandling/ErrorRecord.h>
+#include <FVMaker/ErrorHandling/FVMException.h>
+#include <FVMaker/ErrorHandling/ThrowError.h>
 
 FVMAKER_NAMESPACE_OPEN
 
