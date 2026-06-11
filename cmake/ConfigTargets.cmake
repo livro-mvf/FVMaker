@@ -46,6 +46,13 @@ if(FVM_LIBRARY_SOURCES)
             $<$<AND:$<BOOL:${FVM_ENABLE_NDEBUG}>,$<CONFIG:MinSizeRel>>:NDEBUG>
     )
 
+    if(FVM_PUBLIC_DEPENDENCIES)
+        target_link_libraries(FVMaker
+            PUBLIC
+                ${FVM_PUBLIC_DEPENDENCIES}
+        )
+    endif()
+
     if(FVM_PRIVATE_DEPENDENCIES)
         target_link_libraries(FVMaker
             PRIVATE
@@ -80,6 +87,13 @@ else()
             cxx_std_20
     )
 
+    if(FVM_PUBLIC_DEPENDENCIES)
+        target_link_libraries(FVMaker
+            INTERFACE
+                ${FVM_PUBLIC_DEPENDENCIES}
+        )
+    endif()
+
     message(WARNING
         "No FVMaker source files were found in "
         "'${FVM_LIBRARY_SOURCE_DIR}'. "
@@ -89,13 +103,18 @@ endif()
 
 add_library(FVMaker::FVMaker ALIAS FVMaker)
 
-add_custom_target(info
-    COMMAND ${CMAKE_COMMAND} -E echo "Project: ${PROJECT_NAME}"
-    COMMAND ${CMAKE_COMMAND} -E echo "Version: ${PROJECT_VERSION}"
-    COMMAND ${CMAKE_COMMAND} -E echo "Build type: ${CMAKE_BUILD_TYPE}"
-    COMMAND ${CMAKE_COMMAND} -E echo "C++ compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}"
-    COMMAND ${CMAKE_COMMAND} -E echo "C++ standard: C++20"
-    COMMAND ${CMAKE_COMMAND} -E echo "Source directory: ${FVM_LIBRARY_SOURCE_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E echo "Include directory: ${FVM_LIBRARY_INCLUDE_DIR}"
-    VERBATIM
-)
+if(NOT TARGET info)
+    add_custom_target(info
+        COMMAND ${CMAKE_COMMAND} -E echo "Project: ${PROJECT_NAME}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Version: ${PROJECT_VERSION}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Build type: ${CMAKE_BUILD_TYPE}"
+        COMMAND ${CMAKE_COMMAND} -E echo
+                "C++ compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}"
+        COMMAND ${CMAKE_COMMAND} -E echo "C++ standard: C++20"
+        COMMAND ${CMAKE_COMMAND} -E echo
+                "Source directory: ${FVM_LIBRARY_SOURCE_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E echo
+                "Include directory: ${FVM_LIBRARY_INCLUDE_DIR}"
+        VERBATIM
+    )
+endif()

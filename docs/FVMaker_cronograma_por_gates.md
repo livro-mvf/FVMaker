@@ -57,8 +57,8 @@ A geometria de malha pertence à FVGridMaker, não à FVM.
 Bloco 0  - Fundação do projeto e CMake                         CONCLUÍDO
 Bloco 1  - Core e tipos fundamentais                           CONCLUÍDO
 Bloco 2  - ErrorHandling adaptado da FVGridMaker                CONCLUÍDO
-Bloco 3  - Integração mínima com FVGridMaker 1D                 PENDENTE
-Bloco 4  - Field1D e condições iniciais                         PENDENTE
+Bloco 3  - Integração mínima com FVGridMaker 1D                 CONCLUÍDO
+Bloco 4  - Field1D e condições iniciais                         CONCLUÍDO
 Bloco 5  - LinearSystem1D tridiagonal e Thomas1D                PENDENTE
 Bloco 6  - Resíduo algébrico e normas de erro                   PENDENTE
 Bloco 7  - Boundary1D e ghost volumes                           PENDENTE
@@ -227,13 +227,26 @@ testes com malha uniforme e malha não uniforme.
 Gate de saída:
 
 ```text
-run_tst_GridView1D passa;
-run_tst_GridMetrics1D passa;
-run_ex_GridView1D passa;
+run_tst_Grid_GridView1D passa;
+GridMetrics1D é testado junto com GridView1D;
+run_ex_Grid_GridView1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Grid_GridView1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Grid_GridView1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 4 - Field1D e Condições Iniciais
 
@@ -256,12 +269,25 @@ testes de tamanho, acesso e inicialização.
 Gate de saída:
 
 ```text
-run_tst_Field1D passa;
-run_ex_Field1D passa;
+run_tst_Field_Field1D passa;
+run_ex_Field_Field1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Field_Field1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Field_Field1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 5 - LinearSystem1D Tridiagonal e Thomas1D
 

@@ -58,6 +58,10 @@
 #include <FVMaker/ErrorHandling/ErrorRecord.h>
 #include <FVMaker/ErrorHandling/FVMException.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
+#include <FVMaker/OneDimensional/Field/Field1D.h>
+#include <FVMaker/OneDimensional/Field/FieldView1D.h>
+#include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
+#include <FVMaker/OneDimensional/Grid/GridView1D.h>
 
 FVMAKER_NAMESPACE_OPEN
 
