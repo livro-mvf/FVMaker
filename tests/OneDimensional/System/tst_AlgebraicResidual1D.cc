@@ -88,6 +88,28 @@ TEST(AlgebraicResidual1D, RejectsSolutionWithWrongSize) {
     FAIL() << "algebraic_residual did not reject an incompatible solution size.";
 }
 
+TEST(AlgebraicResidual1D, ComputesAxMinusBForPentadiagonalSystem) {
+    const PentadiagonalSystem1D system{
+        std::vector<Real>{-0.5, -0.5, -0.5},
+        std::vector<Real>{-1.0, -1.0, -1.0, -1.0},
+        std::vector<Real>{4.0, 4.0, 4.0, 4.0, 4.0},
+        std::vector<Real>{-1.0, -1.0, -1.0, -1.0},
+        std::vector<Real>{-0.5, -0.5, -0.5},
+        DenseVector{std::vector<Real>{2.5, 1.5, 1.0, 1.5, 2.5}}
+    };
+    const DenseVector solution{std::vector<Real>{1.0, 1.0, 1.0, 1.0, 1.0}};
+
+    const DenseVector residual = algebraic_residual(system, solution);
+
+    ASSERT_EQ(residual.size(), static_cast<Size>(5));
+    EXPECT_DOUBLE_EQ(residual[0], 0.0);
+    EXPECT_DOUBLE_EQ(residual[1], 0.0);
+    EXPECT_DOUBLE_EQ(residual[2], 0.0);
+    EXPECT_DOUBLE_EQ(residual[3], 0.0);
+    EXPECT_DOUBLE_EQ(residual[4], 0.0);
+    EXPECT_DOUBLE_EQ(norm_infinity(residual), 0.0);
+}
+
 TEST(AlgebraicResidual1D, TDMAStoresResidualAndInfinityNormInSolveResult) {
     const TridiagonalSystem1D system = make_known_system();
     const SolveResult result = TDMA::solve(system);

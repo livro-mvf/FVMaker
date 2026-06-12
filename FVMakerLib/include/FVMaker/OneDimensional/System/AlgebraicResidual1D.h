@@ -13,12 +13,18 @@
 // FVMaker includes
 // ----------------------------------------------------------------------------
 #include <FVMaker/Algebra/DenseVector.h>
+#include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 
 namespace fvm {
 
 [[nodiscard]] DenseVector algebraic_residual(
     const TridiagonalSystem1D& system,
+    const DenseVector& solution
+);
+
+[[nodiscard]] DenseVector algebraic_residual(
+    const PentadiagonalSystem1D& system,
     const DenseVector& solution
 );
 

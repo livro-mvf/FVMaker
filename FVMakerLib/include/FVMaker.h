@@ -65,12 +65,14 @@
 #include <FVMaker/Functions/ManufacturedProblem1D.h>
 #include <FVMaker/Functions/ManufacturedSolution1D.h>
 #include <FVMaker/Functions/VariableCoefficient1D.h>
+#include <FVMaker/OneDimensional/Boundary/GhostCells1D.h>
 #include <FVMaker/OneDimensional/Field/Field1D.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
 #include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
+#include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 #include <FVMaker/Solver/SolveResult.h>
 

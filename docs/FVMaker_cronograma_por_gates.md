@@ -62,7 +62,7 @@ Bloco 4  - Field1D e condições iniciais                         CONCLUÍDO
 Bloco 5  - LinearSystem1D tridiagonal e TDMA                    CONCLUÍDO
 Bloco 6  - Resíduo algébrico e normas de erro                   CONCLUÍDO
 Bloco 6.1 - Funções escalares/vetoriais e suporte a MMS         CONCLUÍDO
-Bloco 7  - Boundary1D e ghost volumes                           PENDENTE
+Bloco 7  - Boundary1D e ghost volumes                           EM ANDAMENTO
 Bloco 8  - Termo fonte 1D e fontes linearizadas                 PENDENTE
 Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        PENDENTE
 Bloco 10 - Solvers iterativos lineares 1D                       PENDENTE
@@ -463,6 +463,8 @@ Dirichlet1D;
 Neumann1D;
 Robin1D;
 BoundarySet1D;
+GhostCells1D com ate 2 ghost cells por lado, fora da opcao default;
+PentadiagonalSystem1D para esquemas 1D com acoplamento ate i+-2;
 estratégia por ghost volumes;
 estratégia por modificação dos coeficientes;
 testes isolados de cada condição de contorno;
@@ -472,13 +474,27 @@ exemplo de comparação entre estratégias quando aplicável.
 Gate de saída:
 
 ```text
+run_tst_Boundary_GhostCells1D passa;
+run_tst_System_PentadiagonalSystem1D passa;
 run_tst_Boundary1D passa;
 run_tst_GhostBoundary1D passa;
+run_ex_System_PentadiagonalAndGhostCells1D passa;
 run_ex_Boundary1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: em andamento.
+
+Progresso concluido:
+
+```text
+GhostCells1D representa 0, 1 ou 2 ghost cells por lado;
+o default de GhostCells1D e zero ghost cells;
+PentadiagonalSystem1D foi criado como alternativa explicita ao sistema
+tridiagonal, sem substituir TridiagonalSystem1D + TDMA como caminho default;
+algebraic_residual calcula A X - B para sistemas tridiagonais e
+pentadiagonais.
+```
 
 ## Bloco 8 - Termo Fonte 1D e Fontes Linearizadas
 

@@ -271,6 +271,15 @@ modificação do lado direito;
 tratamento específico para termos advectivos.
 ```
 
+Em problemas 1D, o uso de ghost cells deve ser opcional. A configuração
+padrão não deve criar ghost cells, mas a infraestrutura deve permitir até duas
+ghost cells em cada lado do domínio quando o esquema numérico exigir.
+
+Alguns esquemas 1D podem gerar acoplamento com vizinhos até `i-2` e `i+2`.
+Por isso, a FVM deve suportar sistemas pentadiagonais como alternativa
+explícita aos sistemas tridiagonais. O caminho padrão para os primeiros
+problemas 1D continua sendo tridiagonal, resolvido por TDMA.
+
 ## 2.7 Termos Diferenciais Independentes
 
 A FVM deve permitir que cada derivada ou termo físico seja representado de
