@@ -1,26 +1,39 @@
-# Exercício Computacional 2.2: Malha 1D Uniforme
+# Exercício Computacional 2.1: Refatoração da Função da Abertura
 
-Este programa implementa a classe `Malha1D`, que representa uma malha unidimensional uniforme. O código foi desenvolvido como material de apoio para o livro sobre o Método de Volumes Finitos, com foco na aplicação de princípios de encapsulamento, validação rigorosa de pré-condições e cálculo de geometrias básicas para discretização.
+Este programa refatora a função `calc` apresentada na abertura do capítulo. A função original calcula uma integral aproximada pela regra dos trapézios, mas possui nomes pouco expressivos, depende de uma função global `f` e não protege explicitamente o caso `n = 0`.
+
+O objetivo do exercício é mostrar uma primeira aplicação de boas práticas de programação científica: melhorar nomes, documentar a intenção do algoritmo, separar a regra de integração da função integranda e validar as precondições antes do cálculo.
 
 ## Funcionalidades
 
-- **Construção segura**: O construtor valida as precondições (`xmin < xmax` e `N > 0`) e rejeita entradas inconsistentes lançando `std::invalid_argument`.
-- **Cálculo de geometria**: Calcula automaticamente o tamanho de cada volume de controle ($\Delta x$).
-- **Consultas de coordenadas**: Fornece acesso às coordenadas dos centros (`centro(i)`) e das faces (`face(i)`) dos volumes.
-- **Tratamento de limites**: Lança `std::out_of_range` ao tentar acessar índices de volumes ou faces fora dos intervalos válidos `[0, N)` e `[0, N]`, respectivamente.
-- **Suíte de testes embutida**: O programa principal executa uma série de testes para validar o comportamento da classe, incluindo testes de valores esperados e de lançamento de exceções.
-
+- **Regra dos trapézios refatorada**: A função `integrar_trapezios` implementa o mesmo algoritmo numérico da função original.
+- **Nomes expressivos**: Os parâmetros foram renomeados para `limite_inferior`, `limite_superior` e `numero_subintervalos`.
+- **Função integranda como argumento**: A integranda deixa de ser uma dependência global obrigatória e passa a ser recebida pela função de integração.
+- **Validação de precondições**: O programa rejeita limites não finitos, intervalo inválido e `numero_subintervalos = 0` lançando `std::invalid_argument`.
+- **Comparação com a versão original**: O programa calcula a integral de `f(x) = x^2` em `[0, 1]` e confirma que a versão refatorada reproduz o resultado da função da abertura.
+- **Suíte de testes embutida**: O programa principal executa testes de valor esperado e testes de lançamento de exceções.
 
 ## Pré-requisitos
 
-O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário um compilador compatível com C++17 ou superior (devido ao uso de atributos como `[[nodiscard]]`).
+O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário um compilador compatível com C++17 ou superior.
 
 - Compilador: `g++`, `clang++` ou MSVC.
 - Padrão: C++17 ou superior.
 
 ## Compilação e Execução
 
-Para compilar o programa a partir do arquivo-fonte (assumindo que o arquivo se chama `exercicio_2_2.cpp`):
+Para compilar o programa a partir do arquivo-fonte:
 
 ```bash
-g++ -std=c++17 -O2 -Wall -Wextra exercicio_2_2.cpp -o malha1d
+g++ -std=c++17 -O2 -Wall -Wextra exercicio_21.cpp -o exercicio_21
+```
+
+Para executar:
+
+```bash
+./exercicio_21
+```
+
+## Saída esperada
+
+A saída mostra a integral aproximada de `f(x) = x^2` em `[0, 1]`, compara o resultado refatorado com o resultado original e executa os testes internos. Ao final, o programa deve informar que todos os testes foram aprovados.

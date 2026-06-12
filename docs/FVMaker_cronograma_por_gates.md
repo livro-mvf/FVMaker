@@ -60,7 +60,8 @@ Bloco 2  - ErrorHandling adaptado da FVGridMaker                CONCLUÍDO
 Bloco 3  - Integração mínima com FVGridMaker 1D                 CONCLUÍDO
 Bloco 4  - Field1D e condições iniciais                         CONCLUÍDO
 Bloco 5  - LinearSystem1D tridiagonal e TDMA                    CONCLUÍDO
-Bloco 6  - Resíduo algébrico e normas de erro                   PENDENTE
+Bloco 6  - Resíduo algébrico e normas de erro                   CONCLUÍDO
+Bloco 6.1 - Funções escalares/vetoriais e suporte a MMS         CONCLUÍDO
 Bloco 7  - Boundary1D e ghost volumes                           PENDENTE
 Bloco 8  - Termo fonte 1D e fontes linearizadas                 PENDENTE
 Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        PENDENTE
@@ -356,13 +357,99 @@ exemplo simples exibindo a norma do erro.
 Gate de saída:
 
 ```text
-run_tst_AlgebraicResidual1D passa;
-run_tst_ErrorNorms passa;
-run_ex_ResidualNorm1D passa;
+run_tst_System_AlgebraicResidual1D passa;
+run_tst_Algebra_ErrorNorms passa;
+run_ex_System_ResidualNorm1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Algebra_ErrorNorms run_tst_System_AlgebraicResidual1D run_tst_Solver_TDMA -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_System_ResidualNorm1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
+
+## Bloco 6.1 - Funções Escalares/Vetoriais e Suporte a MMS
+
+Objetivo: criar a infraestrutura comum para transportar funções analíticas,
+coeficientes variáveis, soluções manufaturadas, fontes e condições de contorno
+por toda a FVM.
+
+Motivação:
+
+```text
+O método das funções manufaturadas exige que solução exata, derivadas,
+coeficientes variáveis e termos fonte sejam avaliáveis de forma consistente em
+centros, faces, fronteiras e instantes de tempo.
+```
+
+Entregas:
+
+```text
+conceito ScalarFunction1D para funções Real(Real);
+conceito ScalarFunction2D para funções Real(Real, Real);
+conceito VectorFunction1D para funções vetoriais em 1D;
+conceito VectorFunction2D para funções vetoriais em 2D;
+tipos armazenáveis StoredScalarFunction1D e StoredScalarFunction2D;
+tipos armazenáveis StoredVectorFunction1D e StoredVectorFunction2D;
+helpers para avaliar função escalar nos centros de uma GridView1D;
+helpers para avaliar função escalar nas faces de uma GridView1D;
+estrutura inicial ManufacturedSolution1D;
+estrutura inicial VariableCoefficient1D;
+estrutura inicial ManufacturedProblem1D com múltiplos coeficientes nomeados;
+testes com função livre, lambda, functor e std::function;
+exemplo simples de MMS 1D apenas avaliando phi, dphi/dx, d2phi/dx2 e f(x).
+```
+
+Decisões:
+
+```text
+ScalarFunction1D e ScalarFunction2D devem ser concepts para uso eficiente em
+código template;
+os tipos Stored* devem usar std::function apenas quando a função precisar ser
+armazenada;
+VectorFunction1D existe mesmo que, em vários problemas 1D, o vetor tenha apenas
+uma componente efetiva;
+MMS deve permitir vários coeficientes nomeados, pois cada equação diferencial
+pode exigir um conjunto diferente de propriedades e derivadas;
+nenhum parser externo, YAML ou biblioteca simbólica entra na FVMakerLib;
+derivadas manufaturadas serão fornecidas pelo usuário ou pelos exemplos, não
+calculadas simbolicamente pela biblioteca.
+```
+
+Gate de saída:
+
+```text
+run_tst_Functions_Functions1D passa;
+run_tst_Functions_Functions2D passa;
+run_tst_Functions_ManufacturedSolution1D passa;
+run_ex_Functions_ManufacturedFunctions1D passa;
+ctest --output-on-failure passa.
+```
+
+Status: concluído.
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Functions_Functions1D run_tst_Functions_Functions2D run_tst_Functions_ManufacturedSolution1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Functions_ManufacturedFunctions1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 7 - Boundary1D e Ghost Volumes
 

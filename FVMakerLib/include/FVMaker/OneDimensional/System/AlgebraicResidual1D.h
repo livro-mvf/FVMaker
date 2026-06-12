@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------------
-// File: SolveResult.h
+// File: AlgebraicResidual1D.h
 // Project: FVMaker
 // Version: 0.1.0
-// Description: Defines a minimal result object for linear solvers.
+// Description: Defines A X - B residual evaluation for 1D systems.
 // Author: FVMaker Team
 // License: GPL-3.0-or-later
 // ----------------------------------------------------------------------------
@@ -13,16 +13,13 @@
 // FVMaker includes
 // ----------------------------------------------------------------------------
 #include <FVMaker/Algebra/DenseVector.h>
-#include <FVMaker/Core/Types.h>
+#include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 
 namespace fvm {
 
-struct SolveResult final {
-    DenseVector solution;
-    DenseVector residual;
-    bool converged{false};
-    Size iterations{};
-    Real residual_norm{};
-};
+[[nodiscard]] DenseVector algebraic_residual(
+    const TridiagonalSystem1D& system,
+    const DenseVector& solution
+);
 
 }  // namespace fvm

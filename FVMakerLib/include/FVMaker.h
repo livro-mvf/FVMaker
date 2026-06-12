@@ -53,17 +53,24 @@
 
 #include <FVMaker/Misc/type.h>
 #include <FVMaker/Algebra/DenseVector.h>
+#include <FVMaker/Algebra/ErrorNorms.h>
 #include <FVMaker/Core/Version.h>
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ErrorCodes.h>
 #include <FVMaker/ErrorHandling/ErrorRecord.h>
 #include <FVMaker/ErrorHandling/FVMException.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
+#include <FVMaker/Functions/FunctionEvaluation1D.h>
+#include <FVMaker/Functions/FunctionTypes.h>
+#include <FVMaker/Functions/ManufacturedProblem1D.h>
+#include <FVMaker/Functions/ManufacturedSolution1D.h>
+#include <FVMaker/Functions/VariableCoefficient1D.h>
 #include <FVMaker/OneDimensional/Field/Field1D.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
 #include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
+#include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 #include <FVMaker/Solver/SolveResult.h>
 

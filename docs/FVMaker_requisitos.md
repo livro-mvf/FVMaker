@@ -39,6 +39,7 @@ A FVM deve tratar de:
 
 ```text
 campos/variáveis definidos sobre malhas estruturadas;
+funções analíticas escalares e vetoriais para MMS, fontes e coeficientes;
 coeficientes físicos;
 termos fonte;
 condições de contorno;
@@ -135,6 +136,46 @@ definidas por função da posição;
 definidas por campo;
 compatíveis com histórico temporal quando o esquema exigir.
 ```
+
+## 2.3.1 Funções Analíticas e MMS
+
+A FVM deve fornecer uma infraestrutura comum para transportar funções
+analíticas usadas em campos, coeficientes, fontes, condições de contorno,
+soluções manufaturadas e testes de erro de truncamento.
+
+Tipos funcionais desejados:
+
+```text
+ScalarFunction1D;
+ScalarFunction2D;
+VectorFunction1D;
+VectorFunction2D.
+```
+
+A FVM deve distinguir:
+
+```text
+conceitos/templates para aceitar lambdas, funções livres, functors e
+std::function sem custo extra quando a função é apenas avaliada;
+tipos armazenáveis baseados em std::function quando a função precisa ser
+guardada em objetos como fonte, coeficiente, condição de contorno ou MMS.
+```
+
+Para o método das funções manufaturadas, a FVM deve permitir armazenar e
+transportar, inicialmente em 1D:
+
+```text
+phi(x);
+dphi/dx;
+d2phi/dx2;
+um conjunto extensível de coeficientes variáveis nomeados, como gamma(x),
+sigma(x), beta(x) ou outros exigidos pela equação;
+derivadas de cada coeficiente quando necessárias;
+termos fonte derivados da solução manufaturada.
+```
+
+As derivadas manufaturadas devem ser fornecidas pelo usuário, exemplos ou
+ferramentas externas. A FVMakerLib não deve depender de bibliotecas simbólicas.
 
 ## 2.4 Coeficientes
 

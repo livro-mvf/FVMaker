@@ -19,7 +19,9 @@
 // ----------------------------------------------------------------------------
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
+#include <FVMaker/Algebra/ErrorNorms.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
+#include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 
 namespace fvm {
 
@@ -75,11 +77,15 @@ SolveResult TDMA::solve(const TridiagonalSystem1D& system) {
             modified_rhs[row] - modified_upper[row] * solution[row + 1];
     }
 
+    DenseVector residual = algebraic_residual(system, solution);
+    const Real residual_norm = norm_infinity(residual);
+
     return SolveResult{
         .solution = std::move(solution),
+        .residual = std::move(residual),
         .converged = true,
         .iterations = 1,
-        .residual_norm = 0.0,
+        .residual_norm = residual_norm,
     };
 }
 
