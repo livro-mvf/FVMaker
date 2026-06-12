@@ -216,17 +216,21 @@ S = S_C + S_P phi
 Essa forma deve ser usada quando necessário em problemas não lineares e em
 formulações de volumes finitos no estilo clássico.
 
+Em 1D, `S_C` e `S_P` devem poder ser fornecidos como valores uniformes,
+vetores por volume ou funções `f(x)` e `f(x,t)`. Em 2D, a mesma ideia deve
+ser estendida para funções `f(x,y)` e `f(x,y,t)`.
+
 ## 2.6 Condições de Contorno
 
-A FVM deve suportar condições de contorno em 1D e 2D.
-
-Tipos mínimos:
+A FVM deve suportar condições de contorno em 1D e 2D sempre pela forma linear:
 
 ```text
-Dirichlet;
-Neumann;
-Robin.
+alpha phi + beta phi' = gamma.
 ```
+
+Dirichlet, Neumann e Robin devem ser tratados como casos particulares dessa
+forma geral, usando atalhos de construção quando isso deixar o programa do
+usuário mais simples.
 
 As condições de contorno devem poder ser:
 
@@ -235,6 +239,10 @@ constantes;
 dependentes da posição;
 dependentes do tempo.
 ```
+
+Os coeficientes alpha, beta e gamma devem poder ser constantes ou funções. Em
+2D, esses coeficientes serão funções da coordenada ao longo da fronteira, e
+também poderão depender do tempo quando necessário.
 
 Em 1D, a FVM deve representar:
 
@@ -251,6 +259,11 @@ right;
 bottom;
 top.
 ```
+
+Mesmo quando uma estratégia de volumes fictícios não for usada por um operador,
+as estruturas de montagem devem reservar espaço conceitual para as condições
+de contorno nos lados esquerdo e direito em 1D, e nas faces norte, sul, leste
+e oeste em 2D.
 
 Exemplo conceitual:
 

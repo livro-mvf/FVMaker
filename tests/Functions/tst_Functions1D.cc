@@ -80,6 +80,18 @@ TEST(Functions1D, AcceptsFreeFunctionLambdaFunctorAndStdFunction) {
     EXPECT_DOUBLE_EQ(ScalarFunctor1D{}(2.0), 4.0);
 }
 
+TEST(Functions1D, AcceptsTimeDependentScalarFunctions) {
+    const auto function = [](Real x, Real time) {
+        return x + time;
+    };
+
+    static_assert(ScalarFunction1DTime<decltype(function)>);
+    EXPECT_DOUBLE_EQ(function(2.0, 3.0), 5.0);
+
+    const StoredScalarFunction1DTime stored = function;
+    EXPECT_DOUBLE_EQ(stored(4.0, 5.0), 9.0);
+}
+
 TEST(Functions1D, AcceptsVectorFunctions) {
     static_assert(VectorFunction1D<decltype(free_vector_1d)>);
     static_assert(VectorFunction1D<VectorFunctor1D>);

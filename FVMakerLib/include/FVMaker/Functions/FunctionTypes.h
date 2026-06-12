@@ -32,9 +32,22 @@ concept ScalarFunction1D =
     std::convertible_to<std::invoke_result_t<Function, Real>, Real>;
 
 template <class Function>
+concept ScalarFunction1DTime =
+    std::invocable<Function, Real, Real> &&
+    std::convertible_to<std::invoke_result_t<Function, Real, Real>, Real>;
+
+template <class Function>
 concept ScalarFunction2D =
     std::invocable<Function, Real, Real> &&
     std::convertible_to<std::invoke_result_t<Function, Real, Real>, Real>;
+
+template <class Function>
+concept ScalarFunction2DTime =
+    std::invocable<Function, Real, Real, Real> &&
+    std::convertible_to<
+        std::invoke_result_t<Function, Real, Real, Real>,
+        Real
+    >;
 
 template <class Function>
 concept VectorFunction1D =
@@ -47,7 +60,9 @@ concept VectorFunction2D =
     std::convertible_to<std::invoke_result_t<Function, Real, Real>, VectorValue2D>;
 
 using StoredScalarFunction1D = std::function<Real(Real)>;
+using StoredScalarFunction1DTime = std::function<Real(Real, Real)>;
 using StoredScalarFunction2D = std::function<Real(Real, Real)>;
+using StoredScalarFunction2DTime = std::function<Real(Real, Real, Real)>;
 using StoredVectorFunction1D = std::function<VectorValue1D(Real)>;
 using StoredVectorFunction2D = std::function<VectorValue2D(Real, Real)>;
 

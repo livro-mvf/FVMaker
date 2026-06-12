@@ -62,8 +62,8 @@ Bloco 4  - Field1D e condições iniciais                         CONCLUÍDO
 Bloco 5  - LinearSystem1D tridiagonal e TDMA                    CONCLUÍDO
 Bloco 6  - Resíduo algébrico e normas de erro                   CONCLUÍDO
 Bloco 6.1 - Funções escalares/vetoriais e suporte a MMS         CONCLUÍDO
-Bloco 7  - Boundary1D e ghost volumes                           EM ANDAMENTO
-Bloco 8  - Termo fonte 1D e fontes linearizadas                 PENDENTE
+Bloco 7  - Boundary1D e ghost volumes                           CONCLUÍDO
+Bloco 8  - Termo fonte 1D e fontes linearizadas                 CONCLUÍDO
 Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        PENDENTE
 Bloco 10 - Solvers iterativos lineares 1D                       PENDENTE
 Bloco 11 - Coeficiente variável linear 1D                       PENDENTE
@@ -459,9 +459,8 @@ Entregas:
 
 ```text
 BoundarySide1D;
-Dirichlet1D;
-Neumann1D;
-Robin1D;
+BoundaryCondition1D na forma alpha phi + beta phi' = gamma;
+atalhos Dirichlet, Neumann e Robin como casos particulares;
 BoundarySet1D;
 GhostCells1D com ate 2 ghost cells por lado, fora da opcao default;
 PentadiagonalSystem1D para esquemas 1D com acoplamento ate i+-2;
@@ -483,17 +482,35 @@ run_ex_Boundary1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: em andamento.
+Status: concluído.
 
 Progresso concluido:
 
 ```text
 GhostCells1D representa 0, 1 ou 2 ghost cells por lado;
 o default de GhostCells1D e zero ghost cells;
+BoundaryCondition1D representa a forma geral alpha phi + beta phi' = gamma;
+BoundarySet1D reserva espaco explicito para lado esquerdo e direito;
 PentadiagonalSystem1D foi criado como alternativa explicita ao sistema
 tridiagonal, sem substituir TridiagonalSystem1D + TDMA como caminho default;
 algebraic_residual calcula A X - B para sistemas tridiagonais e
 pentadiagonais.
+GhostBoundary1D fornece a linearizacao do primeiro ghost cell na forma
+phi_g = c + m phi_P, que permite modificar coeficientes e lado direito em
+montagens futuras.
+ex_Poisson1DCoefficients mostra os coeficientes de d2phi/dx2 = f(x) em uma
+malha 1D criada pela FVGridMaker, usando BoundarySet1D e ghost cells.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Boundary_Boundary1D run_tst_Boundary_GhostBoundary1D run_tst_Boundary_GhostCells1D run_tst_System_PentadiagonalSystem1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Boundary_Boundary1D run_ex_System_PentadiagonalAndGhostCells1D run_ex_Equation_Poisson1DCoefficients -j2.
 ```
 
 ## Bloco 8 - Termo Fonte 1D e Fontes Linearizadas
@@ -503,11 +520,12 @@ Objetivo: representar fontes 1D independentes da equação.
 Entregas:
 
 ```text
-Source1D;
-UniformSource1D;
-FunctionSource1D;
-FieldSource1D;
 LinearizedSource1D com S = S_C + S_P phi;
+fonte uniforme;
+fonte por vetor;
+fonte por função f(x);
+fonte por função f(x,t);
+S_P opcional, com default zero;
 testes de avaliação em volumes;
 testes de contribuição para vetor e diagonal.
 ```
@@ -521,7 +539,31 @@ run_ex_Source1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Decisões:
+
+```text
+O termo fonte 1D é representado por LinearizedSource1D;
+cada volume possui dois coeficientes: S_C e S_P;
+a avaliação local segue B_P = S_C + S_P phi_P;
+S_P é opcional e seu default é zero;
+fontes podem ser uniformes, vetoriais, f(x) ou f(x,t);
+FunctionTypes já prevê ScalarFunction2DTime para fontes futuras f(x,y,t);
+ao aplicar a fonte em A phi = b, S_C soma no lado direito e S_P é movido para
+a diagonal com sinal negativo: a_P <- a_P - S_P.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Source_LinearizedSource1D run_tst_Functions_Functions1D run_tst_Functions_Functions2D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Source_Source1D -j2.
+```
 
 ## Bloco 9 - Laplacian1D: d2phi/dx2 = f(x)
 

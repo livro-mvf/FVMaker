@@ -64,6 +64,18 @@ TEST(Functions2D, AcceptsScalarFunctions) {
     EXPECT_DOUBLE_EQ(ScalarFunctor2D{}(2.0, 3.0), 6.0);
 }
 
+TEST(Functions2D, AcceptsTimeDependentScalarFunctions) {
+    const auto function = [](Real x, Real y, Real time) {
+        return x + y + time;
+    };
+
+    static_assert(ScalarFunction2DTime<decltype(function)>);
+    EXPECT_DOUBLE_EQ(function(1.0, 2.0, 3.0), 6.0);
+
+    const StoredScalarFunction2DTime stored = function;
+    EXPECT_DOUBLE_EQ(stored(4.0, 5.0, 6.0), 15.0);
+}
+
 TEST(Functions2D, AcceptsVectorFunctions) {
     static_assert(VectorFunction2D<decltype(free_vector_2d)>);
     static_assert(VectorFunction2D<VectorFunctor2D>);
