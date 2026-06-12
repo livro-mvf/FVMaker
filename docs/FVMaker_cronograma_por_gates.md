@@ -64,8 +64,8 @@ Bloco 6  - Resíduo algébrico e normas de erro                   CONCLUÍDO
 Bloco 6.1 - Funções escalares/vetoriais e suporte a MMS         CONCLUÍDO
 Bloco 7  - Boundary1D e ghost volumes                           CONCLUÍDO
 Bloco 8  - Termo fonte 1D e fontes linearizadas                 CONCLUÍDO
-Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        PENDENTE
-Bloco 10 - Solvers iterativos lineares 1D                       PENDENTE
+Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        CONCLUÍDO
+Bloco 10 - Solvers iterativos lineares 1D                       CONCLUÍDO
 Bloco 11 - Coeficiente variável linear 1D                       PENDENTE
 Bloco 12 - Controle de solução e SolveResult                    PENDENTE
 Bloco 13 - Problemas não lineares 1D                            PENDENTE
@@ -599,7 +599,31 @@ run_ex_Poisson1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Decisões:
+
+```text
+Laplacian1D representa o operador difusivo 1D com coeficiente constante;
+Equation1D agrupa GridView1D, Laplacian1D, LinearizedSource1D e BoundarySet1D;
+Assembler1D monta o TridiagonalSystem1D para d2phi/dx2 = f(x);
+as condições de contorno entram pela forma alpha phi + beta phi' = gamma;
+ghost cells são linearizados como phi_g = c + m phi_P;
+fontes linearizadas entram como rhs += S_C e diagonal -= S_P;
+TDMA resolve o sistema montado;
+SolveResult fornece residual A X - B e norma infinito.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Operator_Laplacian1D run_tst_Equation_Equation1D run_tst_Assembly_Assembler1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Equation_Poisson1DCoefficients run_ex_Equation_Poisson1D -j2.
+```
 
 ## Bloco 10 - Solvers Iterativos Lineares 1D
 
@@ -615,7 +639,7 @@ controle de tolerância;
 controle de máximo de iterações;
 relato de convergência;
 testes com sistemas conhecidos;
-exemplo comparando Thomas1D e solvers iterativos.
+exemplo comparando TDMA e solvers iterativos.
 ```
 
 Gate de saída:
@@ -628,7 +652,31 @@ run_ex_LinearSolvers1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Decisões:
+
+```text
+Jacobi, GaussSeidel e ConjugateGradient resolvem TridiagonalSystem1D;
+IterativeSolverOptions centraliza tolerância e máximo de iterações;
+falha por não convergência retorna SolveResult com converged=false;
+erros de configuração, diagonal nula ou denominador singular lançam FVMException;
+TDMA permanece o solver direto/default para sistemas tridiagonais;
+ConjugateGradient é usado para sistemas SPD quando aplicável.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Solver_IterativeSolvers1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Solver_LinearSolvers1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 11 - Coeficiente Variável Linear 1D
 

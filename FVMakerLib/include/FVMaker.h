@@ -65,19 +65,26 @@
 #include <FVMaker/Functions/ManufacturedProblem1D.h>
 #include <FVMaker/Functions/ManufacturedSolution1D.h>
 #include <FVMaker/Functions/VariableCoefficient1D.h>
+#include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostCells1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostBoundary1D.h>
 #include <FVMaker/OneDimensional/Field/Field1D.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
+#include <FVMaker/OneDimensional/Equation/Equation1D.h>
 #include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
+#include <FVMaker/OneDimensional/Solver/ConjugateGradient.h>
+#include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
+#include <FVMaker/OneDimensional/Solver/Jacobi.h>
+#include <FVMaker/OneDimensional/Operator/Laplacian1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
 #include <FVMaker/OneDimensional/Source/LinearizedSource1D.h>
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 #include <FVMaker/Solver/SolveResult.h>
+#include <FVMaker/Solver/IterativeSolverOptions.h>
 
 FVMAKER_NAMESPACE_OPEN
 

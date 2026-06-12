@@ -15,9 +15,8 @@
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
 
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
-#include <FVMaker/OneDimensional/Boundary/GhostBoundary1D.h>
+#include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
-#include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 
 namespace {
 
@@ -41,55 +40,19 @@ int main() {
         fvm::dirichlet_1d(0.0)
     };
 
-    const fvm::Real dx = grid.cell_lengths()[0];
-    const fvm::Real inverse_dx2 = fvm::Real{1.0} / (dx * dx);
-
-    fvm::TridiagonalSystem1D system{grid.num_volumes()};
-
-    for (fvm::Size row = 0; row < grid.num_volumes(); ++row) {
-        fvm::Real lower = inverse_dx2;
-        fvm::Real diagonal = -fvm::Real{2.0} * inverse_dx2;
-        fvm::Real upper = inverse_dx2;
-        fvm::Real rhs = source(grid.centers()[row]);
-
-        if (row == 0) {
-            const fvm::GhostCellLinearization1D ghost =
-                fvm::first_ghost_linearization(
-                    boundaries,
-                    fvm::BoundarySide1D::left,
-                    grid.xmin(),
-                    dx
-                );
-
-            lower = fvm::Real{};
-            diagonal =
-                (-fvm::Real{2.0} + ghost.interior_coefficient) * inverse_dx2;
-            rhs -= ghost.constant * inverse_dx2;
-        }
-
-        if (row + 1 == grid.num_volumes()) {
-            const fvm::GhostCellLinearization1D ghost =
-                fvm::first_ghost_linearization(
-                    boundaries,
-                    fvm::BoundarySide1D::right,
-                    grid.xmax(),
-                    dx
-                );
-
-            upper = fvm::Real{};
-            diagonal =
-                (-fvm::Real{2.0} + ghost.interior_coefficient) * inverse_dx2;
-            rhs -= ghost.constant * inverse_dx2;
-        }
-
-        system.set_row(row, lower, diagonal, upper, rhs);
-    }
+    const fvm::Equation1D equation{
+        grid,
+        fvm::Laplacian1D{},
+        fvm::function_source_1d(grid, source),
+        boundaries
+    };
+    const fvm::TridiagonalSystem1D system = fvm::assemble_steady_1d(equation);
 
     std::cout << std::fixed << std::setprecision(6);
     std::cout << "Coeficientes para d2phi/dx2 = f(x)\n";
     std::cout << "==================================\n";
     std::cout << "Malha FVGridMaker uniforme: N = " << grid.num_volumes()
-              << ", dx = " << dx << "\n\n";
+              << ", dx = " << grid.cell_lengths()[0] << "\n\n";
 
     std::cout << std::setw(5) << "i"
               << std::setw(12) << "x_i"
