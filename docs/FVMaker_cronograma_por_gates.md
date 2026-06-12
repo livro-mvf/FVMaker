@@ -59,7 +59,7 @@ Bloco 1  - Core e tipos fundamentais                           CONCLUÍDO
 Bloco 2  - ErrorHandling adaptado da FVGridMaker                CONCLUÍDO
 Bloco 3  - Integração mínima com FVGridMaker 1D                 CONCLUÍDO
 Bloco 4  - Field1D e condições iniciais                         CONCLUÍDO
-Bloco 5  - LinearSystem1D tridiagonal e Thomas1D                PENDENTE
+Bloco 5  - LinearSystem1D tridiagonal e TDMA                    CONCLUÍDO
 Bloco 6  - Resíduo algébrico e normas de erro                   PENDENTE
 Bloco 7  - Boundary1D e ghost volumes                           PENDENTE
 Bloco 8  - Termo fonte 1D e fontes linearizadas                 PENDENTE
@@ -289,7 +289,7 @@ cmake -S . -B build;
 cmake --build build -j2.
 ```
 
-## Bloco 5 - LinearSystem1D Tridiagonal e Thomas1D
+## Bloco 5 - LinearSystem1D Tridiagonal e TDMA
 
 Objetivo: criar a infraestrutura algébrica mínima para o primeiro problema 1D.
 
@@ -298,7 +298,7 @@ Entregas:
 ```text
 TridiagonalSystem1D;
 DenseVector;
-Thomas1D;
+TDMA;
 SolveResult mínimo para solver linear;
 testes com sistemas conhecidos;
 teste de erro para pivô inválido ou dimensão incompatível.
@@ -307,13 +307,26 @@ teste de erro para pivô inválido ou dimensão incompatível.
 Gate de saída:
 
 ```text
-run_tst_TridiagonalSystem1D passa;
-run_tst_Thomas1D passa;
-run_ex_Thomas1D passa;
+run_tst_System_TridiagonalSystem1D passa;
+run_tst_Solver_TDMA passa;
+run_ex_Solver_TDMA passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_System_TridiagonalSystem1D run_tst_Solver_TDMA -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Solver_TDMA -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 6 - Resíduo Algébrico e Normas de Erro
 

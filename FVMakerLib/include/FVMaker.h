@@ -52,6 +52,7 @@
 //==============================================================================
 
 #include <FVMaker/Misc/type.h>
+#include <FVMaker/Algebra/DenseVector.h>
 #include <FVMaker/Core/Version.h>
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ErrorCodes.h>
@@ -62,6 +63,9 @@
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
 #include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
+#include <FVMaker/OneDimensional/Solver/TDMA.h>
+#include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
+#include <FVMaker/Solver/SolveResult.h>
 
 FVMAKER_NAMESPACE_OPEN
 
