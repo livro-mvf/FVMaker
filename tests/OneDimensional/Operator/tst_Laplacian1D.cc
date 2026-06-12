@@ -33,6 +33,25 @@ TEST(Laplacian1D, StoresConstantCoefficient) {
     const Laplacian1D laplacian{2.5};
 
     EXPECT_DOUBLE_EQ(laplacian.coefficient(), 2.5);
+    EXPECT_FALSE(laplacian.has_variable_coefficient());
+}
+
+TEST(Laplacian1D, StoresVariableCoefficientOnFaces) {
+    const fvgrid::Axis1D axis = fvgrid::uniform_axis_1d(
+        fvgrid::NVol{3},
+        fvgrid::Length{1.0},
+        fvgrid::XInit{0.0}
+    );
+    const GridView1D grid{axis};
+    const Laplacian1D laplacian{
+        function_coefficient_1d(grid, [](Real x) { return Real{1.0} + x; })
+    };
+
+    EXPECT_TRUE(laplacian.has_variable_coefficient());
+    EXPECT_DOUBLE_EQ(laplacian.face_coefficient(grid, 0), 1.0);
+    EXPECT_DOUBLE_EQ(laplacian.face_coefficient(grid, 1), 4.0 / 3.0);
+    EXPECT_DOUBLE_EQ(laplacian.face_coefficient(grid, 2), 5.0 / 3.0);
+    EXPECT_DOUBLE_EQ(laplacian.face_coefficient(grid, 3), 2.0);
 }
 
 TEST(Laplacian1D, AssemblesUniformDirichletCoefficients) {
@@ -81,6 +100,35 @@ TEST(Laplacian1D, DirichletBoundaryValuesModifyRightHandSide) {
     EXPECT_DOUBLE_EQ(system.rhs()[0], -8.0);
     EXPECT_DOUBLE_EQ(system.diagonal()[1], -12.0);
     EXPECT_DOUBLE_EQ(system.rhs()[1], -16.0);
+}
+
+TEST(Laplacian1D, AssemblesVariableCoefficientOnFaces) {
+    const fvgrid::Axis1D axis = fvgrid::uniform_axis_1d(
+        fvgrid::NVol{3},
+        fvgrid::Length{1.0},
+        fvgrid::XInit{0.0}
+    );
+    const GridView1D grid{axis};
+    const BoundarySet1D boundaries{dirichlet_1d(0.0), dirichlet_1d(0.0)};
+    const Laplacian1D laplacian{
+        function_coefficient_1d(grid, [](Real x) { return Real{1.0} + x; })
+    };
+
+    const TridiagonalSystem1D system = assemble_laplacian_1d(
+        grid,
+        laplacian,
+        boundaries
+    );
+
+    EXPECT_DOUBLE_EQ(system.diagonal()[0], -30.0);
+    EXPECT_DOUBLE_EQ(system.upper()[0], 12.0);
+
+    EXPECT_DOUBLE_EQ(system.lower()[0], 12.0);
+    EXPECT_DOUBLE_EQ(system.diagonal()[1], -27.0);
+    EXPECT_DOUBLE_EQ(system.upper()[1], 15.0);
+
+    EXPECT_DOUBLE_EQ(system.lower()[1], 15.0);
+    EXPECT_DOUBLE_EQ(system.diagonal()[2], -51.0);
 }
 
 }  // namespace fvm

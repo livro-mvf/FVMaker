@@ -69,6 +69,7 @@
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostCells1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostBoundary1D.h>
+#include <FVMaker/OneDimensional/Coefficient/DiffusionCoefficient1D.h>
 #include <FVMaker/OneDimensional/Field/Field1D.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
 #include <FVMaker/OneDimensional/Equation/Equation1D.h>

@@ -1,0 +1,56 @@
+# Exercício Computacional 2.3: Design Orientado a Dados em um Laço Simples
+
+Este programa compara duas formas de organizar os dados de uma malha com
+`N = 10^6` volumes. Na primeira versão, cada volume é representado por uma
+estrutura contendo posição, solução e termo fonte. Na segunda versão, as mesmas
+grandezas são armazenadas em vetores separados, seguindo a ideia de design
+orientado a dados.
+
+O objetivo do exercício é observar o efeito da organização dos dados no tempo
+do laço principal que atualiza `phi` a partir de `fonte`.
+
+## Funcionalidades
+
+- **Versão com estruturas**: Usa `std::vector<Volume>`, em que cada elemento
+  contém `x`, `phi` e `fonte`.
+- **Versão orientada a dados**: Usa três vetores independentes: `x`, `phi` e
+  `fonte`.
+- **Mesmo cálculo nas duas versões**: O laço principal executa
+  `phi = phi + dt * fonte`.
+- **Medição de tempo**: O tempo do laço principal é medido com
+  `std::chrono::steady_clock`.
+- **Comparação numérica**: O programa verifica se as duas versões produzem a
+  mesma soma final de `phi`.
+- **Discussão didática**: A saída explica a diferença observada em termos de
+  localidade de memória.
+
+## Pré-requisitos
+
+O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário
+um compilador compatível com C++17 ou superior.
+
+- Compilador: `g++`, `clang++` ou MSVC.
+- Padrão: C++17 ou superior.
+
+## Compilação e Execução
+
+Para compilar o programa a partir do arquivo-fonte:
+
+```bash
+g++ -std=c++17 -O2 -Wall -Wextra exercicio_23.cpp -o exercicio_23
+```
+
+Para executar:
+
+```bash
+./exercicio_23
+```
+
+## Saída esperada
+
+A saída mostra os tempos medidos para as duas organizações de dados, a razão
+entre eles e uma verificação de consistência numérica. Os tempos absolutos
+dependem do computador, do compilador e das opções de otimização, mas a versão
+com vetores separados tende a ser mais favorável quando o laço usa apenas
+`phi` e `fonte`, pois evita carregar a coordenada `x` junto com os dados
+necessários ao cálculo.

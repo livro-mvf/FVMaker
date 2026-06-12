@@ -50,8 +50,10 @@ TridiagonalSystem1D assemble_laplacian_1d(
 
     for (Size row = 0; row < grid.num_volumes(); ++row) {
         const Real volume = grid.cell_lengths()[row];
-        const Real west = laplacian.coefficient() / (west_distance(grid, row) * volume);
-        const Real east = laplacian.coefficient() / (east_distance(grid, row) * volume);
+        const Real west = laplacian.face_coefficient(grid, row)
+            / (west_distance(grid, row) * volume);
+        const Real east = laplacian.face_coefficient(grid, row + 1)
+            / (east_distance(grid, row) * volume);
 
         Real lower = row > 0 ? west : Real{};
         Real upper = row + 1 < grid.num_volumes() ? east : Real{};

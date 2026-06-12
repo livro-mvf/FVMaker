@@ -66,7 +66,7 @@ Bloco 7  - Boundary1D e ghost volumes                           CONCLUÍDO
 Bloco 8  - Termo fonte 1D e fontes linearizadas                 CONCLUÍDO
 Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        CONCLUÍDO
 Bloco 10 - Solvers iterativos lineares 1D                       CONCLUÍDO
-Bloco 11 - Coeficiente variável linear 1D                       PENDENTE
+Bloco 11 - Coeficiente variável linear 1D                       CONCLUÍDO
 Bloco 12 - Controle de solução e SolveResult                    PENDENTE
 Bloco 13 - Problemas não lineares 1D                            PENDENTE
 Bloco 14 - Fluxos, interpolação e advecção 1D                   PENDENTE
@@ -711,7 +711,37 @@ run_ex_VariableCoefficient1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
+
+Decisões:
+
+```text
+o coeficiente difusivo 1D é armazenado nas faces dos volumes de controle;
+DiffusionCoefficient1D representa os valores de gamma nas faces;
+uniform_coefficient_1d cria coeficiente constante em todas as faces;
+function_coefficient_1d avalia gamma(x) diretamente nas faces da GridView1D;
+field_coefficient_1d interpola valores de centros para faces por média
+aritmética como default;
+harmonic_field_coefficient_1d fica disponível para casos com salto de
+coeficiente;
+Laplacian1D continua aceitando coeficiente constante e passa a aceitar
+DiffusionCoefficient1D para montar d/dx(gamma(x) dphi/dx);
+Assembler1D usa gamma_w e gamma_e por face, preservando o sistema
+tridiagonal.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Coefficient_DiffusionCoefficient1D run_tst_Operator_Laplacian1D run_tst_Assembly_Assembler1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Equation_VariableCoefficient1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
 
 ## Bloco 12 - Controle de Solução e SolveResult
 

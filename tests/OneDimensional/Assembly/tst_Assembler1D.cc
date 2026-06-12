@@ -33,6 +33,15 @@ constexpr Real pi = 3.141592653589793238462643383279502884;
     return -pi * pi * std::sin(pi * x);
 }
 
+[[nodiscard]] Real variable_coefficient(Real x) {
+    return Real{1.0} + x;
+}
+
+[[nodiscard]] Real variable_coefficient_source(Real x) {
+    return pi * std::cos(pi * x)
+        - (Real{1.0} + x) * pi * pi * std::sin(pi * x);
+}
+
 }  // namespace
 
 TEST(Assembler1D, AppliesLinearizedSourceToLaplacianSystem) {
@@ -87,6 +96,34 @@ TEST(Assembler1D, SolvesPoissonProblemWithManufacturedSolution) {
 
     EXPECT_TRUE(result.converged);
     EXPECT_LT(norm_infinity(error), 6.0e-4);
+    EXPECT_LT(result.residual_norm, 1.0e-10);
+}
+
+TEST(Assembler1D, SolvesVariableCoefficientProblemWithManufacturedSolution) {
+    const fvgrid::Axis1D axis = fvgrid::uniform_axis_1d(
+        fvgrid::NVol{80},
+        fvgrid::Length{1.0},
+        fvgrid::XInit{0.0}
+    );
+    const GridView1D grid{axis};
+    const Equation1D equation{
+        grid,
+        Laplacian1D{function_coefficient_1d(grid, variable_coefficient)},
+        function_source_1d(grid, variable_coefficient_source),
+        BoundarySet1D{dirichlet_1d(0.0), dirichlet_1d(0.0)}
+    };
+
+    const TridiagonalSystem1D system = assemble_steady_1d(equation);
+    const SolveResult result = TDMA::solve(system);
+
+    DenseVector error{grid.num_volumes()};
+
+    for (Size i = 0; i < grid.num_volumes(); ++i) {
+        error[i] = result.solution[i] - phi_exact(grid.centers()[i]);
+    }
+
+    EXPECT_TRUE(result.converged);
+    EXPECT_LT(norm_infinity(error), 2.0e-4);
     EXPECT_LT(result.residual_norm, 1.0e-10);
 }
 

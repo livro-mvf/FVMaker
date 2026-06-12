@@ -2,12 +2,13 @@
 // File: Laplacian1D.cc
 // Project: FVMaker
 // Version: 0.1.0
-// Description: Implements the constant-coefficient 1D Laplacian operator.
+// Description: Implements the 1D conservative Laplacian operator.
 // Author: FVMaker Team
 // License: GPL-3.0-or-later
 // ----------------------------------------------------------------------------
 
 #include <cmath>
+#include <vector>
 
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
@@ -20,8 +21,41 @@ Laplacian1D::Laplacian1D(Real coefficient)
     validate();
 }
 
+Laplacian1D::Laplacian1D(DiffusionCoefficient1D coefficient)
+    : coefficient_(Real{1.0}),
+      face_coefficients_(std::vector<Real>{
+          coefficient.face_values().begin(),
+          coefficient.face_values().end()
+      }) {
+    validate();
+}
+
 Real Laplacian1D::coefficient() const noexcept {
     return coefficient_;
+}
+
+bool Laplacian1D::has_variable_coefficient() const noexcept {
+    return !face_coefficients_.empty();
+}
+
+Real Laplacian1D::face_coefficient(const GridView1D& grid, Size face) const {
+    if (!has_variable_coefficient()) {
+        return coefficient_;
+    }
+
+    require(
+        face_coefficients_.size() == grid.num_faces(),
+        error_catalog::kInvalidCoefficient,
+        Laplacian1D::id()
+    );
+
+    require(
+        face < face_coefficients_.size(),
+        error_catalog::kOutOfRange,
+        Laplacian1D::id()
+    );
+
+    return face_coefficients_[face];
 }
 
 void Laplacian1D::validate() const {
@@ -30,6 +64,14 @@ void Laplacian1D::validate() const {
         error_catalog::kInvalidCoefficient,
         Laplacian1D::id()
     );
+
+    for (const Real value : face_coefficients_.values()) {
+        require(
+            std::isfinite(value),
+            error_catalog::kInvalidCoefficient,
+            Laplacian1D::id()
+        );
+    }
 }
 
 }  // namespace fvm
