@@ -67,6 +67,18 @@ if(NOT FVM_TEST_SOURCES)
 endif()
 
 set(FVM_TEST_RUN_TARGETS)
+set(FVM_MEMCHECK_RUN_TARGETS)
+
+if(BUILD_MEMCHECK)
+    find_program(FVM_VALGRIND_EXECUTABLE valgrind)
+
+    if(NOT FVM_VALGRIND_EXECUTABLE)
+        message(WARNING
+            "BUILD_MEMCHECK is ON, but valgrind was not found. "
+            "Memory-check targets will not be created."
+        )
+    endif()
+endif()
 
 foreach(FVM_TEST_SOURCE IN LISTS FVM_TEST_SOURCES)
     get_filename_component(FVM_TEST_NAME
@@ -137,6 +149,8 @@ foreach(FVM_TEST_SOURCE IN LISTS FVM_TEST_SOURCES)
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin/tests"
     )
 
+    set_target_optimizations("${FVM_TEST_TARGET}")
+
     gtest_discover_tests("${FVM_TEST_TARGET}"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
@@ -151,10 +165,36 @@ foreach(FVM_TEST_SOURCE IN LISTS FVM_TEST_SOURCES)
     list(APPEND FVM_TEST_RUN_TARGETS
         "run_${FVM_TEST_TARGET}"
     )
+
+    if(BUILD_MEMCHECK AND FVM_VALGRIND_EXECUTABLE)
+        add_custom_target("memcheck_${FVM_TEST_TARGET}"
+            COMMAND "${FVM_VALGRIND_EXECUTABLE}"
+                    --tool=memcheck
+                    --leak-check=full
+                    --show-leak-kinds=definite,possible
+                    --errors-for-leak-kinds=definite,possible
+                    --track-origins=yes
+                    --error-exitcode=99
+                    "$<TARGET_FILE:${FVM_TEST_TARGET}>"
+            DEPENDS "${FVM_TEST_TARGET}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+            VERBATIM
+        )
+
+        list(APPEND FVM_MEMCHECK_RUN_TARGETS
+            "memcheck_${FVM_TEST_TARGET}"
+        )
+    endif()
 endforeach()
 
 if(FVM_TEST_RUN_TARGETS)
     add_custom_target(run_all_tests
         DEPENDS ${FVM_TEST_RUN_TARGETS}
+    )
+endif()
+
+if(FVM_MEMCHECK_RUN_TARGETS)
+    add_custom_target(memcheck_all_tests
+        DEPENDS ${FVM_MEMCHECK_RUN_TARGETS}
     )
 endif()

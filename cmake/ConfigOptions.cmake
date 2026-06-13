@@ -4,6 +4,8 @@ option(BUILD_TESTS "Build test targets" OFF)
 option(BUILD_EXAMPLES "Build example targets" OFF)
 option(BUILD_BOOK "Build book/chapter targets" ON)
 option(BUILD_PERFORMANCE "Build performance/profiling targets" OFF)
+option(BUILD_MEMCHECK "Build Valgrind memory-check targets for tests" OFF)
+option(BUILD_SANITIZERS "Build targets with AddressSanitizer and UBSan" OFF)
 option(BUILD_DOCUMENTATION "Build Sphinx documentation targets" OFF)
 
 option(FVM_ENABLE_TBB "Enable Intel TBB support" ON)

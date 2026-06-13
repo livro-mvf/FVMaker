@@ -67,8 +67,8 @@ Bloco 8  - Termo fonte 1D e fontes linearizadas                 CONCLUÍDO
 Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        CONCLUÍDO
 Bloco 10 - Solvers iterativos lineares 1D                       CONCLUÍDO
 Bloco 11 - Coeficiente variável linear 1D                       CONCLUÍDO
-Bloco 12 - Controle de solução e SolveResult                    PENDENTE
-Bloco 13 - Problemas não lineares 1D                            PENDENTE
+Bloco 12 - Controle de solução e SolveResult                    CONCLUÍDO
+Bloco 13 - Problemas não lineares 1D: caminho Picard            PENDENTE
 Bloco 14 - Fluxos, interpolação e advecção 1D                   PENDENTE
 Bloco 15 - Controle transiente 1D e ddt                         PENDENTE
 Bloco 16 - Esquemas temporais de primeira ordem 1D              PENDENTE
@@ -771,23 +771,89 @@ run_ex_SolveSteady1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído.
 
-## Bloco 13 - Problemas Não Lineares 1D
+Decisões:
 
-Objetivo: resolver problemas 1D com coeficientes variáveis e não lineares.
+```text
+SteadyState concentra tolerância absoluta, tolerância relativa e máximo de
+iterações;
+SolveResult foi ampliado com norma relativa do resíduo, norma inicial,
+tolerância efetiva solicitada e flags de convergência absoluta/relativa;
+solve_steady_system_1d resolve sistemas tridiagonais já montados;
+solve_steady_1d monta a Equation1D e chama o solver escolhido;
+o solver default continua sendo TDMA;
+solvers iterativos são selecionados por template, sem herança;
+a tolerância efetiva usada pelos iterativos é max(tol_abs, tol_rel * ||b||inf);
+falha por não convergência continua sendo reportada por
+SolveResult::converged = false, sem lançar exceção.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-tests --target run_tst_Solver_SteadyState run_tst_Solver_SolveController1D -j2;
+cmake --build /tmp/fvmaker-codex-tests --target run_all_tests -j2;
+ctest --test-dir /tmp/fvmaker-codex-tests --output-on-failure;
+cmake -S . -B /tmp/fvmaker-codex-examples -DBUILD_BOOK=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-examples --target run_ex_Solver_SolveSteady1D -j2;
+cmake -S . -B build;
+cmake --build build -j2.
+```
+
+## Bloco 13 - Problemas Não Lineares 1D: Caminho Picard
+
+Objetivo: preparar a FVM para problemas 1D com coeficientes variáveis e não
+lineares, usando primeiro a família Picard.
+
+Decisão de escopo:
+
+```text
+Há duas famílias de solvers não lineares previstas:
+
+1. Solvers por atualização sucessiva, aqui chamados de família Picard.
+2. Solvers baseados em derivadas do resíduo, como Newton, Newton aproximado
+   e métodos tipo Newton.
+
+Este bloco implementa apenas o caminho Picard. Os métodos baseados em
+Jacobiano ficam como extensão futura, depois que a infraestrutura de resíduo,
+incremento e controle não linear estiver estabilizada.
+```
+
+Caminho Picard:
+
+```text
+dado phi^k;
+montar coeficientes e fontes usando phi^k;
+resolver o sistema linear resultante;
+aplicar relaxação quando necessário;
+testar convergência não linear;
+repetir até convergir ou atingir limite de iterações.
+```
 
 Entregas:
 
 ```text
 NonlinearCoefficient1D;
 PicardIteration;
-Newton ou Newton aproximado se adequado;
 relaxação de campos;
 relaxação de equações;
 controle de convergência não linear;
 fontes linearizadas em problema não linear;
 exemplo didático não linear 1D.
+```
+
+Fora do escopo deste bloco:
+
+```text
+Newton exato;
+Newton aproximado;
+Jacobiano analítico;
+Jacobiano numérico;
+Broyden;
+quasi-Newton;
+line search.
 ```
 
 Gate de saída:

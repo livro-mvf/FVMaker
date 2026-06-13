@@ -687,23 +687,46 @@ validação contra casos manufaturados.
 Depois, a FVM deve tratar problemas 1D com coeficientes variáveis e não
 lineares.
 
-Esse bloco deve testar diferentes caminhos para problemas não lineares:
+Do ponto de vista arquitetural, os solvers não lineares serão separados em
+duas famílias:
+
+```text
+família Picard:
+  atualização sucessiva de coeficientes e fontes;
+  montagem linear usando phi da iteração anterior;
+  relaxação de campos ou equações quando necessário;
+
+família baseada em derivadas:
+  Newton;
+  Newton aproximado;
+  métodos tipo Newton;
+  Jacobiano analítico ou numérico.
+```
+
+A primeira implementação deve preparar apenas o caminho Picard, pois ele
+reaproveita a infraestrutura linear já existente:
 
 ```text
 iteração de Picard;
-Newton ou Newton aproximado;
 atualização explícita de coeficientes;
+fontes linearizadas;
+relaxação de campos;
+relaxação de equações;
 controle de convergência não linear;
 critérios de parada;
 relato de não convergência.
 ```
 
-Esse bloco deve testar também:
+A família baseada em derivadas deve permanecer fora do primeiro bloco
+implementável. Ela será detalhada futuramente, quando a biblioteca já possuir
+infraestrutura clara para:
 
 ```text
-fontes linearizadas;
-relaxação de campos;
-relaxação de equações.
+resíduo não linear;
+incremento de solução;
+Jacobiano;
+controle de correção;
+comparação entre Picard e métodos tipo Newton.
 ```
 
 ## 2.18.2 Problemas 1D com Advecção

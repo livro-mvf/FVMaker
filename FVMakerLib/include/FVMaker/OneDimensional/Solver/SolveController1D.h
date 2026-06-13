@@ -1,0 +1,128 @@
+// ----------------------------------------------------------------------------
+// File: SolveController1D.h
+// Project: FVMaker
+// Version: 0.1.0
+// Description: Defines steady 1D solve controller functions.
+// Author: FVMaker Team
+// License: GPL-3.0-or-later
+// ----------------------------------------------------------------------------
+
+#pragma once
+
+#include <algorithm>
+#include <concepts>
+#include <cmath>
+#include <utility>
+
+#include <FVMaker/Algebra/ErrorNorms.h>
+#include <FVMaker/ErrorHandling/ErrorCatalog.h>
+#include <FVMaker/ErrorHandling/ThrowError.h>
+#include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
+#include <FVMaker/OneDimensional/Equation/Equation1D.h>
+#include <FVMaker/OneDimensional/Solver/TDMA.h>
+#include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
+#include <FVMaker/Solver/IterativeSolverOptions.h>
+#include <FVMaker/Solver/SolveResult.h>
+#include <FVMaker/Solver/SteadyState.h>
+
+namespace fvm {
+
+[[nodiscard]] inline Real rhs_norm_infinity(
+    const TridiagonalSystem1D& system
+) {
+    return norm_infinity(system.rhs());
+}
+
+[[nodiscard]] inline Real relative_residual_norm(
+    Real residual_norm,
+    Real reference_norm
+) {
+    return residual_norm / std::max(reference_norm, Real{1.0});
+}
+
+inline void complete_solve_result(
+    SolveResult& result,
+    const TridiagonalSystem1D& system,
+    const SteadyState& control,
+    Real initial_residual_norm
+) {
+    const Real reference_norm = rhs_norm_infinity(system);
+    result.initial_residual_norm = initial_residual_norm;
+    result.relative_residual_norm = relative_residual_norm(
+        result.residual_norm,
+        reference_norm
+    );
+    result.requested_tolerance = control.effective_tolerance(reference_norm);
+    result.reached_absolute_tolerance =
+        result.residual_norm <= control.absolute_tolerance;
+    result.reached_relative_tolerance =
+        result.relative_residual_norm <= control.relative_tolerance;
+    result.converged =
+        result.reached_absolute_tolerance || result.reached_relative_tolerance;
+}
+
+template <class LinearSolver>
+concept DirectTridiagonalSolver1D = requires(const TridiagonalSystem1D& system) {
+    { LinearSolver::solve(system) } -> std::same_as<SolveResult>;
+};
+
+template <class LinearSolver>
+concept IterativeTridiagonalSolver1D = requires(
+    const TridiagonalSystem1D& system,
+    IterativeSolverOptions options
+) {
+    { LinearSolver::solve(system, options) } -> std::same_as<SolveResult>;
+};
+
+template <class LinearSolver = TDMA>
+[[nodiscard]] SolveResult solve_steady_system_1d(
+    const TridiagonalSystem1D& system,
+    const SteadyState& control = {}
+) {
+    control.validate();
+
+    const DenseVector zero{system.size()};
+    const Real initial_residual_norm = norm_infinity(
+        algebraic_residual(system, zero)
+    );
+    const Real effective_tolerance =
+        control.effective_tolerance(rhs_norm_infinity(system));
+
+    SolveResult result;
+
+    if constexpr (IterativeTridiagonalSolver1D<LinearSolver>) {
+        result = LinearSolver::solve(
+            system,
+            IterativeSolverOptions{
+                .tolerance = effective_tolerance,
+                .max_iterations = control.max_iterations
+            }
+        );
+    } else if constexpr (DirectTridiagonalSolver1D<LinearSolver>) {
+        result = LinearSolver::solve(system);
+    } else {
+        static_assert(
+            IterativeTridiagonalSolver1D<LinearSolver>
+                || DirectTridiagonalSolver1D<LinearSolver>,
+            "LinearSolver must expose solve(system) or solve(system, options)."
+        );
+    }
+
+    complete_solve_result(result, system, control, initial_residual_norm);
+
+    return result;
+}
+
+template <class LinearSolver = TDMA>
+[[nodiscard]] SolveResult solve_steady_1d(
+    const Equation1D& equation,
+    const SteadyState& control = {},
+    Real time = Real{}
+) {
+    return solve_steady_system_1d<LinearSolver>(
+        assemble_steady_1d(equation, time),
+        control
+    );
+}
+
+}  // namespace fvm
