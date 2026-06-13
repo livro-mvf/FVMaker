@@ -1,111 +1,47 @@
-````markdown
 # Exercício Computacional 3.1: Gerador de Malhas Aleatórias
 
-Este programa resolve o Exercício Computacional 3.1 do Capítulo 3. O objetivo é construir uma malha aleatória unidimensional para o Método das Diferenças Finitas, imprimir os nós e os espaçamentos da malha, e usar essa malha nas fórmulas de diferenças finitas para malhas não uniformes apresentadas na Seção 3.2.
+Este programa implementa um gerador de malhas aleatórias unidimensionais.
 
-O programa recebe a coordenada inicial `xI`, o comprimento `L > 0` e o número de nós `N > 2`. Em seguida, gera `N - 2` pontos aleatórios no interior do domínio `(xI, xI + L)`, fixa os extremos em `xI` e `xI + L`, ordena os nós internos para garantir uma sequência crescente e imprime cada coordenada `x_i` com o respectivo espaçamento `Delta x_i`.
-
-Além da geração da malha, o programa usa os nós aleatórios para avaliar aproximações de derivadas em malhas não uniformes. Para isso, adota-se a função de teste
+O programa recebe:
 
 ```text
-f(x) = exp(x)
-````
-
-Como
-
-```text
-f'(x)  = exp(x)
-f''(x) = exp(x)
+xI    coordenada inicial
+L     comprimento do domínio, com L > 0
+N     número de nós, com N > 2
 ```
 
-os erros locais das aproximações de primeira e segunda derivadas podem ser calculados diretamente em cada nó interno.
-
-## Objetivos do exercício
-
-Este exercício tem quatro objetivos principais:
-
-1. Gerar uma malha aleatória válida em um domínio unidimensional.
-2. Calcular os espaçamentos entre nós consecutivos.
-3. Aplicar fórmulas de diferenças finitas em malhas não uniformes.
-4. Observar como o erro se comporta quando os passos vizinhos são muito diferentes.
-
-A malha aleatória é usada aqui como teste de estresse. A ordenação dos nós garante que a malha seja válida, mas não remove a irregularidade dos espaçamentos. Essa irregularidade é justamente o que permite observar o efeito de saltos abruptos entre `Delta x_i` e `Delta x_{i+1}`.
-
-## Fórmulas usadas
-
-Em cada nó interno `i`, são definidos os passos
+Em seguida:
 
 ```text
-dx_esq = x_i     - x_{i-1}
-dx_dir = x_{i+1} - x_i
+gera N - 2 posições aleatórias no interior de (xI, xI + L);
+fixa os extremos em xI e xI + L;
+ordena todos os nós;
+imprime cada coordenada x_i;
+calcula e imprime Delta x_i = x_i - x_{i-1}, i = 1, ..., N - 1;
+verifica automaticamente as propriedades que definem uma malha válida.
 ```
 
-A aproximação da primeira derivada em malha não uniforme é dada por
+A semente do gerador pseudoaleatório pode ser informada como argumento
+opcional. Ela existe apenas para reprodutibilidade.
+
+## Gabarito automático
+
+Como a malha é aleatória, os valores numéricos mudam de uma execução para
+outra. O gabarito do exercício são as propriedades que devem permanecer
+verdadeiras:
 
 ```text
-f'_i =
-- dx_dir / ((dx_esq + dx_dir) dx_esq) f_{i-1}
-+ (dx_dir - dx_esq) / (dx_esq dx_dir) f_i
-+ dx_esq / ((dx_esq + dx_dir) dx_dir) f_{i+1}
+x_0 = xI
+x_{N-1} = xI + L
+x_i < x_{i+1}
+Delta x_i > 0
+sum_{i=1}^{N-1} Delta x_i = L
 ```
 
-A aproximação da segunda derivada é dada por
-
-```text
-f''_i =
-2 f_{i+1} / (dx_dir (dx_esq + dx_dir))
-+ 2 f_{i-1} / (dx_esq (dx_esq + dx_dir))
-- 2 f_i / (dx_esq dx_dir)
-```
-
-A segunda fórmula é especialmente importante para o capítulo, pois a aproximação da derivada segunda em malhas não uniformes possui um termo de erro associado à diferença entre os passos vizinhos. Assim, quanto maior o salto local entre `dx_esq` e `dx_dir`, mais evidente pode se tornar o efeito da irregularidade da malha.
-
-## Funcionalidades do programa
-
-O programa executa as seguintes etapas:
-
-* valida os parâmetros de entrada;
-* gera `N - 2` nós aleatórios no interior do domínio;
-* fixa os extremos `xI` e `xI + L`;
-* ordena os nós internos;
-* verifica se a malha é estritamente crescente;
-* calcula os espaçamentos `Delta x_i`;
-* imprime a malha gerada;
-* calcula estatísticas básicas da malha;
-* aplica as fórmulas não uniformes para `f'` e `f''`;
-* compara os valores aproximados com os valores exatos;
-* imprime os erros locais em cada nó interno;
-* executa testes internos de consistência.
-
-## Pré-requisitos
-
-O código é autocontido e usa apenas a biblioteca padrão do C++.
-
-Requisitos mínimos:
-
-* compilador C++ com suporte a C++17;
-* `g++`, `clang++` ou compilador equivalente.
-
-## Arquivos
-
-Este diretório contém:
-
-```text
-exercicio_31.cpp
-README
-```
-
-O arquivo `exercicio_31.cpp` contém a implementação completa do exercício. O arquivo `README` descreve o objetivo, a compilação, a execução e a interpretação dos resultados.
+A última igualdade é verificada dentro de uma pequena tolerância numérica,
+pois os cálculos usam ponto flutuante.
 
 ## Compilação
-
-Para compilar com `g++`, use:
-
-```bash
-g++ -std=c++17 -O2 -Wall -Wextra exercicio_31.cpp -o exercicio_31
-```
-
-Para uma compilação com mais mensagens de diagnóstico:
 
 ```bash
 g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic exercicio_31.cpp -o exercicio_31
@@ -113,22 +49,13 @@ g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic exercicio_31.cpp -o exercicio_31
 
 ## Execução
 
-O programa pode ser executado sem argumentos:
+Sem argumentos:
 
 ```bash
 ./exercicio_31
 ```
 
-Nesse caso, são usados os valores padrão:
-
-```text
-xI      = 0.0
-L       = 1.0
-N       = 12
-semente = 2026
-```
-
-Também é possível informar os parâmetros pela linha de comando:
+Com argumentos:
 
 ```bash
 ./exercicio_31 xI L N [semente]
@@ -140,171 +67,43 @@ Exemplo:
 ./exercicio_31 0.0 1.0 12 2026
 ```
 
-Os argumentos são:
+## Saída
+
+A saída mostra os nós e os espaçamentos:
 
 ```text
-xI        coordenada inicial do domínio
-L         comprimento do domínio, com L > 0
-N         número de nós, com N > 2
-semente   valor opcional usado para reproduzir a malha aleatória
+i                     x_i               Delta x_i
+0          0.000000000000                      --
+1          ...
 ```
 
-## Saída do programa
-
-A saída é organizada em blocos.
-
-### 1. Nós da malha
-
-O primeiro bloco mostra os nós gerados e os espaçamentos entre nós consecutivos:
+Depois, o programa imprime as verificações automáticas:
 
 ```text
-Nós da malha aleatória
-======================
-     i                     x_i               Delta x_i
-     0          0.000000000000                      --
-     1          ...
+[PASSOU] x_0 = xI
+[PASSOU] x_{N-1} = xI + L
+[PASSOU] x_i < x_{i+1}
+[PASSOU] Delta x_i > 0
+[PASSOU] sum Delta x_i = L
 ```
 
-O primeiro nó é sempre `xI`. O último nó é sempre `xI + L`. Os demais nós são aleatórios e ficam no interior do domínio.
+## Interpretação
 
-### 2. Estatísticas da malha
+A ordenação torna a malha válida, mas não remove a irregularidade dos
+espaçamentos. Essa irregularidade é justamente o que torna a malha útil como
+teste de estresse para as fórmulas não uniformes da Seção 3.2.
 
-O segundo bloco mostra estatísticas simples da malha:
-
-```text
-Estatísticas da malha
-=====================
-Coordenada inicial xI         = ...
-Comprimento L                 = ...
-Semente                       = ...
-Número de nós                 = ...
-Número de intervalos          = ...
-Menor espaçamento             = ...
-Maior espaçamento             = ...
-Espaçamento médio             = ...
-Razão dx_max/dx_min           = ...
-Soma dos espaçamentos         = ...
-Erro na soma dos espaçamentos = ...
-```
-
-A soma dos espaçamentos deve recuperar o comprimento `L`, salvo erro de arredondamento de ponto flutuante.
-
-### 3. Análise do erro
-
-O terceiro bloco aplica as fórmulas não uniformes da Seção 3.2 usando `f(x) = exp(x)`:
-
-```text
-Análise do erro com f(x) = exp(x)
-=================================
-     i               x_i            dx_esq            dx_dir   |dx_dir-dx_esq|           erro f'          erro f''
-```
-
-Cada linha corresponde a um nó interno da malha. As colunas mostram:
-
-```text
-i                 índice do nó interno
-x_i               coordenada do nó
-dx_esq            espaçamento à esquerda do nó
-dx_dir            espaçamento à direita do nó
-|dx_dir-dx_esq|   salto local entre os passos vizinhos
-erro f'           erro absoluto da aproximação de primeira derivada
-erro f''          erro absoluto da aproximação de segunda derivada
-```
-
-A coluna `|dx_dir-dx_esq|` ajuda a interpretar o efeito da irregularidade local da malha. Quando os passos vizinhos são muito diferentes, a aproximação da segunda derivada tende a ser mais sensível.
-
-### 4. Testes internos
-
-O programa executa testes internos para verificar:
-
-* se a malha é estritamente crescente;
-* se o primeiro nó coincide com `xI`;
-* se o último nó coincide com `xI + L`;
-* se a soma dos espaçamentos recupera `L`;
-* se a fórmula de primeira derivada é exata para uma função linear;
-* se a fórmula de segunda derivada é exata para uma função quadrática;
-* se entradas inválidas são rejeitadas.
-
-Ao final, deve aparecer um resumo como:
-
-```text
-Resumo dos testes
-=================
-Testes aprovados: 9 de 9
-```
-
-## Interpretação dos resultados
-
-A parte mais importante do exercício não é apenas gerar a malha, mas perceber o efeito da irregularidade dos espaçamentos.
-
-A malha aleatória é válida porque os nós são ordenados e satisfazem
-
-```text
-x_i < x_{i+1}
-```
-
-mas ela não é suave. Os passos podem mudar bruscamente de um intervalo para o seguinte. Por isso, ao aplicar as fórmulas de diferenças finitas em malhas não uniformes, é comum observar que os maiores erros aparecem próximos dos nós onde há maior diferença entre `dx_esq` e `dx_dir`.
-
-Esse comportamento é coerente com a análise feita na Seção 3.2: a malha não uniforme cobra um preço algébrico e numérico. No caso da derivada segunda, o termo de erro envolve a diferença local entre os espaçamentos vizinhos. A malha aleatória torna esse efeito visível.
-
-## Por que usar uma semente?
-
-A semente controla o gerador de números pseudoaleatórios. Usar a mesma semente produz a mesma malha. Isso é importante para reprodutibilidade.
-
-Por exemplo, os dois comandos abaixo geram a mesma malha:
-
-```bash
-./exercicio_31 0.0 1.0 12 2026
-./exercicio_31 0.0 1.0 12 2026
-```
-
-Já este comando gera outra malha:
-
-```bash
-./exercicio_31 0.0 1.0 12 2027
-```
-
-Em exercícios computacionais, registrar a semente é uma boa prática, pois permite repetir exatamente o mesmo teste depois.
+Depois de gerar a malha, use os valores de `x_i` e `Delta x_i` impressos pelo
+programa para alimentar as fórmulas de Taylor em malhas não uniformes e
+observar como o erro se comporta quando os passos mudam abruptamente.
 
 ## Entradas inválidas
 
-O programa rejeita entradas inválidas, como:
+O programa rejeita, entre outros casos:
 
 ```text
-N <= 2
 L <= 0
+N <= 2
 xI não finito
 L não finito
-```
-
-Exemplos de chamadas inválidas:
-
-```bash
-./exercicio_31 0.0 1.0 2
-./exercicio_31 0.0 0.0 12
-./exercicio_31 0.0 -1.0 12
-```
-
-Essas verificações evitam malhas sem sentido físico ou matemático.
-
-## Observações didáticas
-
-Este exercício antecipa uma ideia importante para os capítulos seguintes: a malha não é um detalhe neutro. A forma como os pontos são distribuídos afeta diretamente a qualidade das aproximações numéricas.
-
-Uma malha aleatória dificilmente é uma boa escolha para uma simulação de produção. Porém, ela é útil como teste de estresse, porque expõe rapidamente fragilidades de fórmulas e algoritmos que funcionariam bem apenas em malhas uniformes ou suavemente variadas.
-
-## Resultado esperado
-
-Ao executar o programa corretamente, espera-se que:
-
-* os extremos do domínio apareçam como primeiro e último nós;
-* os nós internos estejam ordenados;
-* todos os espaçamentos sejam positivos;
-* a soma dos espaçamentos seja igual a `L`, dentro do erro de arredondamento;
-* os erros de `f'` e `f''` sejam impressos apenas nos nós internos;
-* os testes internos sejam aprovados.
-
-Os valores numéricos específicos dependem da semente usada.
-
-```
 ```

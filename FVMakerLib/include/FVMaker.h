@@ -70,6 +70,7 @@
 #include <FVMaker/OneDimensional/Boundary/GhostCells1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostBoundary1D.h>
 #include <FVMaker/OneDimensional/Coefficient/DiffusionCoefficient1D.h>
+#include <FVMaker/OneDimensional/Coefficient/NonlinearCoefficient1D.h>
 #include <FVMaker/OneDimensional/Field/Field1D.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>
 #include <FVMaker/OneDimensional/Equation/Equation1D.h>
@@ -78,6 +79,7 @@
 #include <FVMaker/OneDimensional/Solver/ConjugateGradient.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
+#include <FVMaker/OneDimensional/Solver/NonlinearSolve1D.h>
 #include <FVMaker/OneDimensional/Solver/SolveController1D.h>
 #include <FVMaker/OneDimensional/Operator/Laplacian1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
@@ -87,6 +89,7 @@
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 #include <FVMaker/Solver/SolveResult.h>
 #include <FVMaker/Solver/IterativeSolverOptions.h>
+#include <FVMaker/Solver/PicardIteration.h>
 #include <FVMaker/Solver/SteadyState.h>
 
 FVMAKER_NAMESPACE_OPEN

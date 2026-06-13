@@ -68,7 +68,7 @@ Bloco 9  - Laplacian1D: d2phi/dx2 = f(x)                        CONCLUÍDO
 Bloco 10 - Solvers iterativos lineares 1D                       CONCLUÍDO
 Bloco 11 - Coeficiente variável linear 1D                       CONCLUÍDO
 Bloco 12 - Controle de solução e SolveResult                    CONCLUÍDO
-Bloco 13 - Problemas não lineares 1D: caminho Picard            PENDENTE
+Bloco 13 - Problemas não lineares 1D: caminho Picard            CONCLUÍDO PROVISORIAMENTE
 Bloco 14 - Fluxos, interpolação e advecção 1D                   PENDENTE
 Bloco 15 - Controle transiente 1D e ddt                         PENDENTE
 Bloco 16 - Esquemas temporais de primeira ordem 1D              PENDENTE
@@ -861,12 +861,39 @@ Gate de saída:
 ```text
 run_tst_NonlinearCoefficient1D passa;
 run_tst_PicardIteration passa;
-run_tst_UnderRelaxation passa;
+run_tst_Solver_NonlinearSolve1D passa;
 run_ex_Nonlinear1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Progresso iniciado:
+
+```text
+PicardIteration genérico criado como helper de ponto fixo;
+PicardOptions e PicardResult criados;
+relaxação de atualização Picard implementada;
+NonlinearCoefficient1D criado para avaliar Gamma(phi, x) nos centros;
+NonlinearCoefficient1D reaproveita DiffusionCoefficient1D para interpolação
+aritmética ou harmônica nas faces;
+PicardProblem1D criado como contêiner mínimo para problema não linear 1D;
+picard_solve_1d criado para atualizar Gamma(phi^k, x), montar o sistema
+linearizado e usar PicardIteration no controle externo;
+newton_solve_1d_fake criado apenas como marcador explícito da família Newton,
+retornando FVM.CORE.NOT_IMPLEMENTED até a formulação real ser definida;
+ex_Nonlinear1D criado como exemplo provisório para validar o encanamento
+Picard com Gamma(phi,x), ainda sem caso manufaturado definitivo.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-block13-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DBUILD_EXAMPLES=OFF -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-block13-tests --target run_tst_Solver_PicardIteration run_tst_Coefficient_NonlinearCoefficient1D run_tst_Solver_NonlinearSolve1D -j2;
+cmake -S . -B /tmp/fvmaker-codex-block13-examples -DBUILD_BOOK=OFF -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-block13-examples --target run_ex_Equation_Nonlinear1D -j2.
+```
+
+Status: concluído provisoriamente.
 
 ## Bloco 14 - Fluxos, Interpolação e Advecção 1D
 
