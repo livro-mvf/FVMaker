@@ -66,6 +66,9 @@
 #include <FVMaker/Functions/ManufacturedSolution1D.h>
 #include <FVMaker/Functions/VariableCoefficient1D.h>
 #include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
+#include <FVMaker/OneDimensional/Advection/Advection1D.h>
+#include <FVMaker/OneDimensional/Advection/FaceFlux1D.h>
+#include <FVMaker/OneDimensional/Advection/Interpolation1D.h>
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostCells1D.h>
 #include <FVMaker/OneDimensional/Boundary/GhostBoundary1D.h>

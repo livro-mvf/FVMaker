@@ -69,7 +69,7 @@ Bloco 10 - Solvers iterativos lineares 1D                       CONCLUÍDO
 Bloco 11 - Coeficiente variável linear 1D                       CONCLUÍDO
 Bloco 12 - Controle de solução e SolveResult                    CONCLUÍDO
 Bloco 13 - Problemas não lineares 1D: caminho Picard            CONCLUÍDO PROVISORIAMENTE
-Bloco 14 - Fluxos, interpolação e advecção 1D                   PENDENTE
+Bloco 14 - Fluxos, interpolação e advecção 1D                   CONCLUÍDO PROVISORIAMENTE
 Bloco 15 - Controle transiente 1D e ddt                         PENDENTE
 Bloco 16 - Esquemas temporais de primeira ordem 1D              PENDENTE
 Bloco 17 - d2dt2 e equação da onda 1D                           PENDENTE
@@ -919,14 +919,37 @@ exemplo comparando esquemas.
 Gate de saída:
 
 ```text
-run_tst_FaceFlux1D passa;
-run_tst_Interpolation1D passa;
-run_tst_Advection1D passa;
-run_ex_Advection1D passa;
+run_tst_Advection_FaceFlux1D passa;
+run_tst_Advection_Interpolation1D passa;
+run_tst_Advection_Advection1D passa;
+run_ex_Advection_Advection1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Progresso iniciado:
+
+```text
+FaceFlux1D criado como contêiner provisório de fluxos nas faces;
+MassFlux1D definido como alias provisório de FaceFlux1D;
+face_peclet_1d criado para testes iniciais de número de Peclet;
+Interpolation1D criado como família de tags para esquemas de interpolação;
+CentralDifference1D e Upwind1D implementados com fórmulas mínimas;
+PowerLaw1D, Exponential1D e QUICK1D criados como esquemas fake, delegando para
+central/upwind enquanto as fórmulas definitivas não forem fechadas;
+Advection1D criado como helper provisório que calcula valores de phi nas faces;
+ex_Advection1D criado como comparação fake dos esquemas de interpolação.
+```
+
+Verificação executada:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-block14-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DBUILD_EXAMPLES=OFF -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-block14-tests --target run_tst_Advection_FaceFlux1D run_tst_Advection_Interpolation1D run_tst_Advection_Advection1D -j2;
+cmake -S . -B /tmp/fvmaker-codex-block14-examples -DBUILD_BOOK=OFF -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-block14-examples --target run_ex_Advection_Advection1D -j2.
+```
+
+Status: concluído provisoriamente.
 
 ## Bloco 15 - Controle Transiente 1D e ddt
 
