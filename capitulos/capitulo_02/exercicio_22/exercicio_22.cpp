@@ -1,73 +1,30 @@
-//==============================================================================
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
-//==============================================================================
-// AVISO LEGAL / LEGAL DISCLAIMER
 //
-// [PT-BR]
-// O código-fonte é fornecido sob a licença MIT, no estado em que se encontra
-// ("as is"). Embora nos esforcemos para garantir o rigor matemático e a
-// correção das implementações, a natureza da computação científica implica
-// que inconsistências pontuais possam ocorrer. 
-//
-// Caso identifique algum erro,
-// comportamento inesperado, ou tenha sugestões de aprimoramento, seremos
-// imensamente gratos se nos puder contactar através do e-mail
-// livromvf@gmail.com. A sua contribuição é inestimável para o aperfeiçoamento
-// contínuo deste livro e da sua biblioteca de apoio.
-//
-// [EN-GB]
-// The source code is provided under the MIT Licence, on an "as is" basis.
-// Whilst we endeavour to ensure mathematical rigour and correctness in the
-// C++ implementations, the nature of scientific computing implies that
-// occasional inconsistencies or errors may arise. 
-//
-// Should you identify any
-// bugs, unexpected behaviour, or have suggestions for improvement, we would
-// be most grateful if you could reach out to us at livromvf@gmail.com.
-// Your feedback is invaluable to the continuous refinement of this textbook
-// and its accompanying library.
-//==============================================================================
-
-//==============================================================================
 // Exercicio Computacional 2.2
-// Implementacao da classe Malha1D uniforme
+// Titulo: Implementacao da classe Malha1D uniforme.
 //
-// Este programa implementa a classe Malha1D, que representa uma malha
-// unidimensional uniforme seguindo o principio do encapsulamento.
+// Objetivo:
+//   Implementar uma classe pequena para representar uma malha uniforme
+//   unidimensional, usando encapsulamento e uma interface de consulta clara.
 //
-// Dados do problema:
-// xmin, coordenada inicial do dominio.
-// xmax, coordenada final do dominio.
-// N, numero de volumes de controle, com N > 0.
+// Modelo numerico:
+//   Dominio [xmin, xmax] dividido em N volumes uniformes, com N > 0.
 //
-// A classe guarda os tres valores fundamentais e oferece, por meio de uma
-// interface publica enxuta, consultas a esses valores, o calculo do tamanho
-// de cada volume (∆x) e a coordenada do centro do i-esimo volume.
-//
-// O construtor valida as pre-condicoes e rejeita entradas inconsistentes
-// (N <= 0 ou xmax <= xmin) lancando std::invalid_argument.
-//
-// O codigo e autocontido e nao depende da biblioteca em desenvolvimento.
-//==============================================================================
-
-//==============================================================================
-// Bibliotecas padrao do C++
-//==============================================================================
+// Verificacoes:
+//   O programa testa coordenadas de faces, centros, tamanho do volume e casos
+//   invalidos de construcao ou acesso por indice.
 
 #include <cmath>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
-
-//==============================================================================
-// Tipo real usado no programa
-//==============================================================================
+#include <stdexcept>
+#include <string>
 
 using Real = double;
 
-//==============================================================================
-// Classe Malha1D
-//==============================================================================
+namespace {
 
 class Malha1D
 {
@@ -195,7 +152,7 @@ inline void imprimir_malha(const Malha1D& malha)
     std::cout << "xmin            = " << malha.xmin() << '\n';
     std::cout << "xmax            = " << malha.xmax() << '\n';
     std::cout << "N               = " << malha.numero_volumes() << '\n';
-    std::cout << "∆x              = " << malha.tamanho_volume() << '\n';
+    std::cout << "dx              = " << malha.tamanho_volume() << '\n';
     std::cout << '\n';
 
     std::cout << std::setw(6) << "i"
@@ -346,9 +303,7 @@ inline void imprimir_mensagem_final()
     std::cout << std::string(size, '-') << '\n';
 }
 
-//==============================================================================
-// Programa principal
-//==============================================================================
+} // namespace
 
 int main()
 {
@@ -386,7 +341,7 @@ int main()
                 ++testes_passaram;
             }
 
-            if (testar_valor("∆x", malha.tamanho_volume(), 0.25)) {
+            if (testar_valor("dx", malha.tamanho_volume(), 0.25)) {
                 ++testes_passaram;
             }
 
@@ -413,7 +368,7 @@ int main()
 
             testes_total += 4;
 
-            if (testar_valor("∆x", malha.tamanho_volume(), 1.0)) {
+            if (testar_valor("dx", malha.tamanho_volume(), 1.0)) {
                 ++testes_passaram;
             }
 

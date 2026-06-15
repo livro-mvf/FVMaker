@@ -36,43 +36,22 @@ foreach(FVM_BOOK_SOURCE IN LISTS FVM_BOOK_SOURCES)
         NAME_WE
     )
 
-    get_filename_component(FVM_BOOK_PARENT_DIR
-        "${FVM_BOOK_SOURCE}"
-        DIRECTORY
-    )
-
-    get_filename_component(FVM_BOOK_PARENT_TOKEN
-        "${FVM_BOOK_PARENT_DIR}"
-        NAME
-    )
-
     string(REGEX REPLACE "^ex_" "" FVM_BOOK_NAME_TOKEN
         "${FVM_BOOK_NAME}"
-    )
-
-    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_BOOK_PARENT_TOKEN
-        "${FVM_BOOK_PARENT_TOKEN}"
     )
 
     string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_BOOK_NAME_TOKEN
         "${FVM_BOOK_NAME_TOKEN}"
     )
 
-    if(FVM_BOOK_PARENT_TOKEN STREQUAL "capitulos" OR
-       FVM_BOOK_PARENT_TOKEN STREQUAL "Capitulos")
-        set(FVM_BOOK_TARGET
-            "cap_${FVM_BOOK_NAME_TOKEN}"
-        )
-    else()
-        set(FVM_BOOK_TARGET
-            "cap_${FVM_BOOK_PARENT_TOKEN}_${FVM_BOOK_NAME_TOKEN}"
-        )
-    endif()
+    set(FVM_BOOK_TARGET
+        "cap_${FVM_BOOK_NAME_TOKEN}"
+    )
 
     if(TARGET "${FVM_BOOK_TARGET}")
         message(FATAL_ERROR
             "Duplicate book/chapter target detected: ${FVM_BOOK_TARGET}. "
-            "Rename one chapter file or move it to a distinct parent directory."
+            "Book/chapter executable names must be unique."
         )
     endif()
 

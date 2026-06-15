@@ -1,60 +1,20 @@
-//==============================================================================
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
-//==============================================================================
-// AVISO LEGAL / LEGAL DISCLAIMER
 //
-// [PT-BR]
-// O codigo-fonte e fornecido sob a licenca MIT, no estado em que se encontra
-// ("as is"). Embora nos esforcemos para garantir o rigor matematico e a
-// correcao das implementacoes, a natureza da computacao cientifica implica
-// que inconsistencias pontuais possam ocorrer.
-//
-// Caso identifique algum erro, comportamento inesperado, ou tenha sugestoes de
-// aprimoramento, seremos imensamente gratos se nos puder contactar atraves do
-// e-mail livromvf@gmail.com. A sua contribuicao e inestimavel para o
-// aperfeicoamento continuo deste livro e da sua biblioteca de apoio.
-//
-// [EN-GB]
-// The source code is provided under the MIT Licence, on an "as is" basis.
-// Whilst we endeavour to ensure mathematical rigour and correctness in the
-// C++ implementations, the nature of scientific computing implies that
-// occasional inconsistencies or errors may arise.
-//
-// Should you identify any bugs, unexpected behaviour, or have suggestions for
-// improvement, we would be most grateful if you could reach out to us at
-// livromvf@gmail.com. Your feedback is invaluable to the continuous refinement
-// of this textbook and its accompanying library.
-//==============================================================================
-
-//==============================================================================
 // Exercicio Computacional 2.3
-// Design orientado a dados em um laco simples
+// Titulo: Design orientado a dados em um laco simples.
 //
-// Este programa compara duas formas de armazenar os dados de N volumes.
+// Objetivo:
+//   Comparar duas organizacoes de memoria para dados de volumes finitos:
+//   array de estruturas e vetores separados.
 //
-// Na primeira forma, cada volume e uma estrutura contendo a posicao x, o valor
-// da solucao phi e o termo fonte.
+// Modelo numerico:
+//   Um laco atualiza phi usando apenas phi e fonte. A coordenada x faz parte
+//   do estado do problema, mas nao participa desse laco.
 //
-//     struct Volume {
-//         double x;
-//         double phi;
-//         double fonte;
-//     };
-//
-// Na segunda forma, as mesmas grandezas sao armazenadas em vetores separados.
-// O laco principal atualiza somente phi usando fonte. Portanto, a coordenada x
-// existe no problema, mas nao e necessaria durante esse laco.
-//
-// O objetivo e medir o tempo do laco principal nas duas organizacoes e discutir
-// a diferenca em termos de localidade de memoria.
-//
-// O codigo e autocontido e nao depende da biblioteca em desenvolvimento.
-//==============================================================================
-
-//==============================================================================
-// Bibliotecas padrao do C++
-//==============================================================================
+// Verificacoes:
+//   O programa mede os tempos das duas organizacoes e confirma que ambas
+//   produzem a mesma soma final de phi.
 
 #include <algorithm>
 #include <chrono>
@@ -67,16 +27,10 @@
 #include <string>
 #include <vector>
 
-//==============================================================================
-// Tipos usados no programa
-//==============================================================================
-
 using Real = double;
 using Relogio = std::chrono::steady_clock;
 
-//==============================================================================
-// Constantes do experimento
-//==============================================================================
+namespace {
 
 constexpr std::size_t numero_volumes = 1'000'000;
 constexpr std::size_t numero_repeticoes = 50;
@@ -299,9 +253,7 @@ inline void imprimir_mensagem_final(double tempo_aos, double tempo_soa)
     std::cout << std::string(size, '-') << '\n';
 }
 
-//==============================================================================
-// Programa principal
-//==============================================================================
+} // namespace
 
 int main()
 {

@@ -1,55 +1,19 @@
-//==============================================================================
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
-//==============================================================================
-// AVISO LEGAL / LEGAL DISCLAIMER
 //
-// [PT-BR]
-// O código-fonte é fornecido sob a licença MIT, no estado em que se encontra
-// ("as is"). Embora nos esforcemos para garantir o rigor matemático e a
-// correção das implementações, a natureza da computação científica implica
-// que inconsistências pontuais possam ocorrer.
-//
-// Caso identifique algum erro, comportamento inesperado, ou tenha sugestões de
-// aprimoramento, seremos imensamente gratos se nos puder contactar através do
-// e-mail livromvf@gmail.com. A sua contribuição é inestimável para o
-// aperfeiçoamento contínuo deste livro e da sua biblioteca de apoio.
-//
-// [EN-GB]
-// The source code is provided under the MIT Licence, on an "as is" basis.
-// Whilst we endeavour to ensure mathematical rigour and correctness in the
-// C++ implementations, the nature of scientific computing implies that
-// occasional inconsistencies or errors may arise.
-//
-// Should you identify any bugs, unexpected behaviour, or have suggestions for
-// improvement, we would be most grateful if you could reach out to us at
-// livromvf@gmail.com. Your feedback is invaluable to the continuous refinement
-// of this textbook and its accompanying library.
-//==============================================================================
-
-//==============================================================================
 // Exercicio Computacional 2.1
-// Refatoracao da funcao da abertura
+// Titulo: Refatoracao da funcao da abertura.
 //
-// Este programa refatora a funcao calc apresentada na abertura do capitulo:
+// Objetivo:
+//   Refatorar a funcao calc apresentada na abertura do capitulo, preservando
+//   o resultado numerico e melhorando nomes, validacao e flexibilidade.
 //
-//     double calc(double a, double b, int n)
+// Modelo numerico:
+//   Integral aproximada pela regra dos trapezios em um intervalo finito.
 //
-// A versao original calcula uma integral aproximada pela regra dos trapezios,
-// mas possui nomes pouco expressivos, depende de uma funcao global f e nao
-// protege explicitamente o caso n = 0.
-//
-// A versao refatorada troca os nomes genericos por nomes ligados ao problema,
-// recebe a funcao integranda como argumento, valida as pre-condicoes e mantem
-// o mesmo resultado numerico da versao original quando ambas sao usadas com os
-// mesmos dados.
-//
-// O codigo e autocontido e nao depende da biblioteca em desenvolvimento.
-//==============================================================================
-
-//==============================================================================
-// Bibliotecas padrao do C++
-//==============================================================================
+// Verificacoes:
+//   O programa compara a versao original com a versao refatorada, testa uma
+//   integral conhecida e confirma que parametros invalidos sao rejeitados.
 
 #include <cmath>
 #include <cstddef>
@@ -58,15 +22,9 @@
 #include <stdexcept>
 #include <string>
 
-//==============================================================================
-// Tipo real usado no programa
-//==============================================================================
-
 using Real = double;
 
-//==============================================================================
-// Codigo de referencia da abertura
-//==============================================================================
+namespace {
 
 [[nodiscard]] inline Real f_da_abertura(Real x)
 {
@@ -243,9 +201,7 @@ inline void imprimir_mensagem_final()
     std::cout << std::string(size, '=') << '\n';
 }
 
-//==============================================================================
-// Programa principal
-//==============================================================================
+} // namespace
 
 int main()
 {

@@ -47,13 +47,15 @@ BoundaryCondition1D::BoundaryCondition1D(
     Real beta,
     Real gamma
 )
-    : alpha_(constant_boundary_value(alpha)),
-      beta_(constant_boundary_value(beta)),
-      gamma_(constant_boundary_value(gamma)) {
+    : BoundaryCondition1D{
+          BoundaryConditionKind1D::linear,
+          constant_boundary_value(alpha),
+          constant_boundary_value(beta),
+          constant_boundary_value(gamma)
+      } {
     require_finite(alpha);
     require_finite(beta);
     require_finite(gamma);
-    validate_at_reference_point();
 }
 
 BoundaryCondition1D::BoundaryCondition1D(
@@ -61,13 +63,153 @@ BoundaryCondition1D::BoundaryCondition1D(
     StoredBoundaryFunction1D beta,
     StoredBoundaryFunction1D gamma
 )
-    : alpha_(std::move(alpha)),
+    : BoundaryCondition1D{
+          BoundaryConditionKind1D::linear,
+          std::move(alpha),
+          std::move(beta),
+          std::move(gamma)
+      } {}
+
+BoundaryCondition1D::BoundaryCondition1D(
+    BoundaryConditionKind1D kind,
+    StoredBoundaryFunction1D alpha,
+    StoredBoundaryFunction1D beta,
+    StoredBoundaryFunction1D gamma
+)
+    : kind_(kind),
+      alpha_(std::move(alpha)),
       beta_(std::move(beta)),
       gamma_(std::move(gamma)) {
     require_function(alpha_);
     require_function(beta_);
     require_function(gamma_);
     validate_at_reference_point();
+}
+
+BoundaryCondition1D BoundaryCondition1D::linear(
+    Real alpha,
+    Real beta,
+    Real gamma
+) {
+    return BoundaryCondition1D{alpha, beta, gamma};
+}
+
+BoundaryCondition1D BoundaryCondition1D::linear(
+    StoredBoundaryFunction1D alpha,
+    StoredBoundaryFunction1D beta,
+    StoredBoundaryFunction1D gamma
+) {
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::linear,
+        std::move(alpha),
+        std::move(beta),
+        std::move(gamma)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::dirichlet(Real value) {
+    require_finite(value);
+
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::dirichlet,
+        constant_boundary_value(Real{1.0}),
+        constant_boundary_value(Real{}),
+        constant_boundary_value(value)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::dirichlet(
+    StoredBoundaryFunction1D value
+) {
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::dirichlet,
+        constant_boundary_value(Real{1.0}),
+        constant_boundary_value(Real{}),
+        std::move(value)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::neumann(Real derivative) {
+    require_finite(derivative);
+
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::neumann,
+        constant_boundary_value(Real{}),
+        constant_boundary_value(Real{1.0}),
+        constant_boundary_value(derivative)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::neumann(
+    StoredBoundaryFunction1D derivative
+) {
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::neumann,
+        constant_boundary_value(Real{}),
+        constant_boundary_value(Real{1.0}),
+        std::move(derivative)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::robin(
+    Real alpha,
+    Real beta,
+    Real gamma
+) {
+    require_finite(alpha);
+    require_finite(beta);
+    require_finite(gamma);
+
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::robin,
+        constant_boundary_value(alpha),
+        constant_boundary_value(beta),
+        constant_boundary_value(gamma)
+    };
+}
+
+BoundaryCondition1D BoundaryCondition1D::robin(
+    StoredBoundaryFunction1D alpha,
+    StoredBoundaryFunction1D beta,
+    StoredBoundaryFunction1D gamma
+) {
+    return BoundaryCondition1D{
+        BoundaryConditionKind1D::robin,
+        std::move(alpha),
+        std::move(beta),
+        std::move(gamma)
+    };
+}
+
+BoundaryConditionKind1D BoundaryCondition1D::kind() const noexcept {
+    return kind_;
+}
+
+std::string_view BoundaryCondition1D::kind_name() const noexcept {
+    switch (kind_) {
+        case BoundaryConditionKind1D::dirichlet:
+            return "Dirichlet";
+        case BoundaryConditionKind1D::neumann:
+            return "Neumann";
+        case BoundaryConditionKind1D::robin:
+            return "Robin";
+        case BoundaryConditionKind1D::linear:
+            return "Linear";
+    }
+
+    return "Unknown";
+}
+
+bool BoundaryCondition1D::is_dirichlet() const noexcept {
+    return kind_ == BoundaryConditionKind1D::dirichlet;
+}
+
+bool BoundaryCondition1D::is_neumann() const noexcept {
+    return kind_ == BoundaryConditionKind1D::neumann;
+}
+
+bool BoundaryCondition1D::is_robin() const noexcept {
+    return kind_ == BoundaryConditionKind1D::robin;
 }
 
 Real BoundaryCondition1D::alpha(Real position, Real time) const {
@@ -117,7 +259,7 @@ const BoundaryCondition1D& BoundarySet1D::at(BoundarySide1D side) const noexcept
 }
 
 BoundaryCondition1D linear_boundary_1d(Real alpha, Real beta, Real gamma) {
-    return BoundaryCondition1D{alpha, beta, gamma};
+    return BoundaryCondition1D::linear(alpha, beta, gamma);
 }
 
 BoundaryCondition1D linear_boundary_1d(
@@ -125,39 +267,31 @@ BoundaryCondition1D linear_boundary_1d(
     StoredBoundaryFunction1D beta,
     StoredBoundaryFunction1D gamma
 ) {
-    return BoundaryCondition1D{
+    return BoundaryCondition1D::linear(
         std::move(alpha),
         std::move(beta),
         std::move(gamma)
-    };
+    );
 }
 
 BoundaryCondition1D dirichlet_1d(Real value) {
-    return BoundaryCondition1D{Real{1.0}, Real{}, value};
+    return BoundaryCondition1D::dirichlet(value);
 }
 
 BoundaryCondition1D dirichlet_1d(StoredBoundaryFunction1D value) {
-    return BoundaryCondition1D{
-        constant_boundary_value(Real{1.0}),
-        constant_boundary_value(Real{}),
-        std::move(value)
-    };
+    return BoundaryCondition1D::dirichlet(std::move(value));
 }
 
 BoundaryCondition1D neumann_1d(Real derivative) {
-    return BoundaryCondition1D{Real{}, Real{1.0}, derivative};
+    return BoundaryCondition1D::neumann(derivative);
 }
 
 BoundaryCondition1D neumann_1d(StoredBoundaryFunction1D derivative) {
-    return BoundaryCondition1D{
-        constant_boundary_value(Real{}),
-        constant_boundary_value(Real{1.0}),
-        std::move(derivative)
-    };
+    return BoundaryCondition1D::neumann(std::move(derivative));
 }
 
 BoundaryCondition1D robin_1d(Real alpha, Real beta, Real gamma) {
-    return BoundaryCondition1D{alpha, beta, gamma};
+    return BoundaryCondition1D::robin(alpha, beta, gamma);
 }
 
 BoundaryCondition1D robin_1d(
@@ -165,11 +299,11 @@ BoundaryCondition1D robin_1d(
     StoredBoundaryFunction1D beta,
     StoredBoundaryFunction1D gamma
 ) {
-    return BoundaryCondition1D{
+    return BoundaryCondition1D::robin(
         std::move(alpha),
         std::move(beta),
         std::move(gamma)
-    };
+    );
 }
 
 }  // namespace fvm

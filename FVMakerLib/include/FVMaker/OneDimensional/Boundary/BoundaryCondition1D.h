@@ -24,6 +24,13 @@ enum class BoundarySide1D {
     right,
 };
 
+enum class BoundaryConditionKind1D {
+    linear,
+    dirichlet,
+    neumann,
+    robin,
+};
+
 class BoundaryCondition1D final {
 public:
     BoundaryCondition1D(Real alpha, Real beta, Real gamma);
@@ -50,11 +57,59 @@ public:
         return id().class_id();
     }
 
+    [[nodiscard]] static BoundaryCondition1D linear(
+        Real alpha,
+        Real beta,
+        Real gamma
+    );
+
+    [[nodiscard]] static BoundaryCondition1D linear(
+        StoredBoundaryFunction1D alpha,
+        StoredBoundaryFunction1D beta,
+        StoredBoundaryFunction1D gamma
+    );
+
+    [[nodiscard]] static BoundaryCondition1D dirichlet(Real value);
+    [[nodiscard]] static BoundaryCondition1D dirichlet(
+        StoredBoundaryFunction1D value
+    );
+
+    [[nodiscard]] static BoundaryCondition1D neumann(Real derivative);
+    [[nodiscard]] static BoundaryCondition1D neumann(
+        StoredBoundaryFunction1D derivative
+    );
+
+    [[nodiscard]] static BoundaryCondition1D robin(
+        Real alpha,
+        Real beta,
+        Real gamma
+    );
+
+    [[nodiscard]] static BoundaryCondition1D robin(
+        StoredBoundaryFunction1D alpha,
+        StoredBoundaryFunction1D beta,
+        StoredBoundaryFunction1D gamma
+    );
+
+    [[nodiscard]] BoundaryConditionKind1D kind() const noexcept;
+    [[nodiscard]] std::string_view kind_name() const noexcept;
+    [[nodiscard]] bool is_dirichlet() const noexcept;
+    [[nodiscard]] bool is_neumann() const noexcept;
+    [[nodiscard]] bool is_robin() const noexcept;
+
     [[nodiscard]] Real alpha(Real position, Real time = Real{}) const;
     [[nodiscard]] Real beta(Real position, Real time = Real{}) const;
     [[nodiscard]] Real gamma(Real position, Real time = Real{}) const;
 
 private:
+    BoundaryCondition1D(
+        BoundaryConditionKind1D kind,
+        StoredBoundaryFunction1D alpha,
+        StoredBoundaryFunction1D beta,
+        StoredBoundaryFunction1D gamma
+    );
+
+    BoundaryConditionKind1D kind_{BoundaryConditionKind1D::linear};
     StoredBoundaryFunction1D alpha_;
     StoredBoundaryFunction1D beta_;
     StoredBoundaryFunction1D gamma_;

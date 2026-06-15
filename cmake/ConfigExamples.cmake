@@ -36,43 +36,22 @@ foreach(FVM_EXAMPLE_SOURCE IN LISTS FVM_EXAMPLE_SOURCES)
         NAME_WE
     )
 
-    get_filename_component(FVM_EXAMPLE_PARENT_DIR
-        "${FVM_EXAMPLE_SOURCE}"
-        DIRECTORY
-    )
-
-    get_filename_component(FVM_EXAMPLE_PARENT_TOKEN
-        "${FVM_EXAMPLE_PARENT_DIR}"
-        NAME
-    )
-
     string(REGEX REPLACE "^ex_" "" FVM_EXAMPLE_NAME_TOKEN
         "${FVM_EXAMPLE_NAME}"
-    )
-
-    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_EXAMPLE_PARENT_TOKEN
-        "${FVM_EXAMPLE_PARENT_TOKEN}"
     )
 
     string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_EXAMPLE_NAME_TOKEN
         "${FVM_EXAMPLE_NAME_TOKEN}"
     )
 
-    if(FVM_EXAMPLE_PARENT_TOKEN STREQUAL "examples" OR
-       FVM_EXAMPLE_PARENT_TOKEN STREQUAL "Examples")
-        set(FVM_EXAMPLE_TARGET
-            "ex_${FVM_EXAMPLE_NAME_TOKEN}"
-        )
-    else()
-        set(FVM_EXAMPLE_TARGET
-            "ex_${FVM_EXAMPLE_PARENT_TOKEN}_${FVM_EXAMPLE_NAME_TOKEN}"
-        )
-    endif()
+    set(FVM_EXAMPLE_TARGET
+        "ex_${FVM_EXAMPLE_NAME_TOKEN}"
+    )
 
     if(TARGET "${FVM_EXAMPLE_TARGET}")
         message(FATAL_ERROR
             "Duplicate example target detected: ${FVM_EXAMPLE_TARGET}. "
-            "Rename one example file or move it to a distinct parent directory."
+            "Example executable names must be unique."
         )
     endif()
 

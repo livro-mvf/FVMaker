@@ -8,6 +8,7 @@
 // ----------------------------------------------------------------------------
 
 #include <string_view>
+#include <type_traits>
 
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/FVMException.h>
@@ -16,6 +17,8 @@
 #include <gtest/gtest.h>
 
 namespace fvm {
+
+static_assert(std::is_final_v<BoundaryCondition1D>);
 
 TEST(Boundary1D, BoundaryConditionStoresClassIdentity) {
     EXPECT_EQ(
@@ -70,6 +73,11 @@ TEST(Boundary1D, StoresFunctionalLinearBoundaryCondition) {
 TEST(Boundary1D, DirichletIsLinearBoundaryShortcut) {
     const BoundaryCondition1D condition = dirichlet_1d(2.5);
 
+    EXPECT_EQ(condition.kind(), BoundaryConditionKind1D::dirichlet);
+    EXPECT_EQ(condition.kind_name(), std::string_view{"Dirichlet"});
+    EXPECT_TRUE(condition.is_dirichlet());
+    EXPECT_FALSE(condition.is_neumann());
+    EXPECT_FALSE(condition.is_robin());
     EXPECT_DOUBLE_EQ(condition.alpha(0.0), 1.0);
     EXPECT_DOUBLE_EQ(condition.beta(0.0), 0.0);
     EXPECT_DOUBLE_EQ(condition.gamma(0.0), 2.5);
@@ -78,6 +86,11 @@ TEST(Boundary1D, DirichletIsLinearBoundaryShortcut) {
 TEST(Boundary1D, NeumannIsLinearBoundaryShortcut) {
     const BoundaryCondition1D condition = neumann_1d(-1.25);
 
+    EXPECT_EQ(condition.kind(), BoundaryConditionKind1D::neumann);
+    EXPECT_EQ(condition.kind_name(), std::string_view{"Neumann"});
+    EXPECT_FALSE(condition.is_dirichlet());
+    EXPECT_TRUE(condition.is_neumann());
+    EXPECT_FALSE(condition.is_robin());
     EXPECT_DOUBLE_EQ(condition.alpha(0.0), 0.0);
     EXPECT_DOUBLE_EQ(condition.beta(0.0), 1.0);
     EXPECT_DOUBLE_EQ(condition.gamma(0.0), -1.25);
@@ -86,9 +99,35 @@ TEST(Boundary1D, NeumannIsLinearBoundaryShortcut) {
 TEST(Boundary1D, RobinIsLinearBoundaryShortcut) {
     const BoundaryCondition1D condition = robin_1d(2.0, 3.0, 4.0);
 
+    EXPECT_EQ(condition.kind(), BoundaryConditionKind1D::robin);
+    EXPECT_EQ(condition.kind_name(), std::string_view{"Robin"});
+    EXPECT_FALSE(condition.is_dirichlet());
+    EXPECT_FALSE(condition.is_neumann());
+    EXPECT_TRUE(condition.is_robin());
     EXPECT_DOUBLE_EQ(condition.alpha(0.0), 2.0);
     EXPECT_DOUBLE_EQ(condition.beta(0.0), 3.0);
     EXPECT_DOUBLE_EQ(condition.gamma(0.0), 4.0);
+}
+
+TEST(Boundary1D, ClassFactoriesDefineBoundaryConditionsWithoutInheritance) {
+    const BoundaryCondition1D left = BoundaryCondition1D::dirichlet(1.0);
+    const BoundaryCondition1D right = BoundaryCondition1D::neumann(0.0);
+    const BoundaryCondition1D mixed = BoundaryCondition1D::robin(2.0, 3.0, 4.0);
+
+    EXPECT_TRUE(left.is_dirichlet());
+    EXPECT_DOUBLE_EQ(left.alpha(0.0), 1.0);
+    EXPECT_DOUBLE_EQ(left.beta(0.0), 0.0);
+    EXPECT_DOUBLE_EQ(left.gamma(0.0), 1.0);
+
+    EXPECT_TRUE(right.is_neumann());
+    EXPECT_DOUBLE_EQ(right.alpha(0.0), 0.0);
+    EXPECT_DOUBLE_EQ(right.beta(0.0), 1.0);
+    EXPECT_DOUBLE_EQ(right.gamma(0.0), 0.0);
+
+    EXPECT_TRUE(mixed.is_robin());
+    EXPECT_DOUBLE_EQ(mixed.alpha(0.0), 2.0);
+    EXPECT_DOUBLE_EQ(mixed.beta(0.0), 3.0);
+    EXPECT_DOUBLE_EQ(mixed.gamma(0.0), 4.0);
 }
 
 TEST(Boundary1D, BoundarySetStoresLeftAndRightConditions) {
