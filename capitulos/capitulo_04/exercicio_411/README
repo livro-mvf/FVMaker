@@ -1,0 +1,41 @@
+# Exercício Computacional 4.11: Aleatórias: qual arranjo transiciona pior?
+
+Este programa usa a FVGridMaker para gerar duas malhas aleatórias com
+`N = 50` volumes no domínio `[0, 1]`:
+
+```text
+malha volume centrada;
+malha face centrada.
+```
+
+Em ambas as malhas, o programa verifica que o domínio total é preservado:
+
+```text
+sum Delta xP_i = L.
+```
+
+Depois calcula estatísticas de espaçamento e a suavidade local
+
+```text
+G_i = |Delta xP_i / Delta xP_{i-1} - 1|.
+```
+
+Quanto maior `G_i`, mais brusca é a transição local.
+
+## Saída auxiliar
+
+O arquivo `exercicio_411_malhas_aleatorias.csv` contém:
+
+```text
+arranjo,i,xC,dxP,G
+```
+
+Use esse arquivo para comparar as duas distribuições.
+
+## Compilação pelo projeto
+
+Com `BUILD_BOOK=ON`, o alvo gerado é:
+
+```bash
+cmake --build build-livro --target run_cap_exercicio_411_exercicio_411
+```

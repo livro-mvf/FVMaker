@@ -1,0 +1,43 @@
+# Exercício Computacional 4.10: Malha uniforme: as duas garantias
+
+Este programa usa a FVGridMaker para gerar uma malha uniforme
+unidimensional a partir de um intervalo e de um número de volumes.
+
+O programa obtém faces e centros e verifica duas garantias:
+
+```text
+Delta xP_i é constante em todos os volumes;
+sum Delta xP_i = L.
+```
+
+## Entradas
+
+Sem argumentos, o programa usa:
+
+```text
+xI = 0
+L  = 1
+N  = 50
+```
+
+Também é possível executar com:
+
+```bash
+./exercicio_410 xI L N
+```
+
+## Saída auxiliar
+
+O arquivo `exercicio_410_malha_uniforme.csv` contém:
+
+```text
+i,xF_esquerda,xC,xF_direita,dxP
+```
+
+## Compilação pelo projeto
+
+Com `BUILD_BOOK=ON`, o alvo gerado é:
+
+```bash
+cmake --build build-livro --target run_cap_exercicio_410_exercicio_410
+```

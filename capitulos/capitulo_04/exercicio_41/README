@@ -1,0 +1,43 @@
+# Exercício Computacional 4.1: Primeira malha
+
+Este programa usa a FVGridMaker para gerar uma malha uniforme no domínio
+`[xI, xI + L]`, com:
+
+```text
+xI = 0
+L  = 1
+N  = 20
+```
+
+O programa obtém diretamente da `Axis1D`:
+
+```text
+xF  faces
+xC  centros
+Dx  comprimentos dos volumes, Axis1D::cell_lengths()
+dx  distâncias centro-centro e centro-face, Axis1D::dx_centers()
+```
+
+A malha completa é impressa pelo próprio `operator<<` de `Axis1D`.
+
+## Verificações
+
+O programa verifica:
+
+```text
+todos os valores de Dx[P] são iguais;
+sum_{P=0}^{N-1} Dx[P] = L;
+xC[P] = xI + (P + 1/2) Delta x.
+```
+
+Ao final, o programa imprime uma seção didática com aplicações,
+recomendações e conceitos demonstrados, seguindo o padrão usado nos
+programas dos capítulos anteriores.
+
+## Compilação pelo projeto
+
+Com `BUILD_BOOK=ON`, o alvo gerado é:
+
+```bash
+cmake --build build --target run_cap_exercicio_41_exercicio_41
+```

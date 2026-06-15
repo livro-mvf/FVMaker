@@ -90,6 +90,7 @@
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
+#include <FVMaker/Roadmap/FakeBlocks.h>
 #include <FVMaker/Solver/SolveResult.h>
 #include <FVMaker/Solver/IterativeSolverOptions.h>
 #include <FVMaker/Solver/PicardIteration.h>

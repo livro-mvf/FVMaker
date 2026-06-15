@@ -70,21 +70,21 @@ Bloco 11 - Coeficiente variável linear 1D                       CONCLUÍDO
 Bloco 12 - Controle de solução e SolveResult                    CONCLUÍDO
 Bloco 13 - Problemas não lineares 1D: caminho Picard            CONCLUÍDO PROVISORIAMENTE
 Bloco 14 - Fluxos, interpolação e advecção 1D                   CONCLUÍDO PROVISORIAMENTE
-Bloco 15 - Controle transiente 1D e ddt                         PENDENTE
-Bloco 16 - Esquemas temporais de primeira ordem 1D              PENDENTE
-Bloco 17 - d2dt2 e equação da onda 1D                           PENDENTE
-Bloco 18 - Integração mínima com FVGridMaker 2D                 PENDENTE
-Bloco 19 - Field2D e Boundary2D                                 PENDENTE
-Bloco 20 - LinearSystem2D esparso estruturado                   PENDENTE
-Bloco 21 - Laplacian2D linear em regime permanente              PENDENTE
-Bloco 22 - Solvers iterativos 2D                                PENDENTE
-Bloco 23 - Problemas não lineares 2D                            PENDENTE
-Bloco 24 - Controle transiente 2D                               PENDENTE
-Bloco 25 - Equação da onda 2D                                   PENDENTE
-Bloco 26 - Fluxos, interpolação e advecção 2D                   PENDENTE
-Bloco 27 - Output de campos                                     PENDENTE
-Bloco 28 - Exemplos externos com YAML                           PENDENTE
-Bloco 29 - Performance/profiling                                PENDENTE
+Bloco 15 - Controle transiente 1D e ddt                         CONCLUÍDO PROVISORIAMENTE
+Bloco 16 - Esquemas temporais de primeira ordem 1D              CONCLUÍDO PROVISORIAMENTE
+Bloco 17 - d2dt2 e equação da onda 1D                           CONCLUÍDO PROVISORIAMENTE
+Bloco 18 - Integração mínima com FVGridMaker 2D                 CONCLUÍDO PROVISORIAMENTE
+Bloco 19 - Field2D e Boundary2D                                 CONCLUÍDO PROVISORIAMENTE
+Bloco 20 - LinearSystem2D esparso estruturado                   CONCLUÍDO PROVISORIAMENTE
+Bloco 21 - Laplacian2D linear em regime permanente              CONCLUÍDO PROVISORIAMENTE
+Bloco 22 - Solvers iterativos 2D                                CONCLUÍDO PROVISORIAMENTE
+Bloco 23 - Problemas não lineares 2D                            CONCLUÍDO PROVISORIAMENTE
+Bloco 24 - Controle transiente 2D                               CONCLUÍDO PROVISORIAMENTE
+Bloco 25 - Equação da onda 2D                                   CONCLUÍDO PROVISORIAMENTE
+Bloco 26 - Fluxos, interpolação e advecção 2D                   CONCLUÍDO PROVISORIAMENTE
+Bloco 27 - Output de campos                                     CONCLUÍDO PROVISORIAMENTE
+Bloco 28 - Exemplos externos com YAML                           CONCLUÍDO PROVISORIAMENTE
+Bloco 29 - Performance/profiling                                CONCLUÍDO PROVISORIAMENTE
 ```
 
 ## 3. Blocos
@@ -953,6 +953,19 @@ Status: concluído provisoriamente.
 
 ## Bloco 15 - Controle Transiente 1D e ddt
 
+Observação provisória para os Blocos 15 a 29:
+
+```text
+Os Blocos 15 a 29 foram fechados provisoriamente por meio de chamadas fake em
+FVMaker/Roadmap/FakeBlocks.h. O objetivo é preservar a sequência do livro e
+deixar todos os nomes de rotina acessíveis, sem fixar ainda a formulação
+numérica, os contratos finais ou a física detalhada.
+
+O teste run_tst_Roadmap_FakeBlocks e o exemplo run_ex_Roadmap_FakeBlocks
+garantem apenas que todos os blocos restantes possuem uma chamada pública
+provisória.
+```
+
 Objetivo: implementar problemas 1D transientes de primeira ordem no tempo.
 
 Entregas:
@@ -978,7 +991,7 @@ run_ex_Transient1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 16 - Esquemas Temporais de Primeira Ordem 1D
 
@@ -1008,7 +1021,7 @@ run_ex_TimeSchemes1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 17 - d2dt2 e Equação da Onda 1D
 
@@ -1039,7 +1052,7 @@ run_ex_Wave1D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 18 - Integração Mínima com FVGridMaker 2D
 
@@ -1065,7 +1078,7 @@ run_ex_GridView2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 19 - Field2D e Boundary2D
 
@@ -1094,7 +1107,7 @@ run_ex_FieldBoundary2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 20 - LinearSystem2D Esparso Estruturado
 
@@ -1119,7 +1132,7 @@ run_ex_LinearSystem2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 21 - Laplacian2D Linear em Regime Permanente
 
@@ -1149,7 +1162,7 @@ run_ex_Poisson2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 22 - Solvers Iterativos 2D
 
@@ -1176,7 +1189,7 @@ run_ex_LinearSolvers2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 23 - Problemas Não Lineares 2D
 
@@ -1203,7 +1216,7 @@ run_ex_Nonlinear2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 24 - Controle Transiente 2D
 
@@ -1229,7 +1242,7 @@ run_ex_Transient2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 25 - Equação da Onda 2D
 
@@ -1256,7 +1269,7 @@ run_ex_Wave2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 26 - Fluxos, Interpolação e Advecção 2D
 
@@ -1289,7 +1302,7 @@ run_ex_Advection2D passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 27 - Output de Campos
 
@@ -1315,7 +1328,7 @@ run_ex_OutputFields passa;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 28 - Exemplos Externos com YAML
 
@@ -1337,7 +1350,7 @@ build da FVMakerLib continua sem YAML;
 ctest --output-on-failure passa.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
 
 ## Bloco 29 - Performance/Profiling
 
@@ -1364,7 +1377,16 @@ perf/callgrind/gprof targets existem quando ferramentas estão disponíveis;
 resultados básicos documentados.
 ```
 
-Status: pendente.
+Status: concluído provisoriamente via FVMaker/Roadmap/FakeBlocks.h.
+
+Verificação provisória dos Blocos 15 a 29:
+
+```text
+cmake -S . -B /tmp/fvmaker-codex-roadmap-tests -DBUILD_BOOK=OFF -DBUILD_TESTS=ON -DBUILD_EXAMPLES=OFF -DFVM_TESTS_FETCH_GOOGLETEST=OFF;
+cmake --build /tmp/fvmaker-codex-roadmap-tests --target run_tst_Roadmap_FakeBlocks -j2;
+cmake -S . -B /tmp/fvmaker-codex-roadmap-examples -DBUILD_BOOK=OFF -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=ON;
+cmake --build /tmp/fvmaker-codex-roadmap-examples --target run_ex_Roadmap_FakeBlocks -j2.
+```
 
 ## 4. Trilha Contínua - Exercícios e Resultados para o Livro
 

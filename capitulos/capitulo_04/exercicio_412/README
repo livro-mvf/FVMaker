@@ -1,0 +1,35 @@
+# Exercício Computacional 4.12: Refinamento nas fronteiras de Roberts
+
+Este programa usa a distribuição `Roberts1D` da FVGridMaker para gerar malhas
+com refinamento nas fronteiras.
+
+O programa:
+
+```text
+varia beta em [1.1, 20];
+gera malhas volume centradas com Roberts1D;
+calcula min(Dx)/max(Dx);
+gera três malhas representativas: quase uniforme, moderada e extrema;
+confere a simetria xF[i] = L - xF[N-i].
+```
+
+A formulação usa `alpha = 0.5` internamente, como adotado pela FVGridMaker.
+
+## Saídas auxiliares
+
+```text
+exercicio_412_razao_roberts.csv
+exercicio_412_malhas_roberts.csv
+```
+
+O primeiro arquivo serve para o gráfico da razão
+`min(Dx)/max(Dx)` em função de `beta`. O segundo contém as malhas
+representativas.
+
+## Compilação pelo projeto
+
+Com `BUILD_BOOK=ON`, o alvo gerado é:
+
+```bash
+cmake --build build --target run_cap_exercicio_412_exercicio_412
+```
