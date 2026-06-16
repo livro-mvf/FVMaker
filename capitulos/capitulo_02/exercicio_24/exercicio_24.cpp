@@ -16,8 +16,12 @@
 //   O programa testa uma malha valida, rejeicao de parametros invalidos e
 //   acesso a indice fora do intervalo permitido.
 
+
+//==============================================================================
+// Header c++
+//==============================================================================
+
 #include <cmath>
-#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>

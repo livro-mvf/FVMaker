@@ -15,8 +15,12 @@
 //   O programa testa coordenadas de faces, centros, tamanho do volume e casos
 //   invalidos de construcao ou acesso por indice.
 
+
+//==============================================================================
+// Header c++
+//==============================================================================
+
 #include <cmath>
-#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>

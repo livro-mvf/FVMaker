@@ -16,10 +16,15 @@
 //   O programa mede os tempos das duas organizacoes e confirma que ambas
 //   produzem a mesma soma final de phi.
 
+
+
+//==============================================================================
+// Header c++
+//==============================================================================
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <numeric>

@@ -15,9 +15,13 @@
 //   O programa compara duas execucoes com a mesma semente e uma terceira com
 //   semente diferente, usando igualdade exata e uma tolerancia numerica.
 
+
+//==============================================================================
+// Header c++
+//==============================================================================
+
 #include <cmath>
-#include <cstddef>
-#include <cstdint>
+//#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>

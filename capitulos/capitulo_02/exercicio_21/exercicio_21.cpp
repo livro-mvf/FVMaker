@@ -15,12 +15,14 @@
 //   O programa compara a versao original com a versao refatorada, testa uma
 //   integral conhecida e confirma que parametros invalidos sao rejeitados.
 
+//==============================================================================
+// Header c++
+//==============================================================================
+
+
 #include <cmath>
-#include <cstddef>
 #include <iomanip>
 #include <iostream>
-#include <numeric>
-#include <ranges>
 #include <stdexcept>
 #include <string>
 
@@ -35,14 +37,15 @@ namespace {
 
 [[nodiscard]] inline Real calc_original(Real a, Real b, int n)
 {
-    Real h = (b - a) / static_cast<Real>(n);
-    Real s = Real{0.5} * (f_da_abertura(a) + f_da_abertura(b));
+    const Real h = (b - a) / static_cast<Real>(n);
+    Real soma =
+        Real{0.5} * (f_da_abertura(a) + f_da_abertura(b));
 
-    for (int i = 1; i < n; ++i) {
-        s += f_da_abertura(a + static_cast<Real>(i) * h);
+    for (int indice = 1; indice < n; ++indice) {
+        soma += f_da_abertura(a + static_cast<Real>(indice) * h);
     }
 
-    return s * h;
+    return soma * h;
 }
 
 //==============================================================================
@@ -81,24 +84,13 @@ template <typename Funcao>
         (limite_superior - limite_inferior)
         / static_cast<Real>(numero_subintervalos);
 
-    const Real soma_extremos =
+    Real soma =
         Real{0.5}
         * (funcao(limite_inferior) + funcao(limite_superior));
 
-    const auto indices_internos =
-        std::views::iota(std::size_t{1}, numero_subintervalos);
-
-    const Real soma = std::accumulate(
-        indices_internos.begin(),
-        indices_internos.end(),
-        soma_extremos,
-        [funcao, limite_inferior, passo](Real acumulado, std::size_t indice) {
-            const Real x =
-                limite_inferior + static_cast<Real>(indice) * passo;
-
-            return acumulado + funcao(x);
-        }
-    );
+    for (std::size_t indice = 1; indice < numero_subintervalos; ++indice) {
+        soma += funcao(limite_inferior + static_cast<Real>(indice) * passo);
+    }
 
     return soma * passo;
 }
@@ -186,8 +178,8 @@ inline void imprimir_mensagem_final()
     std::cout << std::string(size, '=') << '\n';
     std::cout << "1. A funcao refatorada recebe a integranda como ";
     std::cout << "argumento.\n";
-    std::cout << "2. O somatorio dos pontos internos usa STL e uma ";
-    std::cout << "lambda acumuladora.\n";
+    std::cout << "2. O somatorio dos pontos internos usa um laco direto ";
+    std::cout << "para favorecer velocidade.\n";
     std::cout << "3. Os nomes indicam o significado fisico ou numerico ";
     std::cout << "de cada parametro.\n";
     std::cout << "4. As pre-condicoes sao verificadas antes do calculo ";
@@ -206,13 +198,11 @@ inline void imprimir_mensagem_final()
     std::cout << "global.\n";
     std::cout << "3. Uso de uma funcao generica para aceitar lambdas, ";
     std::cout << "funcoes livres ou objetos chamaveis.\n";
-    std::cout << "4. Uso de std::views::iota para representar os ";
-    std::cout << "indices internos sem montar um vetor auxiliar.\n";
-    std::cout << "5. Uso de std::accumulate para explicitar o ";
-    std::cout << "somatorio da regra dos trapezios.\n";
-    std::cout << "6. Validacao do numero de subintervalos antes da ";
+    std::cout << "4. Uso de um laco contado, simples e previsivel para ";
+    std::cout << "o compilador otimizar.\n";
+    std::cout << "5. Validacao do numero de subintervalos antes da ";
     std::cout << "divisao por n.\n";
-    std::cout << "7. Comparacao entre o resultado numerico e uma ";
+    std::cout << "6. Comparacao entre o resultado numerico e uma ";
     std::cout << "integral conhecida.\n";
     std::cout << std::string(size, '=') << '\n';
 }
