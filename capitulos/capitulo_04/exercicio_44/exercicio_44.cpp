@@ -1,291 +1,241 @@
+//==============================================================================
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
-//
-// Exercicio Computacional 4.4
-// Titulo: Malha simetrica definida pelo usuario.
-//
-// Objetivo:
-//   Criar uma malha unidimensional simetrica fora da FVGridMakerLib e usar
-//   Custom1D para construir a Axis1D final validada pela biblioteca.
-//
-// Modelo numerico:
-//   Centros aleatorios sao sorteados na metade esquerda do dominio e
-//   espelhados na metade direita. As faces internas sao reconstruidas pela
-//   regra ponderada 25/75 entre centros vizinhos.
-//
-// Verificacoes:
-//   O programa confirma a simetria dos centros e a regra das faces ponderadas,
-//   imprime a razao Dx_max/Dx_min e resume as verificacoes automaticas.
+//==============================================================================
+// Exercício Computacional 4.3
+// Refinamento nas fronteiras de Roberts
+//==============================================================================
+
+#include <FVGridMaker/OneDimensional/Distribution1D/Roberts1D.h>
+#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <random>
+#include <numeric>
 #include <stdexcept>
 #include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
-
-#include <FVGridMaker/Core/StrongTypes.h>
-#include <FVGridMaker/Core/Types.h>
-#include <FVGridMaker/OneDimensional/Axis1D/Axis1D.h>
-#include <FVGridMaker/OneDimensional/Distribution1D/Custom1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/AxisGeometry1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/CoordinateKind1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Coordinates1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Domain1D.h>
 
 namespace {
 
-struct FacesPonderadasDosCentros1D final {
-    [[nodiscard]] static constexpr std::string_view name() noexcept {
-        return "FacesPonderadasDosCentros1D";
-    }
+using Real = fvgrid::Real;
 
-    [[nodiscard]] static constexpr fvgrid::CoordinateKind1D input_kind()
-        noexcept {
-        return fvgrid::CoordinateKind1D::Centers;
-    }
+constexpr Real kTol = 1.0e-12;
 
-    [[nodiscard]] static fvgrid::AxisGeometry1D complete_geometry(
-        std::vector<fvgrid::Real> centers,
-        fvgrid::Domain1D domain
-    ) {
-        const fvgrid::Size nvol = centers.size();
-
-        std::vector<fvgrid::Real> faces(nvol + 1);
-        faces.front() = domain.xmin();
-        faces.back() = domain.xmax();
-
-        for (fvgrid::Size i = 1; i < nvol; ++i) {
-            faces[i] = 0.25 * centers[i - 1] + 0.75 * centers[i];
-        }
-
-        return fvgrid::AxisGeometry1D{
-            .faces = std::move(faces),
-            .centers = std::move(centers),
-            .pattern_name = name(),
-        };
-    }
+struct Caso {
+    std::string nome;
+    Real beta;
 };
 
-class MalhaSimetrica1D final {
-public:
-    MalhaSimetrica1D(
-        fvgrid::Length comprimento,
-        fvgrid::NVol numero_de_volumes,
-        fvgrid::XInit x_inicial,
-        fvgrid::Seed semente
-    )
-        : comprimento_{comprimento},
-          numero_de_volumes_{numero_de_volumes},
-          x_inicial_{x_inicial},
-          semente_{semente} {}
+[[nodiscard]] bool perto(Real a, Real b, Real tol = kTol) {
+    return std::abs(a - b) <=
+           tol * std::max<Real>({Real{1}, std::abs(a), std::abs(b)});
+}
 
-    [[nodiscard]] fvgrid::Axis1D gerar() const {
-        std::vector<fvgrid::Real> centros = gerar_centros();
-
-        return fvgrid::Custom1D::make(
-            fvgrid::Coordinates1D::centers(std::move(centros)),
-            FacesPonderadasDosCentros1D{},
-            fvgrid::Domain1D::from_length(x_inicial_, comprimento_)
-        );
-    }
-
-private:
-    [[nodiscard]] std::vector<fvgrid::Real> gerar_centros() const {
-        const fvgrid::Size n = numero_de_volumes_.value();
-        const fvgrid::Real xmin = x_inicial_.value();
-        const fvgrid::Real xmax = xmin + comprimento_.value();
-        const fvgrid::Real xmeio = 0.5 * (xmin + xmax);
-
-        const fvgrid::Size metade = n / 2;
-
-        std::mt19937_64 gerador{semente_.value()};
-        std::uniform_real_distribution<fvgrid::Real> distribuicao{xmin, xmeio};
-
-        std::vector<fvgrid::Real> centros_esquerda(metade);
-
-        for (fvgrid::Size i = 0; i < metade; ++i) {
-            centros_esquerda[i] = distribuicao(gerador);
-        }
-
-        std::sort(centros_esquerda.begin(), centros_esquerda.end());
-
-        std::vector<fvgrid::Real> centros(n);
-
-        for (fvgrid::Size i = 0; i < metade; ++i) {
-            centros[i] = centros_esquerda[i];
-        }
-
-        if (n % 2 != 0) {
-            centros[metade] = xmeio;
-        }
-
-        for (fvgrid::Size i = 0; i < metade; ++i) {
-            centros[n - 1 - i] = 2.0 * xmeio - centros_esquerda[i];
-        }
-
-        return centros;
-    }
-
-    fvgrid::Length comprimento_;
-    fvgrid::NVol numero_de_volumes_;
-    fvgrid::XInit x_inicial_;
-    fvgrid::Seed semente_;
-};
-
-[[nodiscard]] bool registrar_teste(
-    const std::string& descricao,
-    bool passou
+[[nodiscard]] fvgrid::Axis1D gerar_malha_roberts(
+    std::size_t n,
+    Real comprimento,
+    Real beta
 ) {
-    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
+    // -------------------------------------------------------------------------
+    // PONTO CENTRAL DO EXERCÍCIO
+    // Aqui a malha de Roberts é gerada pela FVGridMaker.
+    //
+    // Roberts1D usa alpha = 1/2 internamente e recebe beta como parâmetro.
+    // VolumeCentered1D indica que as coordenadas primárias calculadas pela
+    // formulação de Roberts são faces da malha.
+    // -------------------------------------------------------------------------
+    return fvgrid::Roberts1D::make(
+        fvgrid::NVol{n},
+        fvgrid::Length{comprimento},
+        fvgrid::XInit{0.0},
+        fvgrid::Beta{beta},
+        fvgrid::VolumeCentered1D{}
+    );
+}
+
+[[nodiscard]] Real razao_max_min(std::span<const Real> Dx) {
+    const auto [menor, maior] = std::minmax_element(Dx.begin(), Dx.end());
+    return *maior / *menor;
+}
+
+[[nodiscard]] Real soma(std::span<const Real> valores) {
+    return std::accumulate(valores.begin(), valores.end(), Real{});
+}
+
+[[nodiscard]] bool simetria_faces(const fvgrid::Axis1D& eixo) {
+    const Real comprimento = eixo.length();
+    const std::size_t n = eixo.num_faces() - 1;
+
+    for (std::size_t i = 0; i <= n; ++i) {
+        if (!perto(eixo.faces()[i], comprimento - eixo.faces()[n - i], 1.0e-11)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+[[nodiscard]] bool registrar(const std::string& texto, bool passou) {
+    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << texto << '\n';
     return passou;
 }
 
-[[nodiscard]] bool centros_simetricos(
-    const fvgrid::Axis1D& malha,
-    fvgrid::Real tolerancia
-) {
-    const auto centros = malha.centers();
-    const fvgrid::Real xmeio = 0.5 * (malha.xmin() + malha.xmax());
+void exportar_razao(std::size_t n, Real comprimento) {
+    std::ofstream arquivo{"exercicio_43_roberts_razao.csv"};
 
-    bool passou = true;
-
-    for (fvgrid::Size i = 0; i < centros.size(); ++i) {
-        const fvgrid::Size j = centros.size() - 1 - i;
-
-        if (i > j) {
-            break;
-        }
-
-        const fvgrid::Real residuo =
-            std::abs((centros[i] + centros[j]) - 2.0 * xmeio);
-
-        if (residuo > tolerancia) {
-            std::cout << "  centros[" << i << "] + centros[" << j
-                      << "] difere de 2*xmeio por "
-                      << residuo << '\n';
-            passou = false;
-        }
+    if (!arquivo) {
+        throw std::runtime_error("Não foi possível criar exercicio_43_roberts_razao.csv.");
     }
 
-    return passou;
+    arquivo << "beta,razao_Dxmax_Dxmin\n";
+
+    constexpr std::size_t amostras = 80;
+    constexpr Real beta_min = 1.1;
+    constexpr Real beta_max = 20.0;
+
+    for (std::size_t k = 0; k < amostras; ++k) {
+        const Real t = static_cast<Real>(k) / static_cast<Real>(amostras - 1);
+        const Real beta = beta_min + t * (beta_max - beta_min);
+        const fvgrid::Axis1D eixo = gerar_malha_roberts(n, comprimento, beta);
+
+        arquivo << std::setprecision(17) << beta << ','
+                << razao_max_min(eixo.cell_lengths()) << '\n';
+    }
 }
 
-[[nodiscard]] bool faces_ponderadas_corretas(
-    const fvgrid::Axis1D& malha,
-    fvgrid::Real tolerancia
+void exportar_malhas(
+    std::size_t n,
+    Real comprimento,
+    const std::array<Caso, 3>& casos
 ) {
-    const auto faces = malha.faces();
-    const auto centros = malha.centers();
+    std::ofstream arquivo{"exercicio_43_roberts_malhas.csv"};
 
-    bool passou = true;
-
-    for (fvgrid::Size i = 1; i + 1 < faces.size(); ++i) {
-        const fvgrid::Real face_esperada =
-            0.25 * centros[i - 1] + 0.75 * centros[i];
-
-        const fvgrid::Real residuo = std::abs(faces[i] - face_esperada);
-
-        if (residuo > tolerancia) {
-            std::cout << "  face[" << i
-                      << "] nao obedece a regra 25/75; residuo = "
-                      << residuo << '\n';
-            passou = false;
-        }
+    if (!arquivo) {
+        throw std::runtime_error("Não foi possível criar exercicio_43_roberts_malhas.csv.");
     }
 
-    return passou;
+    arquivo << "caso,beta,i,xF,xC,Dx,dx\n";
+
+    for (const Caso& caso : casos) {
+        const fvgrid::Axis1D eixo = gerar_malha_roberts(n, comprimento, caso.beta);
+
+        for (std::size_t i = 0; i < eixo.num_cells(); ++i) {
+            arquivo << caso.nome << ',' << std::setprecision(17)
+                    << caso.beta << ',' << i << ','
+                    << eixo.faces()[i] << ','
+                    << eixo.centers()[i] << ','
+                    << eixo.cell_lengths()[i] << ','
+                    << eixo.dx_centers()[i] << '\n';
+        }
+
+        arquivo << caso.nome << ',' << caso.beta << ',' << n << ','
+                << eixo.faces()[n] << ",,,"
+                << eixo.dx_centers()[n] << '\n';
+    }
 }
 
-void imprimir_razao_de_espacamentos(const fvgrid::Axis1D& malha) {
-    const auto dx = malha.cell_lengths();
-    const auto [min_it, max_it] = std::minmax_element(dx.begin(), dx.end());
-
-    std::cout << "Dx_max/Dx_min = " << (*max_it / *min_it) << "\n\n";
+void explicar_alpha_um() {
+    std::cout << "\nPor que alpha = 1 não pode ser usado?\n";
+    std::cout << "=====================================\n";
+    std::cout << "Na equação de Roberts aparece o expoente ";
+    std::cout << "(eta - alpha) / (1 - alpha).\n";
+    std::cout << "Se alpha = 1, o denominador 1 - alpha é zero; ";
+    std::cout << "a transformação fica singular e deixa de definir ";
+    std::cout << "uma malha válida por essa fórmula.\n";
+    std::cout << "Por isso a FVGridMaker usa alpha = 1/2 nesta distribuição.\n";
 }
 
-[[nodiscard]] unsigned verificar_malha(
-    const fvgrid::Axis1D& malha,
-    fvgrid::Real tolerancia
-) {
+void imprimir_mensagem_final() {
+    constexpr int size = 80;
+
+    std::cout << "\nAplicações e recomendações\n";
+    std::cout << std::string(size, '=') << '\n';
+    std::cout << "1. Use beta próximo de 1 quando quiser forte concentração ";
+    std::cout << "de volumes junto às fronteiras.\n";
+    std::cout << "2. Use beta grande quando quiser uma malha próxima da uniforme.\n";
+    std::cout << "3. Verifique a razão Dx_max/Dx_min antes de usar a malha ";
+    std::cout << "em uma simulação.\n";
+    std::cout << "4. Confirme a simetria quando o problema físico também ";
+    std::cout << "for simétrico nas fronteiras.\n";
+    std::cout << "5. Use os CSVs gerados para visualizar a concentração ";
+    std::cout << "produzida por diferentes valores de beta.\n";
+    std::cout << std::string(size, '=') << '\n';
+
+    std::cout << "\nConceitos demonstrados\n";
+    std::cout << std::string(size, '=') << '\n';
+    std::cout << "1. Geração de malhas analíticas pela distribuição Roberts1D.\n";
+    std::cout << "2. Controle de refinamento por meio do parâmetro beta.\n";
+    std::cout << "3. Uso de alpha = 1/2 para obter uma distribuição simétrica.\n";
+    std::cout << "4. Cálculo de uma métrica global de não uniformidade ";
+    std::cout << "por Dx_max/Dx_min.\n";
+    std::cout << "5. Validação numérica da simetria xF[i] = L - xF[N-i].\n";
+    std::cout << std::string(size, '=') << '\n';
+}
+
+}  // namespace
+
+int main() {
+    std::cout << std::fixed << std::setprecision(12);
+
+    constexpr std::size_t n = 50;
+    constexpr Real comprimento = 1.0;
+    constexpr Real alpha = 0.5;
+
+    const std::array<Caso, 3> casos{{
+        {"proximo_de_1", 1.1},
+        {"intermediario", 4.0},
+        {"beta_grande", 20.0}
+    }};
+
+    std::cout << "Exercício 4.3 - refinamento nas fronteiras de Roberts\n";
+    std::cout << "L = " << comprimento
+              << ", N = " << n
+              << ", alpha = " << alpha
+              << ", beta em [1.1, 20]\n\n";
+
+    bool todos_simetria = true;
+    bool todos_soma = true;
+
+    std::cout << "Casos representativos\n";
+    std::cout << "=====================\n";
+    for (const Caso& caso : casos) {
+        const fvgrid::Axis1D eixo = gerar_malha_roberts(n, comprimento, caso.beta);
+
+        const bool simetria = simetria_faces(eixo);
+        const bool soma_ok = perto(soma(eixo.cell_lengths()), comprimento);
+
+        todos_simetria = todos_simetria && simetria;
+        todos_soma = todos_soma && soma_ok;
+
+        std::cout << caso.nome << " (beta = " << caso.beta << ")\n";
+        std::cout << "  Dx_max/Dx_min = " << razao_max_min(eixo.cell_lengths()) << '\n';
+        std::cout << "  sum(Dx)       = " << soma(eixo.cell_lengths()) << '\n';
+        std::cout << "  simetria      = " << (simetria ? "sim" : "não") << "\n\n";
+    }
+
+    exportar_razao(n, comprimento);
+    exportar_malhas(n, comprimento, casos);
+
+    std::cout << "Verificações automáticas\n";
+    std::cout << "========================\n";
     unsigned aprovados{};
     unsigned total{};
-
-    std::cout << "\nVerificacoes automaticas\n";
-    std::cout << "========================\n";
-
-    ++total;
-    aprovados += registrar_teste(
-        "centros simetricos em relacao ao ponto medio",
-        centros_simetricos(malha, tolerancia)
-    );
-
-    ++total;
-    aprovados += registrar_teste(
-        "faces internas obedecem a regra 25/75",
-        faces_ponderadas_corretas(malha, tolerancia)
-    );
+    ++total; aprovados += registrar("sum Dx[P] = L nos casos representativos", todos_soma);
+    ++total; aprovados += registrar("xF[i] = L - xF[N-i] nos casos representativos", todos_simetria);
 
     std::cout << "\nResumo\n";
     std::cout << "======\n";
-    std::cout << "Verificacoes aprovadas: "
-              << aprovados << " de " << total << '\n';
+    std::cout << "Verificações aprovadas: " << aprovados << " de " << total << '\n';
+    std::cout << "CSVs gerados:\n";
+    std::cout << "  exercicio_43_roberts_razao.csv\n";
+    std::cout << "  exercicio_43_roberts_malhas.csv\n";
 
-    return (aprovados == total) ? 0u : 1u;
-}
+    explicar_alpha_um();
+    imprimir_mensagem_final();
 
-void imprimir_mensagem_final()
-{
-    std::cout << "\nAplicacoes e recomendacoes\n";
-    std::cout << "--------------------------\n";
-    std::cout << "1. A construcao especializada fica no exercicio, ";
-    std::cout << "mantendo a biblioteca focada em componentes reutilizaveis.\n";
-    std::cout << "2. A simetria dos centros pode ser usada para testar ";
-    std::cout << "malhas nao uniformes com propriedades geometricas impostas.\n";
-    std::cout << "3. A razao Dx_max/Dx_min ajuda a avaliar o grau de ";
-    std::cout << "nao uniformidade antes de resolver uma equacao numerica.\n";
-}
-
-} // namespace
-
-int main()
-{
-    try {
-        const fvgrid::Length comprimento{1.0};
-        const fvgrid::NVol numero_de_volumes{21};
-        const fvgrid::XInit x_inicial{0.0};
-        const fvgrid::Seed semente{2026};
-
-        constexpr fvgrid::Real tolerancia = 1.0e-12;
-
-        const MalhaSimetrica1D gerador{
-            comprimento,
-            numero_de_volumes,
-            x_inicial,
-            semente
-        };
-
-        const fvgrid::Axis1D malha = gerador.gerar();
-
-        std::cout << std::fixed << std::setprecision(8);
-        std::cout << "Exercicio Computacional 4.4\n";
-        std::cout << "Malha simetrica definida pelo usuario\n";
-        std::cout << "=====================================\n\n";
-
-        std::cout << malha << '\n';
-        imprimir_razao_de_espacamentos(malha);
-
-        const unsigned status = verificar_malha(malha, tolerancia);
-        imprimir_mensagem_final();
-
-        return static_cast<int>(status);
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro: " << erro.what() << '\n';
-        return 1;
-    }
+    return aprovados == total ? 0 : 1;
 }
