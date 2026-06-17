@@ -26,6 +26,14 @@ sum Dx[P] = L
 xC[P] = xI + (P + 1/2) Delta x
 ```
 
+## Saida auxiliar
+
+A malha e exportada pela propria FVGridMaker com `Axis1DCSVWriter`:
+
+```text
+exercicio_41_malha.csv
+```
+
 ## Alvo CMake
 
 ```bash

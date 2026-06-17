@@ -8,6 +8,7 @@
 
 #include <FVGridMaker/OneDimensional/Distribution1D/Random1D.h>
 #include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
+#include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
 
 #include <algorithm>
 #include <cmath>
@@ -191,6 +192,8 @@ int main() {
     );
 
     imprimir_resumo(aprovados, total, Dx, comprimento);
+    fvgrid::Axis1DCSVWriter::write(eixo, "exercicio_42_malha_aleatoria.csv");
+    std::cout << "CSV gerado: exercicio_42_malha_aleatoria.csv\n";
     imprimir_observacao_final();
     imprimir_mensagem_final();
 

@@ -23,6 +23,15 @@ sum Dx[P] = L
 xC[P] = (xF[P] + xF[P+1]) / 2
 ```
 
+## Saida auxiliar
+
+A malha aleatoria e exportada pela propria FVGridMaker com
+`Axis1DCSVWriter`:
+
+```text
+exercicio_42_malha_aleatoria.csv
+```
+
 ## Alvo CMake
 
 ```bash
