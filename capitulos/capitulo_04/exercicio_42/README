@@ -1,28 +1,18 @@
-# Exercício Computacional 4.2: Malha aleatória
+# Exercicio Computacional 4.2: Malha aleatoria
 
-Este programa usa a FVGridMaker para construir um gerador de malhas aleatórias
-para o MVF no domínio `[xI, xI + L]`, com:
+Este programa usa a `Random1D` da FVGridMaker para gerar uma malha aleatoria
+volume centrada no dominio `[xI, xI + L]`.
 
-```text
-xI = 0
-L  = 1
-N  = 20
-```
-
-O arranjo usado é volume centrado. A distribuição `Random1D` gera as faces
-internas aleatórias, fixa as faces externas no domínio e entrega uma `Axis1D`
-com:
+O programa:
 
 ```text
-xF  faces
-xC  centros
-Dx  comprimentos dos volumes
-dx  distâncias centro-centro e centro-face
+gera N - 1 faces internas aleatorias
+fixa xF[0] = xI e xF[N] = xI + L
+ordena as faces
+obtem Dx, xC e dx pela Axis1D
 ```
 
-## Verificações
-
-O programa verifica automaticamente:
+## Verificacoes
 
 ```text
 xF[0] = xI
@@ -30,16 +20,11 @@ xF[N] = xI + L
 xF[P+1] > xF[P]
 Dx[P] > 0
 sum Dx[P] = L
-dimensões de xF, xC, Dx e dx
+xC[P] = (xF[P] + xF[P+1]) / 2
 ```
 
-Essas verificações são o gabarito do gerador: os valores mudam com a semente,
-mas as propriedades geométricas devem sempre permanecer verdadeiras.
-
-## Compilação pelo projeto
-
-Com `BUILD_BOOK=ON`, o alvo gerado é:
+## Alvo CMake
 
 ```bash
-cmake --build build --target run_cap_exercicio_42_exercicio_42
+cmake --build build --target run_cap_exercicio_42
 ```

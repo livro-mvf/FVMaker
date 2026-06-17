@@ -1,0 +1,32 @@
+# Exercicio Computacional 4.4: Malha simetrica definida pelo usuario
+
+Este programa usa a FVGridMaker sem modificar a biblioteca. A rotina local gera
+centros simetricos, espelha a metade esquerda em relacao ao centro do dominio e
+entrega esses centros ao construtor customizado `Custom1D`.
+
+Parametros:
+
+```text
+L       = 1
+N       = 21
+xI      = 0
+semente = 2026
+```
+
+O programa:
+
+```text
+gera centros aleatorios na metade esquerda
+espelha os centros na metade direita
+inclui um centro em L/2 quando N e impar
+reconstroi faces pela regra 25/75
+monta a Axis1D com Custom1D
+calcula Dx_max/Dx_min
+confirma xC[i] + xC[N-1-i] = L
+```
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_44
+```

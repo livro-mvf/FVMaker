@@ -14,7 +14,9 @@
 //
 // Verificacoes:
 //   O programa confirma extremos, monotonicidade, espacamentos positivos e
-//   soma dos espacamentos igual ao comprimento do dominio.
+//   soma dos espacamentos igual ao comprimento do dominio. Em seguida avalia
+//   f(x) = exp(x), estima f'' nos nos internos pela formula nao uniforme e
+//   compara os erros em uma malha aleatoria e em uma malha uniforme.
 
 #include <algorithm>
 #include <cmath>
@@ -47,6 +49,19 @@ struct MalhaAleatoria1D
     Real comprimento{};
     std::uint64_t semente{};
     std::vector<Real> nos;
+};
+
+struct ResultadoDerivada
+{
+    std::size_t indice{};
+    Real x{};
+    Real dx_esquerda{};
+    Real dx_direita{};
+    Real valor{};
+    Real aproximada{};
+    Real exata{};
+    Real erro{};
+    Real indicador_erro{};
 };
 
 [[nodiscard]] Real converter_real(
@@ -170,6 +185,29 @@ void validar_parametros(
     return MalhaAleatoria1D{x_inicial, comprimento, semente, nos};
 }
 
+[[nodiscard]] MalhaAleatoria1D gerar_malha_uniforme(
+    Real x_inicial,
+    Real comprimento,
+    std::size_t numero_nos
+)
+{
+    validar_parametros(x_inicial, comprimento, numero_nos);
+
+    const Real passo =
+        comprimento / static_cast<Real>(numero_nos - 1);
+
+    std::vector<Real> nos;
+    nos.reserve(numero_nos);
+
+    for (std::size_t i = 0; i < numero_nos; ++i) {
+        nos.push_back(x_inicial + static_cast<Real>(i) * passo);
+    }
+
+    nos.back() = x_inicial + comprimento;
+
+    return MalhaAleatoria1D{x_inicial, comprimento, 0u, nos};
+}
+
 [[nodiscard]] std::vector<Real> calcular_espacamentos(
     const std::vector<Real>& nos
 )
@@ -224,6 +262,122 @@ void validar_parametros(
     );
 }
 
+[[nodiscard]] std::vector<Real> avaliar_exponencial(
+    const std::vector<Real>& nos
+)
+{
+    std::vector<Real> valores;
+    valores.reserve(nos.size());
+
+    for (const Real x : nos) {
+        valores.push_back(std::exp(x));
+    }
+
+    return valores;
+}
+
+[[nodiscard]] Real segunda_derivada_nao_uniforme(
+    const std::vector<Real>& nos,
+    const std::vector<Real>& valores,
+    std::size_t i
+)
+{
+    const Real dx_esquerda = nos[i] - nos[i - 1];
+    const Real dx_direita = nos[i + 1] - nos[i];
+
+    const Real inclinacao_esquerda =
+        (valores[i] - valores[i - 1]) / dx_esquerda;
+
+    const Real inclinacao_direita =
+        (valores[i + 1] - valores[i]) / dx_direita;
+
+    return Real{2.0}
+        * (inclinacao_direita - inclinacao_esquerda)
+        / (dx_esquerda + dx_direita);
+}
+
+[[nodiscard]] std::vector<ResultadoDerivada> calcular_estudo_derivada(
+    const std::vector<Real>& nos
+)
+{
+    const std::vector<Real> valores = avaliar_exponencial(nos);
+
+    std::vector<ResultadoDerivada> resultados;
+    resultados.reserve(nos.size() - 2);
+
+    for (std::size_t i = 1; i + 1 < nos.size(); ++i) {
+        const Real dx_esquerda = nos[i] - nos[i - 1];
+        const Real dx_direita = nos[i + 1] - nos[i];
+        const Real aproximada =
+            segunda_derivada_nao_uniforme(nos, valores, i);
+        const Real exata = std::exp(nos[i]);
+        const Real erro = std::abs(aproximada - exata);
+        const Real indicador =
+            std::abs(dx_esquerda - dx_direita) * std::abs(exata);
+
+        resultados.push_back(
+            ResultadoDerivada{
+                i,
+                nos[i],
+                dx_esquerda,
+                dx_direita,
+                valores[i],
+                aproximada,
+                exata,
+                erro,
+                indicador
+            }
+        );
+    }
+
+    return resultados;
+}
+
+[[nodiscard]] Real maior_erro(
+    const std::vector<ResultadoDerivada>& resultados
+)
+{
+    Real maior = Real{};
+
+    for (const ResultadoDerivada& resultado : resultados) {
+        maior = std::max(maior, resultado.erro);
+    }
+
+    return maior;
+}
+
+[[nodiscard]] Real erro_medio(
+    const std::vector<ResultadoDerivada>& resultados
+)
+{
+    if (resultados.empty()) {
+        return Real{};
+    }
+
+    Real total = Real{};
+
+    for (const ResultadoDerivada& resultado : resultados) {
+        total += resultado.erro;
+    }
+
+    return total / static_cast<Real>(resultados.size());
+}
+
+[[nodiscard]] std::size_t indice_maior_erro(
+    const std::vector<ResultadoDerivada>& resultados
+)
+{
+    return static_cast<std::size_t>(
+        std::max_element(
+            resultados.begin(),
+            resultados.end(),
+            [](const ResultadoDerivada& a, const ResultadoDerivada& b) {
+                return a.erro < b.erro;
+            }
+        ) - resultados.begin()
+    );
+}
+
 void imprimir_malha(const MalhaAleatoria1D& malha)
 {
     const std::vector<Real> espacamentos =
@@ -249,6 +403,119 @@ void imprimir_malha(const MalhaAleatoria1D& malha)
                   << std::setw(24) << malha.nos[i]
                   << std::setw(24) << espacamentos[i - 1] << '\n';
     }
+}
+
+void imprimir_tabela_derivada(
+    const std::string& titulo,
+    const std::vector<ResultadoDerivada>& resultados
+)
+{
+    std::cout << '\n' << titulo << '\n';
+    std::cout << std::string(titulo.size(), '=') << '\n';
+    std::cout << std::setw(6) << "i"
+              << std::setw(18) << "x_i"
+              << std::setw(18) << "dx_i"
+              << std::setw(18) << "dx_{i+1}"
+              << std::setw(18) << "f(x_i)"
+              << std::setw(18) << "f'' aprox."
+              << std::setw(18) << "f'' exata"
+              << std::setw(18) << "erro abs."
+              << std::setw(18) << "indicador" << '\n';
+
+    for (const ResultadoDerivada& resultado : resultados) {
+        std::cout << std::setw(6) << resultado.indice
+                  << std::setw(18) << resultado.x
+                  << std::setw(18) << resultado.dx_esquerda
+                  << std::setw(18) << resultado.dx_direita
+                  << std::setw(18) << resultado.valor
+                  << std::setw(18) << resultado.aproximada
+                  << std::setw(18) << resultado.exata
+                  << std::setw(18) << resultado.erro
+                  << std::setw(18) << resultado.indicador_erro << '\n';
+    }
+}
+
+void imprimir_estudo_derivada(
+    const MalhaAleatoria1D& malha_aleatoria,
+    const MalhaAleatoria1D& malha_uniforme
+)
+{
+    const std::vector<ResultadoDerivada> resultados_aleatorios =
+        calcular_estudo_derivada(malha_aleatoria.nos);
+
+    const std::vector<ResultadoDerivada> resultados_uniformes =
+        calcular_estudo_derivada(malha_uniforme.nos);
+
+    imprimir_tabela_derivada(
+        "Estimativa de f'' na malha aleatoria",
+        resultados_aleatorios
+    );
+
+    imprimir_tabela_derivada(
+        "Estimativa de f'' na malha uniforme",
+        resultados_uniformes
+    );
+
+    const std::size_t pos_maior_erro_aleatorio =
+        indice_maior_erro(resultados_aleatorios);
+
+    const ResultadoDerivada& pior =
+        resultados_aleatorios[pos_maior_erro_aleatorio];
+
+    const Real menor_dx = std::min(pior.dx_esquerda, pior.dx_direita);
+    const Real maior_dx = std::max(pior.dx_esquerda, pior.dx_direita);
+
+    std::cout << "\nComparacao dos erros\n";
+    std::cout << "====================\n";
+    std::cout << std::setw(6) << "i"
+              << std::setw(18) << "erro aleat."
+              << std::setw(18) << "erro unif."
+              << std::setw(18) << "razao"
+              << std::setw(18) << "indicador" << '\n';
+
+    for (std::size_t k = 0; k < resultados_aleatorios.size(); ++k) {
+        const Real erro_uniforme = resultados_uniformes[k].erro;
+        const Real razao =
+            (erro_uniforme > Real{})
+                ? resultados_aleatorios[k].erro / erro_uniforme
+                : std::numeric_limits<Real>::infinity();
+
+        std::cout << std::setw(6) << resultados_aleatorios[k].indice
+                  << std::setw(18) << resultados_aleatorios[k].erro
+                  << std::setw(18) << erro_uniforme
+                  << std::setw(18) << razao
+                  << std::setw(18)
+                  << resultados_aleatorios[k].indicador_erro << '\n';
+    }
+
+    const Real maior_erro_aleatorio = maior_erro(resultados_aleatorios);
+    const Real maior_erro_uniforme = maior_erro(resultados_uniformes);
+    const Real erro_medio_aleatorio = erro_medio(resultados_aleatorios);
+    const Real erro_medio_uniforme = erro_medio(resultados_uniformes);
+
+    std::cout << "\nResumo comparativo\n";
+    std::cout << "==================\n";
+    std::cout << "maior erro aleatorio       = "
+              << maior_erro_aleatorio << '\n';
+    std::cout << "maior erro uniforme        = "
+              << maior_erro_uniforme << '\n';
+    std::cout << "razao dos maiores erros    = "
+              << (maior_erro_aleatorio / maior_erro_uniforme) << '\n';
+    std::cout << "erro medio aleatorio       = "
+              << erro_medio_aleatorio << '\n';
+    std::cout << "erro medio uniforme        = "
+              << erro_medio_uniforme << '\n';
+    std::cout << "razao dos erros medios     = "
+              << (erro_medio_aleatorio / erro_medio_uniforme) << '\n';
+
+    std::cout << "\nMaior erro local na malha aleatoria\n";
+    std::cout << "===================================\n";
+    std::cout << "i              = " << pior.indice << '\n';
+    std::cout << "erro absoluto  = " << pior.erro << '\n';
+    std::cout << "indicador      = " << pior.indicador_erro << '\n';
+    std::cout << "dx_i           = " << pior.dx_esquerda << '\n';
+    std::cout << "dx_{i+1}       = " << pior.dx_direita << '\n';
+    std::cout << "salto local    = " << (maior_dx / menor_dx) << '\n';
 }
 
 [[nodiscard]] bool registrar_teste(
@@ -330,6 +597,14 @@ void imprimir_mensagem_final()
     std::cout << "verdadeiras em toda execucao valida.\n";
     std::cout << "2. Os nos e os Delta x_i impressos aqui alimentam ";
     std::cout << "as formulas nao uniformes da Secao 3.2.\n";
+    std::cout << "3. A tabela de f'' mostra o erro ponto a ponto para ";
+    std::cout << "f(x) = exp(x), cuja segunda derivada exata tambem ";
+    std::cout << "e exp(x).\n";
+    std::cout << "4. A malha uniforme com o mesmo N serve de referencia ";
+    std::cout << "para medir o preco da irregularidade.\n";
+    std::cout << "5. O indicador |dx_i - dx_{i+1}| |f'''(x_i)| ajuda ";
+    std::cout << "a localizar onde o erro da malha aleatoria tende ";
+    std::cout << "a crescer.\n";
 }
 
 void imprimir_uso(const char* nome_programa)
@@ -382,8 +657,15 @@ int main(int argc, char* argv[])
             parametros.semente
         );
 
+        const MalhaAleatoria1D malha_uniforme = gerar_malha_uniforme(
+            parametros.x_inicial,
+            parametros.comprimento,
+            parametros.numero_nos
+        );
+
         imprimir_malha(malha);
         const unsigned status = verificar_malha(malha);
+        imprimir_estudo_derivada(malha, malha_uniforme);
         imprimir_mensagem_final();
 
         return static_cast<int>(status);

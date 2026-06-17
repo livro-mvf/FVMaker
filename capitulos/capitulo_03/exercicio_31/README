@@ -19,6 +19,12 @@ ordena todos os nós;
 imprime cada coordenada x_i;
 calcula e imprime Delta x_i = x_i - x_{i-1}, i = 1, ..., N - 1;
 verifica automaticamente as propriedades que definem uma malha válida.
+avalia f(x) = exp(x) nos nós gerados;
+estima f'' nos nós internos com a fórmula não uniforme;
+compara a estimativa com f''(x) = exp(x);
+repete o cálculo em uma malha uniforme com o mesmo N;
+compara os erros das duas malhas;
+calcula |Delta x_i - Delta x_{i+1}| |f'''(x_i)| em cada nó interno.
 ```
 
 A semente do gerador pseudoaleatório pode ser informada como argumento
@@ -87,15 +93,50 @@ Depois, o programa imprime as verificações automáticas:
 [PASSOU] sum Delta x_i = L
 ```
 
+Em seguida, o programa imprime o estudo da segunda derivada:
+
+```text
+i               x_i              dx_i        dx_{i+1}          f(x_i)      f'' aprox.       f'' exata       erro abs.       indicador
+1          ...
+```
+
+O estudo é impresso para a malha aleatória e para uma malha uniforme com o
+mesmo número de nós. Depois, a saída mostra a razão entre os erros das duas
+malhas e um resumo com a razão dos maiores erros e dos erros médios.
+
 ## Interpretação
 
 A ordenação torna a malha válida, mas não remove a irregularidade dos
 espaçamentos. Essa irregularidade é justamente o que torna a malha útil como
 teste de estresse para as fórmulas não uniformes da Seção 3.2.
 
-Depois de gerar a malha, use os valores de `x_i` e `Delta x_i` impressos pelo
-programa para alimentar as fórmulas de Taylor em malhas não uniformes e
-observar como o erro se comporta quando os passos mudam abruptamente.
+Depois de gerar a malha, o próprio programa usa os valores de `x_i` e
+`Delta x_i` para aplicar a fórmula não uniforme:
+
+```text
+f''_i ~= 2/(dx_i + dx_{i+1})
+         * ((f_{i+1} - f_i)/dx_{i+1} - (f_i - f_{i-1})/dx_i)
+```
+
+com:
+
+```text
+dx_i     = x_i - x_{i-1}
+dx_{i+1} = x_{i+1} - x_i
+```
+
+Para `f(x) = exp(x)`, a derivada exata também é `exp(x)`. A tabela final
+mostra o erro ponto a ponto. Como `f'''(x) = exp(x)`, o indicador do termo de
+erro é calculado por:
+
+```text
+|dx_i - dx_{i+1}| |f'''(x_i)| = |dx_i - dx_{i+1}| exp(x_i)
+```
+
+A comparação com a malha uniforme dá uma medida concreta do custo da
+irregularidade. O maior erro local da malha aleatória é destacado junto com o
+indicador e a razão entre os passos vizinhos, permitindo verificar a tendência
+prevista pelo termo de erro da fórmula não uniforme.
 
 ## Entradas inválidas
 

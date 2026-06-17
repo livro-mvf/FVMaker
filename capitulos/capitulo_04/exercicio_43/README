@@ -1,9 +1,9 @@
-# Exercício Computacional 4.3: Refinamento nas fronteiras de Roberts
+# Exercicio Computacional 4.3: Refinamento nas fronteiras de Roberts
 
-Este programa usa a formulação de Roberts disponível na FVGridMaker para gerar
-malhas refinadas nas fronteiras do domínio.
+Este programa usa a `Roberts1D` da FVGridMaker para gerar malhas refinadas nas
+fronteiras.
 
-Parâmetros usados:
+Parametros principais:
 
 ```text
 L     = 1
@@ -12,32 +12,24 @@ alpha = 1/2
 beta  em [1.1, 20]
 ```
 
-Na FVGridMaker, `alpha = 1/2` é fixo na distribuição `Roberts1D`; por isso o
-comando recebe `L`, `N`, `xI` e `beta`.
-
-## O que o programa produz
+O programa:
 
 ```text
-a) Calcula Dx_max/Dx_min em função de beta.
-b) Gera malhas para beta próximo de 1, intermediário e grande.
-c) Verifica xF[i] = L - xF[N-i].
-d) Explica por que alpha = 1 não pode ser usado na equação de Roberts.
+varia beta e exporta Dx_max/Dx_min
+gera tres malhas representativas
+confirma xF[i] = L - xF[N-i]
+explica por que alpha = 1 torna a formula singular
 ```
 
-## Saídas auxiliares
+## Saidas auxiliares
 
 ```text
 exercicio_43_roberts_razao.csv
 exercicio_43_roberts_malhas.csv
 ```
 
-O primeiro arquivo serve para traçar `Dx_max/Dx_min` em função de `beta`.
-O segundo contém as faces, centros e comprimentos das malhas representativas.
-
-## Compilação pelo projeto
-
-Com `BUILD_BOOK=ON`, o alvo gerado é:
+## Alvo CMake
 
 ```bash
-cmake --build build --target run_cap_exercicio_43_exercicio_43
+cmake --build build --target run_cap_exercicio_43
 ```
