@@ -1,0 +1,13 @@
+# Exercicio Computacional 5.4: Fonte constante e linear
+
+Este programa usa malhas volume centradas da FVGridMaker para testar a regra de
+um ponto no termo fonte.
+
+As fontes constante e linear sao reproduzidas exatamente, salvo arredondamento,
+quando `x_C` e o centroide do volume.
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_54
+```

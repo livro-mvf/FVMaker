@@ -1,0 +1,13 @@
+# Exercicio Computacional 5.5: Consistencia vista pelo residuo
+
+Este programa aplica a equacao discreta interna a solucao analitica do problema
+`phi'' + 1 = 0`, com `phi(0)=0` e `phi'(1)=0`.
+
+As malhas sao geradas pela FVGridMaker. O programa compara arranjos face
+centrado e volume centrado em malhas nao uniformes refinadas.
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_55
+```

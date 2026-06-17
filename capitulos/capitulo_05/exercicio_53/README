@@ -1,0 +1,17 @@
+# Exercicio Computacional 5.3: Termo fonte aproximado e exato
+
+Este programa calcula `B_P = f(x_C[P]) Dx[P]` em malhas face centradas geradas
+pela FVGridMaker e compara com integrais exatas.
+
+## Casos
+
+```text
+f(x) = x^2 em [0,5], N = 5
+f(x) = exp(x) sin(x), N = 10,20,40,80
+```
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_53
+```

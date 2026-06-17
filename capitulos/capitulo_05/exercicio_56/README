@@ -1,0 +1,18 @@
+# Exercicio Computacional 5.6: Coeficientes de um problema proprio
+
+Este programa monta, sem resolver, o sistema do problema
+
+```text
+phi'' + 1 = 0 em [0,1]
+phi(0) = 0
+phi'(1) = 0
+```
+
+A malha uniforme face centrada com `N=3` vem da FVGridMaker, e a matriz
+tridiagonal e reconstruida com apoio do FVMaker.
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_56
+```

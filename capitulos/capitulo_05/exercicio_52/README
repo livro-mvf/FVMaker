@@ -1,0 +1,13 @@
+# Exercicio Computacional 5.2: Condicoes de contorno em uma rotina unica
+
+Este programa usa `BoundaryCondition1D` do FVMaker para representar Dirichlet,
+Neumann e Robin pela forma unica `alpha phi + beta dphi/dx = gamma`.
+
+A rotina didatica recebe lado, distancia ao contorno, termo fonte do volume e
+coeficiente do vizinho interno, e devolve `A_W`, `A_E`, `A_P` e `B_P`.
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_52
+```

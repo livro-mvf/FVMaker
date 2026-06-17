@@ -1,0 +1,22 @@
+# Exercicio Computacional 5.1: Imprima os coeficientes do exemplo
+
+Este programa usa a FVGridMaker para gerar a malha uniforme face centrada do
+Exemplo 5.2 e monta os vetores `A_W`, `A_E`, `A_P` e `B_P`.
+
+A montagem usa as equacoes do capitulo para volumes internos e contornos, e a
+reconstrucao da matriz usa `EquationContribution1D` e `to_tridiagonal_system`
+do FVMaker.
+
+## Verificacoes
+
+```text
+vetores de coeficientes reproduzem o exemplo
+matriz e lado direito coincidem com a forma matricial do texto
+entradas fora das tres diagonais sao nulas
+```
+
+## Alvo CMake
+
+```bash
+cmake --build build --target run_cap_exercicio_51
+```
