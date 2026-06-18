@@ -4,6 +4,9 @@
 // Description: Implements additive 1D equation contributions.
 // ----------------------------------------------------------------------------
 
+#include <iomanip>
+#include <ostream>
+#include <string>
 #include <vector>
 
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
@@ -115,6 +118,38 @@ TridiagonalSystem1D to_tridiagonal_system(
         std::move(upper),
         std::move(rhs)
     };
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const EquationContribution1D& contribution
+) {
+    os << "indice"
+       << std::setw(16) << "A_P"
+       << std::setw(16) << "A_E"
+       << std::setw(16) << "A_W"
+       << std::setw(16) << "B_P"
+       << std::setw(16) << "S_C"
+       << std::setw(16) << "S_P"
+       << '\n';
+
+    os << std::string(102, '-') << '\n';
+
+    for (Size i = 0; i < contribution.size(); ++i) {
+        os << std::setw(6) << i
+           << std::setw(16) << contribution.ap()[i]
+           << std::setw(16) << contribution.ae()[i]
+           << std::setw(16) << contribution.aw()[i]
+           << std::setw(16) << contribution.bp()[i]
+           << std::setw(16) << contribution.bp()[i]
+           << std::setw(16) << Real{};
+
+        if (i + 1 < contribution.size()) {
+            os << '\n';
+        }
+    }
+
+    return os;
 }
 
 }  // namespace fvm

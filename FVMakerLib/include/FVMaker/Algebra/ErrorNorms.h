@@ -17,6 +17,24 @@
 
 namespace fvm {
 
+enum class NormType {
+    infinity,
+    l1,
+    l2,
+};
+
+class VectorNorms final {
+public:
+    [[nodiscard]] static Real evaluate(
+        const DenseVector& vector,
+        NormType type
+    ) noexcept;
+
+    [[nodiscard]] static Real infinity(const DenseVector& vector) noexcept;
+    [[nodiscard]] static Real l1(const DenseVector& vector) noexcept;
+    [[nodiscard]] static Real l2(const DenseVector& vector) noexcept;
+};
+
 [[nodiscard]] Real norm_infinity(const DenseVector& vector) noexcept;
 [[nodiscard]] Real norm_l1(const DenseVector& vector) noexcept;
 [[nodiscard]] Real norm_l2(const DenseVector& vector) noexcept;

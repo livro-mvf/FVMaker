@@ -15,6 +15,7 @@
 #include <FVMaker/ErrorHandling/ThrowError.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
+#include <FVMaker/Solver/StopCriteria.h>
 
 namespace fvm {
 
@@ -31,6 +32,29 @@ void validate_options(IterativeSolverOptions options, ID source) {
         error_catalog::kInvalidArgument,
         source
     );
+}
+
+[[nodiscard]] DenseVector difference(
+    const DenseVector& a,
+    const DenseVector& b
+) {
+    DenseVector result{a.size()};
+
+    for (Size i = 0; i < a.size(); ++i) {
+        result[i] = a[i] - b[i];
+    }
+
+    return result;
+}
+
+void apply_stop_evaluation(
+    SolveResult& result,
+    const StopCriteriaEvaluation& evaluation
+) {
+    result.stop_criterion = evaluation.criterion;
+    result.stop_value = evaluation.value;
+    result.stop_tolerance = evaluation.tolerance;
+    result.reached_iteration_limit = evaluation.reached_iteration_limit;
 }
 
 }  // namespace
@@ -59,6 +83,10 @@ SolveResult Jacobi::solve(
     DenseVector next{n};
     DenseVector residual = algebraic_residual(system, current);
     Real residual_norm = norm_infinity(residual);
+    const Real initial_residual_norm = residual_norm;
+    const StopCriteria criteria = options.stop_criteria.empty()
+        ? StopCriteria::residual_absolute(options.tolerance)
+        : options.stop_criteria;
 
     if (residual_norm <= options.tolerance) {
         return SolveResult{
@@ -71,6 +99,8 @@ SolveResult Jacobi::solve(
     }
 
     for (Size iteration = 1; iteration <= options.max_iterations; ++iteration) {
+        const DenseVector previous = current;
+
         for (Size row = 0; row < n; ++row) {
             Real sum = rhs[row];
 
@@ -88,25 +118,43 @@ SolveResult Jacobi::solve(
         current = next;
         residual = algebraic_residual(system, current);
         residual_norm = norm_infinity(residual);
+        const DenseVector correction = difference(current, previous);
+        const StopCriteriaEvaluation stop = criteria.evaluate(
+            StopCriteriaState{
+                .iteration = iteration,
+                .max_iterations = options.max_iterations,
+                .solution = &current,
+                .correction = &correction,
+                .residual = &residual,
+                .initial_residual_norm = initial_residual_norm
+            }
+        );
 
-        if (residual_norm <= options.tolerance) {
-            return SolveResult{
+        if (stop.converged) {
+            SolveResult result{
                 .solution = std::move(current),
                 .residual = std::move(residual),
                 .converged = true,
                 .iterations = iteration,
                 .residual_norm = residual_norm,
             };
+            apply_stop_evaluation(result, stop);
+            return result;
         }
     }
 
-    return SolveResult{
+    SolveResult result{
         .solution = std::move(current),
         .residual = std::move(residual),
         .converged = false,
         .iterations = options.max_iterations,
         .residual_norm = residual_norm,
     };
+    result.reached_iteration_limit = true;
+    result.stop_criterion = StopCriterionKind::max_iterations;
+    result.stop_value = static_cast<Real>(options.max_iterations);
+    result.stop_tolerance = static_cast<Real>(options.max_iterations);
+    return result;
 }
 
 }  // namespace fvm

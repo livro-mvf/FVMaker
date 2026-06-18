@@ -43,7 +43,7 @@ int main() {
         capitulo_05::matriz_densa(coeficientes);
 
     std::cout << "Exercicio 5.6 - problema proprio\n\n";
-    capitulo_05::imprimir_vetores(coeficientes);
+    std::cout << coeficientes << '\n';
 
     std::cout << "\nMatriz reconstruida\n";
     std::cout << "===================\n";

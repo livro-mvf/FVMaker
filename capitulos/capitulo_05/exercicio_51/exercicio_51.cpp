@@ -65,7 +65,7 @@ int main() {
     };
 
     std::cout << "Exercicio 5.1 - coeficientes do Exemplo 5.2\n\n";
-    capitulo_05::imprimir_vetores(coeficientes);
+    std::cout << coeficientes << '\n';
 
     std::cout << "\nMatriz reconstruida a partir dos vetores\n";
     std::cout << "=======================================\n";

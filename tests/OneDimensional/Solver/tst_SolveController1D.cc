@@ -15,7 +15,9 @@
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
 
 #include <FVMaker/Algebra/ErrorNorms.h>
+#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
+#include <FVMaker/OneDimensional/Solver/LinearSolverOptions1D.h>
 #include <FVMaker/OneDimensional/Solver/SolveController1D.h>
 
 #include <gtest/gtest.h>
@@ -89,6 +91,24 @@ TEST(SolveController1D, SolvesKnownSystemWithIterativeSolver) {
     EXPECT_NEAR(result.solution[2], 1.0, 1.0e-8);
     EXPECT_LE(result.iterations, static_cast<Size>(1000));
     EXPECT_DOUBLE_EQ(result.requested_tolerance, 1.0e-10);
+}
+
+TEST(SolveController1D, SolvesKnownSystemWithRuntimeSolverSelection) {
+    const SolveResult result = solve_steady_system_1d(
+        make_spd_system(),
+        LinearSolverOptions1D{
+            .solver = LinearSolverKind1D::bicgstab,
+            .absolute_tolerance = 1.0e-12,
+            .relative_tolerance = 1.0e-12,
+            .max_iterations = 100
+        }
+    );
+
+    ASSERT_TRUE(result.converged);
+    EXPECT_NEAR(result.solution[0], 1.0, 1.0e-8);
+    EXPECT_NEAR(result.solution[1], 1.0, 1.0e-8);
+    EXPECT_NEAR(result.solution[2], 1.0, 1.0e-8);
+    EXPECT_EQ(name(LinearSolverKind1D::bicgstab), std::string_view{"BiCGSTAB"});
 }
 
 TEST(SolveController1D, ReportsNonConvergenceFromIterativeSolver) {

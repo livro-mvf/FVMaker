@@ -9,6 +9,7 @@
 #include "../comum/mvf_capitulo_05.h"
 
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
+#include <FVMaker/OneDimensional/System/EquationContribution1D.h>
 
 #include <iomanip>
 #include <iostream>
@@ -37,14 +38,17 @@ void testar(
             coeficiente_vizinho
         );
 
+    fvm::EquationContribution1D coeficientes{1};
+    coeficientes.aw()[0] = c.aw;
+    coeficientes.ae()[0] = c.ae;
+    coeficientes.ap()[0] = c.ap;
+    coeficientes.bp()[0] = c.bp;
+
     std::cout << nome << '\n';
     std::cout << "  alpha = " << condicao.alpha(x_contorno)
               << ", beta = " << condicao.beta(x_contorno)
               << ", gamma = " << condicao.gamma(x_contorno) << '\n';
-    std::cout << "  A_W = " << c.aw
-              << ", A_E = " << c.ae
-              << ", A_P = " << c.ap
-              << ", B_P = " << c.bp << "\n\n";
+    std::cout << coeficientes << "\n\n";
 }
 
 }  // namespace

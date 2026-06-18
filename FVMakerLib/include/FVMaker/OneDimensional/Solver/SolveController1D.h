@@ -19,6 +19,12 @@
 #include <FVMaker/ErrorHandling/ThrowError.h>
 #include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
 #include <FVMaker/OneDimensional/Equation/Equation1D.h>
+#include <FVMaker/OneDimensional/Solver/BiCG.h>
+#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
+#include <FVMaker/OneDimensional/Solver/ConjugateGradient.h>
+#include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
+#include <FVMaker/OneDimensional/Solver/Jacobi.h>
+#include <FVMaker/OneDimensional/Solver/LinearSolverOptions1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/Solver/IterativeSolverOptions.h>
@@ -113,6 +119,40 @@ template <class LinearSolver = TDMA>
     return result;
 }
 
+[[nodiscard]] inline SolveResult solve_steady_system_1d(
+    const TridiagonalSystem1D& system,
+    const LinearSolverOptions1D& options
+) {
+    options.validate();
+
+    switch (options.solver) {
+        case LinearSolverKind1D::tdma:
+            return solve_steady_system_1d<TDMA>(system, options.steady_state());
+        case LinearSolverKind1D::jacobi:
+            return solve_steady_system_1d<Jacobi>(system, options.steady_state());
+        case LinearSolverKind1D::gauss_seidel:
+            return solve_steady_system_1d<GaussSeidel>(
+                system,
+                options.steady_state()
+            );
+        case LinearSolverKind1D::conjugate_gradient:
+            return solve_steady_system_1d<ConjugateGradient>(
+                system,
+                options.steady_state()
+            );
+        case LinearSolverKind1D::bicg:
+            return solve_steady_system_1d<BiCG>(system, options.steady_state());
+        case LinearSolverKind1D::bicgstab:
+            return solve_steady_system_1d<BiCGSTAB>(
+                system,
+                options.steady_state()
+            );
+    }
+
+    require(false, error_catalog::kInvalidArgument, LinearSolverOptions1D::id());
+    return {};
+}
+
 template <class LinearSolver = TDMA>
 [[nodiscard]] SolveResult solve_steady_1d(
     const Equation1D& equation,
@@ -122,6 +162,17 @@ template <class LinearSolver = TDMA>
     return solve_steady_system_1d<LinearSolver>(
         assemble_steady_1d(equation, time),
         control
+    );
+}
+
+[[nodiscard]] inline SolveResult solve_steady_1d(
+    const Equation1D& equation,
+    const LinearSolverOptions1D& options,
+    Real time = Real{}
+) {
+    return solve_steady_system_1d(
+        assemble_steady_1d(equation, time),
+        options
     );
 }
 

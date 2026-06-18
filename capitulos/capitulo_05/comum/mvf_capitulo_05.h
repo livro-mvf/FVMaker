@@ -167,23 +167,6 @@ template <class Function>
     return matriz;
 }
 
-inline void imprimir_vetores(const fvm::EquationContribution1D& coeficientes) {
-    std::cout << "P               A_W             A_E             A_P             B_P\n";
-    std::cout << "--------------------------------------------------------------------\n";
-
-    for (Size p = 0; p < coeficientes.size(); ++p) {
-        std::cout << std::setw(2) << p
-                  << ' '
-                  << std::setw(14) << coeficientes.aw()[p]
-                  << ' '
-                  << std::setw(14) << coeficientes.ae()[p]
-                  << ' '
-                  << std::setw(14) << coeficientes.ap()[p]
-                  << ' '
-                  << std::setw(14) << coeficientes.bp()[p] << '\n';
-    }
-}
-
 inline void imprimir_matriz(
     const std::vector<std::vector<Real>>& matriz,
     std::span<const Real> rhs

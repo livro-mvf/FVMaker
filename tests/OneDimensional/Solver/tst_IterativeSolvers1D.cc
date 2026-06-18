@@ -12,6 +12,8 @@
 
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/FVMException.h>
+#include <FVMaker/OneDimensional/Solver/BiCG.h>
+#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/ConjugateGradient.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
@@ -31,12 +33,30 @@ namespace {
     };
 }
 
+[[nodiscard]] TridiagonalSystem1D make_nonsymmetric_system() {
+    return TridiagonalSystem1D{
+        std::vector<Real>{-1.0, -2.0},
+        std::vector<Real>{4.0, 5.0, 6.0},
+        std::vector<Real>{-2.0, -1.0},
+        DenseVector{std::vector<Real>{2.0, 4.0, 8.0}}
+    };
+}
+
 void expect_unit_solution(const SolveResult& result) {
     ASSERT_TRUE(result.converged);
     ASSERT_EQ(result.solution.size(), static_cast<Size>(3));
     EXPECT_NEAR(result.solution[0], 1.0, 1.0e-8);
     EXPECT_NEAR(result.solution[1], 1.0, 1.0e-8);
     EXPECT_NEAR(result.solution[2], 1.0, 1.0e-8);
+    EXPECT_LE(result.residual_norm, 1.0e-8);
+}
+
+void expect_nonsymmetric_solution(const SolveResult& result) {
+    ASSERT_TRUE(result.converged);
+    ASSERT_EQ(result.solution.size(), static_cast<Size>(3));
+    EXPECT_NEAR(result.solution[0], 1.2, 1.0e-8);
+    EXPECT_NEAR(result.solution[1], 1.4, 1.0e-8);
+    EXPECT_NEAR(result.solution[2], 1.8, 1.0e-8);
     EXPECT_LE(result.residual_norm, 1.0e-8);
 }
 
@@ -72,6 +92,21 @@ TEST(IterativeSolvers1D, ConjugateGradientStoresClassIdentity) {
     );
 }
 
+TEST(IterativeSolvers1D, BiCGStoresClassIdentity) {
+    EXPECT_EQ(BiCG::id().module(), std::string_view{"OneDimensional"});
+    EXPECT_EQ(BiCG::id().class_name(), std::string_view{"BiCG"});
+    EXPECT_EQ(BiCG::id().class_id(), std::string_view{"fvm.1d.solver.BiCG"});
+}
+
+TEST(IterativeSolvers1D, BiCGSTABStoresClassIdentity) {
+    EXPECT_EQ(BiCGSTAB::id().module(), std::string_view{"OneDimensional"});
+    EXPECT_EQ(BiCGSTAB::id().class_name(), std::string_view{"BiCGSTAB"});
+    EXPECT_EQ(
+        BiCGSTAB::id().class_id(),
+        std::string_view{"fvm.1d.solver.BiCGSTAB"}
+    );
+}
+
 TEST(IterativeSolvers1D, JacobiSolvesKnownSystem) {
     const SolveResult result = Jacobi::solve(
         make_spd_system(),
@@ -90,6 +125,47 @@ TEST(IterativeSolvers1D, GaussSeidelSolvesKnownSystem) {
     expect_unit_solution(result);
 }
 
+TEST(IterativeSolvers1D, GaussSeidelSupportsBackwardSweep) {
+    const SolveResult result = GaussSeidel::solve(
+        make_spd_system(),
+        IterativeSolverOptions{
+            .tolerance = 1.0e-10,
+            .max_iterations = 1000,
+            .gauss_seidel_sweep = GaussSeidelSweep::backward
+        }
+    );
+
+    expect_unit_solution(result);
+}
+
+TEST(IterativeSolvers1D, GaussSeidelSupportsHybridSweep) {
+    const SolveResult result = GaussSeidel::solve(
+        make_spd_system(),
+        IterativeSolverOptions{
+            .tolerance = 1.0e-10,
+            .max_iterations = 1000,
+            .gauss_seidel_sweep = GaussSeidelSweep::hybrid
+        }
+    );
+
+    expect_unit_solution(result);
+}
+
+TEST(IterativeSolvers1D, JacobiUsesCustomStopCriteria) {
+    const SolveResult result = Jacobi::solve(
+        make_spd_system(),
+        IterativeSolverOptions{
+            .tolerance = 1.0e-30,
+            .max_iterations = 1000,
+            .gauss_seidel_sweep = GaussSeidelSweep::hybrid,
+            .stop_criteria = StopCriteria::correction_absolute(1.0e-10)
+        }
+    );
+
+    expect_unit_solution(result);
+    EXPECT_EQ(result.stop_criterion, StopCriterionKind::correction_absolute);
+}
+
 TEST(IterativeSolvers1D, ConjugateGradientSolvesKnownSPDSystem) {
     const SolveResult result = ConjugateGradient::solve(
         make_spd_system(),
@@ -98,6 +174,24 @@ TEST(IterativeSolvers1D, ConjugateGradientSolvesKnownSPDSystem) {
 
     expect_unit_solution(result);
     EXPECT_LE(result.iterations, static_cast<Size>(3));
+}
+
+TEST(IterativeSolvers1D, BiCGSolvesNonSymmetricSystem) {
+    const SolveResult result = BiCG::solve(
+        make_nonsymmetric_system(),
+        IterativeSolverOptions{.tolerance = 1.0e-12, .max_iterations = 20}
+    );
+
+    expect_nonsymmetric_solution(result);
+}
+
+TEST(IterativeSolvers1D, BiCGSTABSolvesNonSymmetricSystem) {
+    const SolveResult result = BiCGSTAB::solve(
+        make_nonsymmetric_system(),
+        IterativeSolverOptions{.tolerance = 1.0e-12, .max_iterations = 20}
+    );
+
+    expect_nonsymmetric_solution(result);
 }
 
 TEST(IterativeSolvers1D, ReportsNonConvergenceWithoutThrowing) {

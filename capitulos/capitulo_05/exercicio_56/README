@@ -8,8 +8,9 @@ phi(0) = 0
 phi'(1) = 0
 ```
 
-A malha uniforme face centrada com `N=3` vem da FVGridMaker, e a matriz
-tridiagonal e reconstruida com apoio do FVMaker.
+A malha uniforme face centrada com `N=3` vem da FVGridMaker. Os coeficientes
+sao impressos com `std::cout << coeficientes << "\n"`, e a matriz tridiagonal
+e reconstruida com apoio do FVMaker.
 
 ## Alvo CMake
 

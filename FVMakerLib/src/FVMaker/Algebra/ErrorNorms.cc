@@ -20,7 +20,20 @@
 
 namespace fvm {
 
-Real norm_infinity(const DenseVector& vector) noexcept {
+Real VectorNorms::evaluate(const DenseVector& vector, NormType type) noexcept {
+    switch (type) {
+        case NormType::infinity:
+            return infinity(vector);
+        case NormType::l1:
+            return l1(vector);
+        case NormType::l2:
+            return l2(vector);
+    }
+
+    return infinity(vector);
+}
+
+Real VectorNorms::infinity(const DenseVector& vector) noexcept {
     Real norm{};
 
     for (Real value : vector.values()) {
@@ -30,7 +43,7 @@ Real norm_infinity(const DenseVector& vector) noexcept {
     return norm;
 }
 
-Real norm_l1(const DenseVector& vector) noexcept {
+Real VectorNorms::l1(const DenseVector& vector) noexcept {
     Real norm{};
 
     for (Real value : vector.values()) {
@@ -40,7 +53,7 @@ Real norm_l1(const DenseVector& vector) noexcept {
     return norm;
 }
 
-Real norm_l2(const DenseVector& vector) noexcept {
+Real VectorNorms::l2(const DenseVector& vector) noexcept {
     Real sum{};
 
     for (Real value : vector.values()) {
@@ -48,6 +61,18 @@ Real norm_l2(const DenseVector& vector) noexcept {
     }
 
     return std::sqrt(sum);
+}
+
+Real norm_infinity(const DenseVector& vector) noexcept {
+    return VectorNorms::infinity(vector);
+}
+
+Real norm_l1(const DenseVector& vector) noexcept {
+    return VectorNorms::l1(vector);
+}
+
+Real norm_l2(const DenseVector& vector) noexcept {
+    return VectorNorms::l2(vector);
 }
 
 }  // namespace fvm

@@ -14,6 +14,7 @@
 // ----------------------------------------------------------------------------
 #include <FVMaker/Algebra/DenseVector.h>
 #include <FVMaker/Core/Types.h>
+#include <FVMaker/Solver/StopCriteria.h>
 
 namespace fvm {
 
@@ -29,6 +30,10 @@ struct SolveResult final {
     Real requested_tolerance{};
     bool reached_absolute_tolerance{false};
     bool reached_relative_tolerance{false};
+    StopCriterionKind stop_criterion{StopCriterionKind::max_iterations};
+    Real stop_value{};
+    Real stop_tolerance{};
+    bool reached_iteration_limit{false};
 };
 
 }  // namespace fvm

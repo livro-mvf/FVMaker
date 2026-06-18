@@ -10,12 +10,21 @@
 #pragma once
 
 #include <FVMaker/Core/Types.h>
+#include <FVMaker/Solver/StopCriteria.h>
 
 namespace fvm {
+
+enum class GaussSeidelSweep {
+    forward,
+    backward,
+    hybrid,
+};
 
 struct IterativeSolverOptions final {
     Real tolerance{1.0e-10};
     Size max_iterations{10000};
+    GaussSeidelSweep gauss_seidel_sweep{GaussSeidelSweep::hybrid};
+    StopCriteria stop_criteria{};
 };
 
 }  // namespace fvm

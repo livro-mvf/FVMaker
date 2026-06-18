@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <iosfwd>
 #include <string_view>
 
 #include <FVMaker/Algebra/DenseVector.h>
@@ -66,6 +67,11 @@ private:
 );
 
 [[nodiscard]] TridiagonalSystem1D to_tridiagonal_system(
+    const EquationContribution1D& contribution
+);
+
+std::ostream& operator<<(
+    std::ostream& os,
     const EquationContribution1D& contribution
 );
 

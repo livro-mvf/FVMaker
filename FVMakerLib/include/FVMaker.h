@@ -79,9 +79,12 @@
 #include <FVMaker/OneDimensional/Equation/Equation1D.h>
 #include <FVMaker/OneDimensional/Grid/GridMetrics1D.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
+#include <FVMaker/OneDimensional/Solver/BiCG.h>
+#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/ConjugateGradient.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
+#include <FVMaker/OneDimensional/Solver/LinearSolverOptions1D.h>
 #include <FVMaker/OneDimensional/Solver/NonlinearSolve1D.h>
 #include <FVMaker/OneDimensional/Solver/SolveController1D.h>
 #include <FVMaker/OneDimensional/Operator/Laplacian1D.h>
@@ -90,11 +93,14 @@
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
+#include <FVMaker/OneDimensional/Variable/Variable1D.h>
+#include <FVMaker/Output/VTK/Variable1DVTKWriter.h>
 #include <FVMaker/Roadmap/FakeBlocks.h>
 #include <FVMaker/Solver/SolveResult.h>
 #include <FVMaker/Solver/IterativeSolverOptions.h>
 #include <FVMaker/Solver/PicardIteration.h>
 #include <FVMaker/Solver/SteadyState.h>
+#include <FVMaker/Solver/StopCriteria.h>
 
 FVMAKER_NAMESPACE_OPEN
 
