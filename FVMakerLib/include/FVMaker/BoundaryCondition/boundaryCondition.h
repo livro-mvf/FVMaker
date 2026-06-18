@@ -8,7 +8,6 @@
 //==============================================================================
 // FVMAKER includes
 //==============================================================================
-
 #include <FVMaker/BoundaryCondition/bcTrait.h>
 #include <FVMaker/Grid/gridDimension.h>
 

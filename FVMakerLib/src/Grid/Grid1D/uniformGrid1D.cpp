@@ -21,9 +21,8 @@
 //==============================================================================
 // Includes da FVMaker
 //==============================================================================
-
 #include <FVMaker/Grid/Grid1D/uniformGrid1D.h>
-#include <FVMaker/Misc/parallelControl.h>
+// #include <FVMaker/Misc/parallelControl.h>
 
 
 GRID_NAMESPACE_OPEN

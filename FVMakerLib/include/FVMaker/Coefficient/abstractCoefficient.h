@@ -29,7 +29,6 @@
 //==============================================================================
 // Includes da biblioteca FVMaker
 //==============================================================================
-
 #include <FVMaker/Error/FVMakerException.h>   // FVMakerException
 #include <FVMaker/Grid/gridDimension.h>       // GridDim
 
