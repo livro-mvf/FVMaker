@@ -10,6 +10,7 @@
 // ----------------------------------------------------------------------------
 // C++ standard library includes
 // ----------------------------------------------------------------------------
+#include <memory>
 #include <utility>
 
 // ----------------------------------------------------------------------------
@@ -125,6 +126,111 @@ void TridiagonalSystem1D::validate() const {
         error_catalog::kInvalidSystemSize,
         TridiagonalSystem1D::id()
     );
+}
+
+void multiply(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x,
+    DenseVector& y
+) {
+    require(
+        x.size() == system.size(),
+        error_catalog::kInvalidSystemSize,
+        TridiagonalSystem1D::id()
+    );
+    require(
+        y.size() == system.size(),
+        error_catalog::kInvalidSystemSize,
+        TridiagonalSystem1D::id()
+    );
+    require(
+        std::addressof(x) != std::addressof(y),
+        error_catalog::kInvalidArgument,
+        TridiagonalSystem1D::id()
+    );
+
+    const auto lower = system.lower();
+    const auto diagonal = system.diagonal();
+    const auto upper = system.upper();
+
+    for (Size row = 0; row < system.size(); ++row) {
+        Real value = diagonal[row] * x[row];
+
+        if (row > 0) {
+            value += lower[row - 1] * x[row - 1];
+        }
+
+        if (row + 1 < system.size()) {
+            value += upper[row] * x[row + 1];
+        }
+
+        y[row] = value;
+    }
+}
+
+void multiply_transpose(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x,
+    DenseVector& y
+) {
+    require(
+        x.size() == system.size(),
+        error_catalog::kInvalidSystemSize,
+        TridiagonalSystem1D::id()
+    );
+    require(
+        y.size() == system.size(),
+        error_catalog::kInvalidSystemSize,
+        TridiagonalSystem1D::id()
+    );
+    require(
+        std::addressof(x) != std::addressof(y),
+        error_catalog::kInvalidArgument,
+        TridiagonalSystem1D::id()
+    );
+
+    const auto lower = system.lower();
+    const auto diagonal = system.diagonal();
+    const auto upper = system.upper();
+
+    for (Size row = 0; row < system.size(); ++row) {
+        Real value = diagonal[row] * x[row];
+
+        if (row > 0) {
+            value += upper[row - 1] * x[row - 1];
+        }
+
+        if (row + 1 < system.size()) {
+            value += lower[row] * x[row + 1];
+        }
+
+        y[row] = value;
+    }
+}
+
+DenseVector multiply(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+) {
+    DenseVector y{system.size()};
+    multiply(system, x, y);
+    return y;
+}
+
+DenseVector multiply_transpose(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+) {
+    DenseVector y{system.size()};
+    multiply_transpose(system, x, y);
+    return y;
+}
+
+DenseVector operator*(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+) {
+    return multiply(system, x);
 }
 
 }  // namespace fvm

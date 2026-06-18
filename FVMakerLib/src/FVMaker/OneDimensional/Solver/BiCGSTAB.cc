@@ -40,36 +40,6 @@ void validate_options(IterativeSolverOptions options, ID source) {
     return value;
 }
 
-[[nodiscard]] DenseVector multiply(
-    const TridiagonalSystem1D& system,
-    const DenseVector& x
-) {
-    require(
-        x.size() == system.size(),
-        error_catalog::kInvalidSystemSize,
-        BiCGSTAB::id()
-    );
-
-    DenseVector ax{system.size()};
-    const auto lower = system.lower();
-    const auto diagonal = system.diagonal();
-    const auto upper = system.upper();
-
-    for (Size row = 0; row < system.size(); ++row) {
-        ax[row] = diagonal[row] * x[row];
-
-        if (row > 0) {
-            ax[row] += lower[row - 1] * x[row - 1];
-        }
-
-        if (row + 1 < system.size()) {
-            ax[row] += upper[row] * x[row + 1];
-        }
-    }
-
-    return ax;
-}
-
 [[nodiscard]] DenseVector residual_b_minus_ax(
     const TridiagonalSystem1D& system,
     const DenseVector& solution
@@ -115,6 +85,8 @@ SolveResult BiCGSTAB::solve(
     DenseVector shadow = residual;
     DenseVector direction{n};
     DenseVector v{n};
+    DenseVector s{n};
+    DenseVector t{n};
 
     Real rho = Real{1};
     Real alpha = Real{1};
@@ -139,7 +111,7 @@ SolveResult BiCGSTAB::solve(
                 residual[i] + beta * (direction[i] - omega * v[i]);
         }
 
-        v = multiply(system, direction);
+        multiply(system, direction, v);
         const Real alpha_denominator = dot(shadow, v);
         require(
             std::abs(alpha_denominator) > Real{},
@@ -149,7 +121,6 @@ SolveResult BiCGSTAB::solve(
 
         alpha = next_rho / alpha_denominator;
 
-        DenseVector s{n};
         for (Size i = 0; i < n; ++i) {
             s[i] = residual[i] - alpha * v[i];
         }
@@ -162,7 +133,7 @@ SolveResult BiCGSTAB::solve(
             return make_result(system, std::move(solution), true, iteration);
         }
 
-        const DenseVector t = multiply(system, s);
+        multiply(system, s, t);
         const Real omega_denominator = dot(t, t);
         require(
             std::abs(omega_denominator) > Real{},

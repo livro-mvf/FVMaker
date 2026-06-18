@@ -6,17 +6,13 @@
 // Imprima os coeficientes do Exemplo 5.2
 //==============================================================================
 
+
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
 #include "../comum/mvf_capitulo_05.h"
-
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/FaceCentered1D.h>
-#include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
-#include <FVMaker/OneDimensional/System/EquationContribution1D.h>
 
-#include <array>
-#include <iomanip>
-#include <iostream>
-#include <vector>
 
 int main() {
     using capitulo_05::Real;

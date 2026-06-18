@@ -3,91 +3,105 @@
 // SPDX-License-Identifier: MIT
 //==============================================================================
 // Exercicio Computacional 5.2
-// Condicoes de contorno em uma rotina unica
+// Coeficientes em malha nao uniforme
 //==============================================================================
 
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
 #include "../comum/mvf_capitulo_05.h"
 
-#include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
-#include <FVMaker/OneDimensional/System/EquationContribution1D.h>
-
-#include <iomanip>
-#include <iostream>
-#include <string_view>
-
-namespace {
-
-using Real = capitulo_05::Real;
-
-void testar(
-    std::string_view nome,
-    fvm::BoundarySide1D lado,
-    const fvm::BoundaryCondition1D& condicao,
-    Real x_contorno,
-    Real distancia,
-    Real termo_fonte,
-    Real coeficiente_vizinho
-) {
-    const capitulo_05::CoeficientesContorno c =
-        capitulo_05::coeficientes_contorno(
-            lado,
-            condicao,
-            x_contorno,
-            distancia,
-            termo_fonte,
-            coeficiente_vizinho
-        );
-
-    fvm::EquationContribution1D coeficientes{1};
-    coeficientes.aw()[0] = c.aw;
-    coeficientes.ae()[0] = c.ae;
-    coeficientes.ap()[0] = c.ap;
-    coeficientes.bp()[0] = c.bp;
-
-    std::cout << nome << '\n';
-    std::cout << "  alpha = " << condicao.alpha(x_contorno)
-              << ", beta = " << condicao.beta(x_contorno)
-              << ", gamma = " << condicao.gamma(x_contorno) << '\n';
-    std::cout << coeficientes << "\n\n";
-}
-
-}  // namespace
 
 int main() {
+    using capitulo_05::Real;
+    using capitulo_05::Size;
+
     std::cout << std::fixed << std::setprecision(12);
-    std::cout << "Exercicio 5.2 - contornos por uma rotina unica\n\n";
 
-    testar(
-        "Dirichlet a esquerda: phi(0) = 1",
-        fvm::BoundarySide1D::left,
-        fvm::dirichlet_1d(1.0),
-        0.0,
-        0.5,
-        0.25,
-        1.0
+    const Real x_inicial = 0.0;
+    const Real comprimento = 5.0;
+    const Size n = 5;
+
+    const fvgrid::Axis1D eixo =
+        capitulo_05::malha_face_centrada_customizada(
+            capitulo_05::centros_potencia(n, comprimento, x_inicial, 1.45),
+            x_inicial,
+            comprimento
+        );
+
+    const auto fonte = [](Real x) { return x * x; };
+
+    const fvm::EquationContribution1D coeficientes =
+        capitulo_05::montar_coeficientes_poisson(
+            eixo,
+            fonte,
+            fvm::dirichlet_1d(1.0),
+            fvm::neumann_1d(0.0)
+        );
+
+    std::cout << "Exercicio 5.2 - coeficientes em malha nao uniforme\n\n";
+    std::cout << "Malha gerada pela FVGridMaker\n";
+    std::cout << "=============================\n";
+    std::cout << eixo << "\n\n";
+
+    std::cout << "Coeficientes montados sem mudar a rotina do Exercicio 5.1\n";
+    std::cout << "=========================================================\n";
+    std::cout << coeficientes << "\n\n";
+
+    bool internos_assimetricos = true;
+    bool ap_soma_interna = true;
+
+    for (Size p = 1; p + 1 < n; ++p) {
+        internos_assimetricos =
+            internos_assimetricos &&
+            !capitulo_05::perto(coeficientes.aw()[p], coeficientes.ae()[p]);
+
+        ap_soma_interna =
+            ap_soma_interna &&
+            capitulo_05::perto(
+                coeficientes.ap()[p],
+                coeficientes.aw()[p] + coeficientes.ae()[p]
+            );
+    }
+
+    unsigned aprovados{};
+    unsigned total{};
+
+    ++total;
+    aprovados += capitulo_05::registrar(
+        "A_W != A_E nos volumes internos",
+        internos_assimetricos
     );
 
-    testar(
-        "Neumann a direita: phi'(5) = 0",
-        fvm::BoundarySide1D::right,
-        fvm::neumann_1d(0.0),
-        5.0,
-        0.5,
-        20.25,
-        1.0
+    ++total;
+    aprovados += capitulo_05::registrar(
+        "A_P = A_W + A_E nos volumes internos",
+        ap_soma_interna
     );
 
-    testar(
-        "Robin a esquerda: 2 phi - phi' = 3",
-        fvm::BoundarySide1D::left,
-        fvm::robin_1d(2.0, -1.0, 3.0),
-        0.0,
-        0.25,
-        0.50,
-        4.0
+    std::cout << "\nTroca deliberada de delta x_w por delta x_e\n";
+    std::cout << "==========================================\n";
+
+    bool erro_detectado = false;
+    const auto xC = eixo.centers();
+
+    for (Size p = 1; p + 1 < n; ++p) {
+        const Real aw_errado = Real{1} / (xC[p + 1] - xC[p]);
+
+        if (!capitulo_05::perto(aw_errado, coeficientes.aw()[p])) {
+            erro_detectado = true;
+            std::cout << "P = " << p
+                      << ": A_W correto = " << coeficientes.aw()[p]
+                      << ", A_W com distancia trocada = " << aw_errado
+                      << '\n';
+        }
+    }
+
+    ++total;
+    aprovados += capitulo_05::registrar(
+        "a malha nao uniforme acusa a troca de distancia",
+        erro_detectado
     );
 
-    std::cout << "A mesma rotina mudou apenas alpha, beta, gamma e o lado.\n";
-
-    return 0;
+    return aprovados == total ? 0 : 1;
 }

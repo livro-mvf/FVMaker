@@ -83,4 +83,31 @@ private:
     void validate() const;
 };
 
+void multiply(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x,
+    DenseVector& y
+);
+
+void multiply_transpose(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x,
+    DenseVector& y
+);
+
+[[nodiscard]] DenseVector multiply(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+);
+
+[[nodiscard]] DenseVector multiply_transpose(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+);
+
+[[nodiscard]] DenseVector operator*(
+    const TridiagonalSystem1D& system,
+    const DenseVector& x
+);
+
 }  // namespace fvm

@@ -11,3 +11,4 @@ centrado e volume centrado em malhas nao uniformes refinadas.
 ```bash
 cmake --build build --target run_cap_exercicio_55
 ```
+Exercicio 5.5: compara o termo fonte aproximado por um ponto com integrais exatas.

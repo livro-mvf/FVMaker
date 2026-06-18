@@ -15,3 +15,4 @@ f(x) = exp(x) sin(x), N = 10,20,40,80
 ```bash
 cmake --build build --target run_cap_exercicio_53
 ```
+Exercicio 5.3: verifica a identidade A_E[i] = A_W[i+1] nas faces internas.

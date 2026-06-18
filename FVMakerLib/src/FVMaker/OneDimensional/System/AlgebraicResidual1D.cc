@@ -26,29 +26,7 @@ DenseVector algebraic_residual(
         TridiagonalSystem1D::id()
     );
 
-    const Size n = system.size();
-    const auto lower = system.lower();
-    const auto diagonal = system.diagonal();
-    const auto upper = system.upper();
-    const auto rhs = system.rhs().values();
-
-    DenseVector residual{n};
-
-    for (Size row = 0; row < n; ++row) {
-        Real ax = diagonal[row] * solution[row];
-
-        if (row > 0) {
-            ax += lower[row - 1] * solution[row - 1];
-        }
-
-        if (row + 1 < n) {
-            ax += upper[row] * solution[row + 1];
-        }
-
-        residual[row] = ax - rhs[row];
-    }
-
-    return residual;
+    return system * solution - system.rhs();
 }
 
 DenseVector algebraic_residual(

@@ -56,4 +56,14 @@ private:
     std::vector<Real> values_;
 };
 
+DenseVector& operator+=(DenseVector& left, const DenseVector& right);
+DenseVector& operator-=(DenseVector& left, const DenseVector& right);
+DenseVector& operator*=(DenseVector& vector, Real scalar);
+
+[[nodiscard]] DenseVector operator+(const DenseVector& left, const DenseVector& right);
+[[nodiscard]] DenseVector operator-(const DenseVector& left, const DenseVector& right);
+[[nodiscard]] DenseVector operator-(const DenseVector& vector);
+[[nodiscard]] DenseVector operator*(Real scalar, const DenseVector& vector);
+[[nodiscard]] DenseVector operator*(const DenseVector& vector, Real scalar);
+
 }  // namespace fvm

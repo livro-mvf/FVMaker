@@ -19,16 +19,10 @@
 //==============================================================================
 // Header c++
 //==============================================================================
-
-#include <cmath>
-//#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <random>
-#include <sstream>
-#include <stdexcept>
-#include <string>
 
 using Real = double;
 

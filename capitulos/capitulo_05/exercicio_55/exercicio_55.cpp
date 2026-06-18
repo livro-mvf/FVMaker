@@ -3,116 +3,191 @@
 // SPDX-License-Identifier: MIT
 //==============================================================================
 // Exercicio Computacional 5.5
-// Consistencia vista pelo residuo
+// Termo fonte: a aproximacao contra o valor exato
 //==============================================================================
 
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
 #include "../comum/mvf_capitulo_05.h"
 
-#include <FVGridMaker/OneDimensional/Distribution1D/Custom1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Coordinates1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Domain1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/FaceCentered1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
-
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <vector>
+#include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
 
 namespace {
 
 using Real = capitulo_05::Real;
 using Size = capitulo_05::Size;
 
-[[nodiscard]] Real solucao(Real x) {
-    return -Real{0.5} * x * x + x;
+[[nodiscard]] Real integral_x2(Real a, Real b) {
+    return (b * b * b - a * a * a) / Real{3};
 }
 
-[[nodiscard]] std::vector<Real> faces_nao_uniformes(Size n) {
-    std::vector<Real> faces(n + 1);
+[[nodiscard]] Real primitiva_exp_sin(Real x) {
+    return Real{0.5} * std::exp(x) * (std::sin(x) - std::cos(x));
+}
 
-    for (Size i = 0; i <= n; ++i) {
-        const Real s = static_cast<Real>(i) / static_cast<Real>(n);
-        faces[i] = s * s * s;
+[[nodiscard]] Real integral_exp_sin(Real a, Real b) {
+    return primitiva_exp_sin(b) - primitiva_exp_sin(a);
+}
+
+template <class Function, class Integral>
+[[nodiscard]] Real erro_total_fonte(
+    const fvgrid::Axis1D& eixo,
+    Function&& f,
+    Integral&& integral
+) {
+    Real erro_total{};
+
+    for (Size p = 0; p < eixo.num_cells(); ++p) {
+        const Real aproximado = capitulo_05::fonte_um_ponto(eixo, p, f);
+        const Real exato = integral(eixo.faces()[p], eixo.faces()[p + 1]);
+        erro_total += std::abs(aproximado - exato);
     }
 
-    return faces;
+    return erro_total;
 }
 
-[[nodiscard]] std::vector<Real> centros_nao_uniformes(Size n) {
-    std::vector<Real> centros(n);
+template <class Function, class Integral>
+void imprimir_fonte_por_volume(
+    std::string_view titulo,
+    const fvgrid::Axis1D& eixo,
+    Function&& f,
+    Integral&& integral
+) {
+    std::cout << titulo << '\n';
+    std::cout << "P              B_P          integral          erro\n";
 
-    for (Size i = 0; i < n; ++i) {
-        const Real s =
-            (static_cast<Real>(i) + Real{0.5}) / static_cast<Real>(n);
-        centros[i] = s * s;
+    for (Size p = 0; p < eixo.num_cells(); ++p) {
+        const Real aproximado = capitulo_05::fonte_um_ponto(eixo, p, f);
+        const Real exato = integral(eixo.faces()[p], eixo.faces()[p + 1]);
+
+        std::cout << std::setw(2) << p
+                  << std::setw(16) << aproximado
+                  << std::setw(16) << exato
+                  << std::setw(16) << std::abs(aproximado - exato)
+                  << '\n';
     }
-
-    return centros;
 }
 
-[[nodiscard]] Real residuo_maximo(const fvgrid::Axis1D& eixo) {
-    Real maximo{};
+void caso_x2_uniforme() {
+    const fvgrid::Axis1D eixo = fvgrid::Uniform1D::make(
+        fvgrid::NVol{5},
+        fvgrid::Length{5.0},
+        fvgrid::XInit{0.0},
+        fvgrid::FaceCentered1D{}
+    );
 
-    for (Size p = 1; p + 1 < eixo.num_cells(); ++p) {
-        const Real phi_w = solucao(eixo.centers()[p - 1]);
-        const Real phi_p = solucao(eixo.centers()[p]);
-        const Real phi_e = solucao(eixo.centers()[p + 1]);
+    imprimir_fonte_por_volume(
+        "f(x) = x^2, malha uniforme, N = 5",
+        eixo,
+        [](Real x) { return x * x; },
+        integral_x2
+    );
+}
 
-        const Real fluxo_e =
-            (phi_e - phi_p) / (eixo.centers()[p + 1] - eixo.centers()[p]);
-        const Real fluxo_w =
-            (phi_p - phi_w) / (eixo.centers()[p] - eixo.centers()[p - 1]);
-        const Real bp = eixo.cell_lengths()[p];
-        const Real residuo = fluxo_e - fluxo_w + bp;
+void ordem_x2_uniforme() {
+    std::cout << "\nErro local maximo de x^2 contra Delta x^3\n";
+    std::cout << "N              dx        erro_max     erro/dx^3\n";
 
-        maximo = std::max(maximo, std::abs(residuo));
+    for (Size n : {5u, 10u, 20u, 40u}) {
+        const fvgrid::Axis1D eixo = fvgrid::Uniform1D::make(
+            fvgrid::NVol{n},
+            fvgrid::Length{5.0},
+            fvgrid::XInit{0.0},
+            fvgrid::FaceCentered1D{}
+        );
+
+        Real erro_max{};
+        for (Size p = 0; p < eixo.num_cells(); ++p) {
+            const Real aproximado =
+                capitulo_05::fonte_um_ponto(eixo, p, [](Real x) { return x * x; });
+            const Real exato = integral_x2(eixo.faces()[p], eixo.faces()[p + 1]);
+            erro_max = std::max(erro_max, std::abs(aproximado - exato));
+        }
+
+        const Real dx = eixo.cell_lengths()[0];
+        std::cout << std::setw(2) << n
+                  << std::setw(16) << dx
+                  << std::setw(16) << erro_max
+                  << std::setw(16) << erro_max / (dx * dx * dx)
+                  << '\n';
     }
-
-    return maximo;
 }
 
-void imprimir_linha(Size n, Real erro_fc, Real erro_vc) {
-    std::cout << std::setw(4) << n
-              << std::setw(20) << erro_fc
-              << std::setw(20) << erro_vc << '\n';
+void ordem_x2_nao_uniforme() {
+    std::cout << "\nf(x) = x^2 em malha face centrada nao uniforme\n";
+    std::cout << "N        erro_total      ordem_obs\n";
+
+    Real erro_anterior{};
+    for (Size n : {10u, 20u, 40u, 80u}) {
+        const fvgrid::Axis1D eixo =
+            capitulo_05::malha_face_centrada_customizada(
+                capitulo_05::centros_potencia(n, 5.0, 0.0, 1.35),
+                0.0,
+                5.0
+            );
+
+        const Real erro = erro_total_fonte(
+            eixo,
+            [](Real x) { return x * x; },
+            integral_x2
+        );
+
+        Real ordem{};
+        if (erro_anterior > Real{}) {
+            ordem = std::log(erro_anterior / erro) / std::log(Real{2});
+        }
+
+        std::cout << std::setw(2) << n
+                  << std::setw(18) << erro
+                  << std::setw(15) << ordem << '\n';
+
+        erro_anterior = erro;
+    }
+}
+
+void caso_exp_sin() {
+    std::cout << "\nf(x) = exp(x) sin(x), erro total\n";
+    std::cout << "N              erro      ordem_obs\n";
+
+    Real erro_anterior{};
+    for (Size n : {10u, 20u, 40u, 80u}) {
+        const fvgrid::Axis1D eixo = fvgrid::Uniform1D::make(
+            fvgrid::NVol{n},
+            fvgrid::Length{1.0},
+            fvgrid::XInit{0.0},
+            fvgrid::FaceCentered1D{}
+        );
+
+        const Real erro_total = erro_total_fonte(
+            eixo,
+            [](Real x) { return std::exp(x) * std::sin(x); },
+            integral_exp_sin
+        );
+
+        Real ordem{};
+        if (erro_anterior > Real{}) {
+            ordem = std::log(erro_anterior / erro_total) / std::log(Real{2});
+        }
+
+        std::cout << std::setw(2) << n
+                  << std::setw(18) << erro_total
+                  << std::setw(15) << ordem << '\n';
+
+        erro_anterior = erro_total;
+    }
 }
 
 }  // namespace
 
 int main() {
     std::cout << std::fixed << std::setprecision(12);
-    std::cout << "Exercicio 5.5 - residuo de truncamento interno\n\n";
-    std::cout << "N       face centrada     volume centrada\n";
+    std::cout << "Exercicio 5.5 - termo fonte\n\n";
 
-    for (Size n : {8u, 16u, 32u, 64u}) {
-        const fvgrid::Domain1D dominio =
-            fvgrid::Domain1D::from_length(fvgrid::XInit{0.0}, fvgrid::Length{1.0});
-
-        const fvgrid::Axis1D face_centrada = fvgrid::Custom1D::make(
-            fvgrid::Coordinates1D::centers(centros_nao_uniformes(n)),
-            fvgrid::FaceCentered1D{},
-            dominio
-        );
-
-        const fvgrid::Axis1D volume_centrada = fvgrid::Custom1D::make(
-            fvgrid::Coordinates1D::faces(faces_nao_uniformes(n)),
-            fvgrid::VolumeCentered1D{},
-            dominio
-        );
-
-        imprimir_linha(
-            n,
-            residuo_maximo(face_centrada),
-            residuo_maximo(volume_centrada)
-        );
-    }
-
-    std::cout << "\nA malha face centrada elimina o termo de primeira ordem "
-              << "do fluxo neste teste quadratico.\n";
-    std::cout << "Na volume centrada, a geometria das faces e dos centros "
-              << "pode deixar residuo quando a malha nao uniforme e usada.\n";
+    caso_x2_uniforme();
+    ordem_x2_uniforme();
+    ordem_x2_nao_uniforme();
+    caso_exp_sin();
 
     return 0;
 }

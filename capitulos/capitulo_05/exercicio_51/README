@@ -26,3 +26,4 @@ entradas fora das tres diagonais sao nulas
 ```bash
 cmake --build build --target run_cap_exercicio_51
 ```
+Exercicio 5.1: imprime os coeficientes do Exemplo 5.2 e reconstroi a matriz tridiagonal.

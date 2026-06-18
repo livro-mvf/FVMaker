@@ -21,16 +21,11 @@
 //==============================================================================
 // Header c++
 //==============================================================================
-
-#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 using Real = double;
 using Relogio = std::chrono::steady_clock;

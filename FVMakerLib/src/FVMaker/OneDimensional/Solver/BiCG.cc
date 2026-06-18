@@ -36,66 +36,6 @@ void validate_options(IterativeSolverOptions options, ID source) {
     return value;
 }
 
-[[nodiscard]] DenseVector multiply(
-    const TridiagonalSystem1D& system,
-    const DenseVector& x
-) {
-    require(
-        x.size() == system.size(),
-        error_catalog::kInvalidSystemSize,
-        BiCG::id()
-    );
-
-    DenseVector ax{system.size()};
-    const auto lower = system.lower();
-    const auto diagonal = system.diagonal();
-    const auto upper = system.upper();
-
-    for (Size row = 0; row < system.size(); ++row) {
-        ax[row] = diagonal[row] * x[row];
-
-        if (row > 0) {
-            ax[row] += lower[row - 1] * x[row - 1];
-        }
-
-        if (row + 1 < system.size()) {
-            ax[row] += upper[row] * x[row + 1];
-        }
-    }
-
-    return ax;
-}
-
-[[nodiscard]] DenseVector multiply_transpose(
-    const TridiagonalSystem1D& system,
-    const DenseVector& x
-) {
-    require(
-        x.size() == system.size(),
-        error_catalog::kInvalidSystemSize,
-        BiCG::id()
-    );
-
-    DenseVector atx{system.size()};
-    const auto lower = system.lower();
-    const auto diagonal = system.diagonal();
-    const auto upper = system.upper();
-
-    for (Size row = 0; row < system.size(); ++row) {
-        atx[row] = diagonal[row] * x[row];
-
-        if (row > 0) {
-            atx[row] += upper[row - 1] * x[row - 1];
-        }
-
-        if (row + 1 < system.size()) {
-            atx[row] += lower[row] * x[row + 1];
-        }
-    }
-
-    return atx;
-}
-
 [[nodiscard]] DenseVector residual_b_minus_ax(
     const TridiagonalSystem1D& system,
     const DenseVector& solution
@@ -141,6 +81,8 @@ SolveResult BiCG::solve(
     DenseVector shadow = residual;
     DenseVector direction = residual;
     DenseVector shadow_direction = shadow;
+    DenseVector ad{n};
+    DenseVector at_shadow{n};
 
     Real rho = dot(shadow, residual);
     require(std::abs(rho) > Real{}, error_catalog::kSingularSystem, BiCG::id());
@@ -150,8 +92,8 @@ SolveResult BiCG::solve(
     }
 
     for (Size iteration = 1; iteration <= options.max_iterations; ++iteration) {
-        const DenseVector ad = multiply(system, direction);
-        const DenseVector at_shadow = multiply_transpose(system, shadow_direction);
+        multiply(system, direction, ad);
+        multiply_transpose(system, shadow_direction, at_shadow);
         const Real denominator = dot(shadow_direction, ad);
 
         require(

@@ -6,16 +6,20 @@
 // Primeira malha
 //==============================================================================
 
-#include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
-#include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
-
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <algorithm>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-#include <string>
+
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
+#include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
+#include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
+
 
 namespace {
 

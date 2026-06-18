@@ -17,25 +17,19 @@
 //   O programa confirma a simetria dos centros e a regra das faces ponderadas,
 //   imprime a razao Dx_max/Dx_min e resume as verificacoes automaticas.
 
+
+
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <algorithm>
-#include <cmath>
-#include <iomanip>
 #include <iostream>
 #include <random>
-#include <stdexcept>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
 
-#include <FVGridMaker/Core/StrongTypes.h>
-#include <FVGridMaker/Core/Types.h>
-#include <FVGridMaker/OneDimensional/Axis1D/Axis1D.h>
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
 #include <FVGridMaker/OneDimensional/Distribution1D/Custom1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/AxisGeometry1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/CoordinateKind1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Coordinates1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/Domain1D.h>
 #include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
 
 namespace {

@@ -12,3 +12,4 @@ coeficiente do vizinho interno, e devolve os coeficientes em um
 ```bash
 cmake --build build --target run_cap_exercicio_52
 ```
+Exercicio 5.2: monta coeficientes em uma malha nao uniforme e evidencia A_W != A_E.

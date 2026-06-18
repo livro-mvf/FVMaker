@@ -6,19 +6,20 @@
 // Refinamento nas fronteiras de Roberts
 //==============================================================================
 
-#include <FVGridMaker/OneDimensional/Distribution1D/Roberts1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
-#include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
-
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <algorithm>
-#include <array>
-#include <cmath>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 #include <numeric>
-#include <stdexcept>
-#include <string>
+
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
+#include <FVGridMaker/OneDimensional/Distribution1D/Roberts1D.h>
+#include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
+
 
 namespace {
 

@@ -18,18 +18,13 @@
 //   f(x) = exp(x), estima f'' nos nos internos pela formula nao uniforme e
 //   compara os erros em uma malha aleatoria e em uma malha uniforme.
 
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <limits>
-#include <numeric>
 #include <random>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 using Real = double;
 

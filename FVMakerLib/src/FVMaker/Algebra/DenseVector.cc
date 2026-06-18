@@ -16,8 +16,22 @@
 // FVMaker includes
 // ----------------------------------------------------------------------------
 #include <FVMaker/Algebra/DenseVector.h>
+#include <FVMaker/ErrorHandling/ErrorCatalog.h>
+#include <FVMaker/ErrorHandling/ThrowError.h>
 
 namespace fvm {
+
+namespace {
+
+void require_same_size(const DenseVector& left, const DenseVector& right) {
+    require(
+        left.size() == right.size(),
+        error_catalog::kInvalidSystemSize,
+        DenseVector::id()
+    );
+}
+
+}  // namespace
 
 DenseVector::DenseVector(Size size) : values_(size) {}
 
@@ -47,6 +61,62 @@ Real& DenseVector::operator[](Size index) noexcept {
 
 const Real& DenseVector::operator[](Size index) const noexcept {
     return values_[index];
+}
+
+DenseVector& operator+=(DenseVector& left, const DenseVector& right) {
+    require_same_size(left, right);
+
+    for (Size i = 0; i < left.size(); ++i) {
+        left[i] += right[i];
+    }
+
+    return left;
+}
+
+DenseVector& operator-=(DenseVector& left, const DenseVector& right) {
+    require_same_size(left, right);
+
+    for (Size i = 0; i < left.size(); ++i) {
+        left[i] -= right[i];
+    }
+
+    return left;
+}
+
+DenseVector& operator*=(DenseVector& vector, Real scalar) {
+    for (Real& value : vector.values()) {
+        value *= scalar;
+    }
+
+    return vector;
+}
+
+DenseVector operator+(const DenseVector& left, const DenseVector& right) {
+    DenseVector result = left;
+    result += right;
+    return result;
+}
+
+DenseVector operator-(const DenseVector& left, const DenseVector& right) {
+    DenseVector result = left;
+    result -= right;
+    return result;
+}
+
+DenseVector operator-(const DenseVector& vector) {
+    DenseVector result = vector;
+    result *= Real{-1};
+    return result;
+}
+
+DenseVector operator*(Real scalar, const DenseVector& vector) {
+    DenseVector result = vector;
+    result *= scalar;
+    return result;
+}
+
+DenseVector operator*(const DenseVector& vector, Real scalar) {
+    return scalar * vector;
 }
 
 }  // namespace fvm

@@ -11,3 +11,4 @@ quando `x_C` e o centroide do volume.
 ```bash
 cmake --build build --target run_cap_exercicio_54
 ```
+Exercicio 5.4: testa uma rotina unica para contornos Dirichlet, Neumann e Robin.

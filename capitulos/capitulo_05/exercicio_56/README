@@ -17,3 +17,4 @@ e reconstruida com apoio do FVMaker.
 ```bash
 cmake --build build --target run_cap_exercicio_56
 ```
+Exercicio 5.6: usa fontes constante e linear como testes de regressao em malhas uniformes e nao uniformes.

@@ -8,13 +8,20 @@
 #pragma once
 
 
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <string_view>
-#include <vector>
+#include <numeric>
 
-#include <FVGridMaker/OneDimensional/Axis1D/Axis1D.h>
+//==============================================================================
+// Header FVGridMaker
+//==============================================================================
+#include <FVGridMaker/OneDimensional/Distribution1D/Custom1D.h>
+#include <FVGridMaker/OneDimensional/GridPattern1D/FaceCentered1D.h>
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
 #include <FVMaker/OneDimensional/System/EquationContribution1D.h>
 
@@ -43,6 +50,73 @@ template <class Function>
     Function&& f
 ) {
     return f(eixo.centers()[p]) * eixo.cell_lengths()[p];
+}
+
+[[nodiscard]] inline Real soma(std::span<const Real> valores) {
+    return std::accumulate(valores.begin(), valores.end(), Real{});
+}
+
+[[nodiscard]] inline std::vector<Real> faces_potencia(
+    Size n,
+    Real comprimento,
+    Real x_inicial,
+    Real expoente
+) {
+    std::vector<Real> faces(n + 1);
+
+    for (Size i = 0; i <= n; ++i) {
+        const Real s = static_cast<Real>(i) / static_cast<Real>(n);
+        faces[i] = x_inicial + comprimento * std::pow(s, expoente);
+    }
+
+    return faces;
+}
+
+[[nodiscard]] inline std::vector<Real> centros_potencia(
+    Size n,
+    Real comprimento,
+    Real x_inicial,
+    Real expoente
+) {
+    std::vector<Real> centros(n);
+
+    for (Size i = 0; i < n; ++i) {
+        const Real s = (static_cast<Real>(i) + Real{0.5}) /
+                       static_cast<Real>(n);
+        centros[i] = x_inicial + comprimento * std::pow(s, expoente);
+    }
+
+    return centros;
+}
+
+[[nodiscard]] inline fvgrid::Axis1D malha_face_centrada_customizada(
+    std::vector<Real> centros,
+    Real x_inicial,
+    Real comprimento
+) {
+    return fvgrid::Custom1D::make(
+        fvgrid::Coordinates1D::centers(std::move(centros)),
+        fvgrid::FaceCentered1D{},
+        fvgrid::Domain1D::from_length(
+            fvgrid::XInit{x_inicial},
+            fvgrid::Length{comprimento}
+        )
+    );
+}
+
+[[nodiscard]] inline fvgrid::Axis1D malha_volume_centrada_customizada(
+    std::vector<Real> faces,
+    Real x_inicial,
+    Real comprimento
+) {
+    return fvgrid::Custom1D::make(
+        fvgrid::Coordinates1D::faces(std::move(faces)),
+        fvgrid::VolumeCentered1D{},
+        fvgrid::Domain1D::from_length(
+            fvgrid::XInit{x_inicial},
+            fvgrid::Length{comprimento}
+        )
+    );
 }
 
 struct CoeficientesContorno {
