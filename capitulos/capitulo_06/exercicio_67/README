@@ -1,1 +1,24 @@
-Exercicio 6.7: mede o efeito da estimativa inicial nos criterios de residuo.
+# Exercício Computacional 6.7: Efeito da Estimativa Inicial
+
+Compara estimativas iniciais diferentes sob critérios baseados em atualização e em resíduo.
+
+## O que o programa faz
+
+- usa um sistema de 80 incógnitas;
+- repete o cálculo para diferentes chutes constantes;
+- mantém a tolerância em `1e-8`;
+- imprime critério, chute, convergência, iterações, resíduo e erro;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_67
+```
+
+## Saída esperada
+
+O número de iterações pode depender fortemente do chute e do critério, embora a solução convergida seja a mesma.

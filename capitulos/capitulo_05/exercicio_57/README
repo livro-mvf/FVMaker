@@ -1,1 +1,24 @@
-Exercicio 5.7: mede o residuo de truncamento normalizado em arranjos face centrada e volume centrado.
+# Exercício Computacional 5.7: Consistência pelo Resíduo Normalizado
+
+Insere uma solução analítica na equação discreta e mede o resíduo sob refinamento.
+
+## O que o programa faz
+
+- malhas face centradas e volume centradas;
+- resíduo máximo e normalizado;
+- ordem observada;
+- caso com salto interno usado como contraste;
+
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_57
+```
+
+## Saída esperada
+
+A tabela apresenta `N`, resíduos e ordens. A coluna do salto interno é diagnóstica.

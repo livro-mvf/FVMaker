@@ -1,31 +1,24 @@
-# Exercicio Computacional 2.5: Reprodutibilidade de um experimento numerico
+# Exercício Computacional 2.5: Reprodutibilidade de um Experimento Numérico
 
-Este programa gera numeros pseudoaleatorios com `<random>`, calcula a media e
-registra, em arquivos de saida, os elementos necessarios para repetir o
-experimento: `N`, semente e resultado.
+Gera números pseudoaleatórios, calcula a média e registra tamanho, semente e resultado.
 
-## Funcionalidades
+## O que o programa faz
 
-- Executa duas vezes o experimento com a mesma semente.
-- Executa uma terceira vez com semente diferente.
-- Grava tres arquivos de saida.
-- Compara as duas execucoes com mesma semente usando `==`.
-- Repete a comparacao usando tolerancia numerica.
-- Mostra por que semente, tamanho do experimento e tolerancia fazem parte da
-  reprodutibilidade numerica.
+- duas execuções com a mesma semente;
+- uma execução com semente diferente;
+- comparação direta e com tolerância;
+- gravação dos três arquivos de resultados;
 
-## Arquivos gerados
+## Pré-requisitos
 
-Durante a execucao, o programa grava:
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
 
-- `exercicio_25_mesma_semente_a.txt`
-- `exercicio_25_mesma_semente_b.txt`
-- `exercicio_25_semente_diferente.txt`
-
-## Execucao
-
-Com `BUILD_BOOK=ON`, o alvo CMake gerado e:
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_25
 ```
+
+## Saída esperada
+
+Confirma a repetição com a mesma semente e evidencia a mudança causada por outra.

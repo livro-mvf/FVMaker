@@ -1,29 +1,25 @@
-# Exercicio Computacional 5.1: Imprima os coeficientes do exemplo
+# Exercício Computacional 5.1: Coeficientes do Exemplo 5.2
 
-Este programa usa a FVGridMaker para gerar a malha uniforme face centrada do
-Exemplo 5.2 e monta os vetores `A_W`, `A_E`, `A_P` e `B_P`.
+Gera a malha uniforme face centrada do exemplo e monta `A_W`, `A_P`, `A_E` e `B_P`.
 
-A montagem usa as equacoes do capitulo para volumes internos e contornos. Os
-coeficientes sao impressos diretamente com:
+## O que o programa faz
 
-```cpp
-std::cout << coeficientes << "\n";
-```
+- monta volumes internos e contornos;
+- imprime `EquationContribution1D`;
+- converte para `TridiagonalSystem1D`;
+- reconstrói matriz e lado direito;
+- verifica valores e estrutura tridiagonal;
 
-A reconstrucao da matriz usa `EquationContribution1D` e
-`to_tridiagonal_system` do FVMaker.
+## Pré-requisitos
 
-## Verificacoes
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
 
-```text
-vetores de coeficientes reproduzem o exemplo
-matriz e lado direito coincidem com a forma matricial do texto
-entradas fora das tres diagonais sao nulas
-```
-
-## Alvo CMake
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_51
 ```
-Exercicio 5.1: imprime os coeficientes do Exemplo 5.2 e reconstroi a matriz tridiagonal.
+
+## Saída esperada
+
+Exibe coeficientes, matriz e verificações. Retorna zero quando todas passam.

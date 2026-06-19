@@ -1,23 +1,26 @@
-# Exercicio Computacional 2.4: Plano minimo de testes para a Malha1D
+# Exercício Computacional 2.4: Plano Mínimo de Testes para a Malha 1D
 
-Este programa retoma a classe `Malha1D` do exercicio anterior e escreve um
-conjunto minimo de testes manuais. A intencao e mostrar que cada teste deve
-proteger um comportamento especifico da classe e declarar que erro de
-implementacao ele apanharia.
+Transforma os requisitos de `Malha1D` em testes executáveis.
 
-## Funcionalidades
+## O que o programa faz
 
-- Cria uma malha valida em `[0, 1]` com `N = 4`.
-- Verifica `dx` e os centros esperados.
-- Rejeita `N = 0`.
-- Rejeita `xmax <= xmin`.
-- Rejeita acesso a `centro(N)`.
-- Imprime, para cada teste, o erro de implementacao que ele detectaria.
+- construção válida, número de volumes e espaçamento;
+- coordenadas de centros e faces;
+- consistência dos extremos;
+- rejeição de domínio inválido e de `N = 0`;
+- acesso fora dos limites;
+- comparação de ponto flutuante com tolerância;
 
-## Execucao
+## Pré-requisitos
 
-Com `BUILD_BOOK=ON`, o alvo CMake gerado e:
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_24
 ```
+
+## Saída esperada
+
+Cada caso é marcado como aprovado ou reprovado. O processo retorna zero somente quando todo o plano é satisfeito.

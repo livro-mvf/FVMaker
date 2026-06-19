@@ -238,46 +238,6 @@ inline void imprimir_matriz(
     }
 }
 
-struct TDMATrace {
-    fvm::DenseVector t;
-    fvm::DenseVector q;
-    fvm::DenseVector phi;
-};
-
-[[nodiscard]] inline TDMATrace tdma_com_rastro(
-    const fvm::EquationContribution1D& coeficientes
-) {
-    const Size n = coeficientes.size();
-    const auto aw = coeficientes.aw().values();
-    const auto ap = coeficientes.ap().values();
-    const auto ae = coeficientes.ae().values();
-    const auto bp = coeficientes.bp().values();
-
-    TDMATrace rastro{
-        .t = fvm::DenseVector{n},
-        .q = fvm::DenseVector{n},
-        .phi = fvm::DenseVector{n}
-    };
-
-    rastro.t[0] = ae[0] / ap[0];
-    rastro.q[0] = bp[0] / ap[0];
-
-    for (Size i = 1; i < n; ++i) {
-        const Real aux = Real{1} / (ap[i] - aw[i] * rastro.t[i - 1]);
-        rastro.t[i] = ae[i] * aux;
-        rastro.q[i] = (bp[i] + aw[i] * rastro.q[i - 1]) * aux;
-    }
-
-    rastro.phi[n - 1] = rastro.q[n - 1];
-
-    for (Size reverse_index = n - 1; reverse_index > 0; --reverse_index) {
-        const Size i = reverse_index - 1;
-        rastro.phi[i] = rastro.t[i] * rastro.phi[i + 1] + rastro.q[i];
-    }
-
-    return rastro;
-}
-
 inline void imprimir_vetor(std::string_view nome, const fvm::DenseVector& v) {
     std::cout << nome << '\n';
     for (Size i = 0; i < v.size(); ++i) {

@@ -1,20 +1,24 @@
-# Exercicio Computacional 5.6: Coeficientes de um problema proprio
+# Exercício Computacional 5.6: Fontes Constante e Linear como Regressão
 
-Este programa monta, sem resolver, o sistema do problema
+Usa fontes cuja integral é reproduzida pela regra de um ponto quando `x_C` é o centroide.
 
-```text
-phi'' + 1 = 0 em [0,1]
-phi(0) = 0
-phi'(1) = 0
-```
+## O que o programa faz
 
-A malha uniforme face centrada com `N=3` vem da FVGridMaker. Os coeficientes
-sao impressos com `std::cout << coeficientes << "\n"`, e a matriz tridiagonal
-e reconstruida com apoio do FVMaker.
+- fontes constante e linear;
+- malha volume centrada não uniforme;
+- repetição em malha uniforme;
+- comparação de `B_P` com a integral analítica;
 
-## Alvo CMake
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_56
 ```
-Exercicio 5.6: usa fontes constante e linear como testes de regressao em malhas uniformes e nao uniformes.
+
+## Saída esperada
+
+Os erros devem ficar próximos da precisão de ponto flutuante.

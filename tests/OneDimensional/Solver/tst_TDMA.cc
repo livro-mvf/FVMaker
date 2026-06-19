@@ -114,4 +114,27 @@ TEST(TDMA, RejectsZeroPivotDuringElimination) {
     FAIL() << "TDMA did not reject a zero pivot.";
 }
 
+
+TEST(TDMA, ExposesForwardSweepCoefficients) {
+    const TridiagonalSystem1D system{
+        std::vector<Real>{-1.0, -1.0},
+        std::vector<Real>{2.0, 2.0, 2.0},
+        std::vector<Real>{-1.0, -1.0},
+        DenseVector{std::vector<Real>{1.0, 0.0, 1.0}}
+    };
+
+    const TDMAForwardSweep sweep = TDMA::forward_sweep(system);
+
+    ASSERT_EQ(sweep.t.size(), static_cast<Size>(3));
+    ASSERT_EQ(sweep.q.size(), static_cast<Size>(3));
+
+    EXPECT_DOUBLE_EQ(sweep.t[0], 0.5);
+    EXPECT_DOUBLE_EQ(sweep.t[1], 2.0 / 3.0);
+    EXPECT_DOUBLE_EQ(sweep.t[2], 0.0);
+
+    EXPECT_DOUBLE_EQ(sweep.q[0], 0.5);
+    EXPECT_DOUBLE_EQ(sweep.q[1], 1.0 / 3.0);
+    EXPECT_DOUBLE_EQ(sweep.q[2], 1.0);
+}
+
 }  // namespace fvm

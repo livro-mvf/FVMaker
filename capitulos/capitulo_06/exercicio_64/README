@@ -1,1 +1,25 @@
-Exercicio 6.4: mede iteracoes, operacoes estimadas e tempo dos metodos iterativos.
+# Exercício Computacional 6.4: Iterações Não São Tempo
+
+Mede custo e tempo de Jacobi, Gauss-Seidel híbrido, BiCG e BiCGSTAB para sistemas crescentes.
+
+## O que o programa faz
+
+- usa `N = 100, 300, 1000` no teste automático;
+- registra convergência e iterações;
+- estima operações por volume e iteração;
+- mede o tempo de execução;
+- mostra que menos iterações não implica necessariamente menor tempo;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_64
+```
+
+## Saída esperada
+
+A tabela contém `N`, método, convergência, iterações, operações estimadas e tempo. Tempos dependem da máquina e do build.

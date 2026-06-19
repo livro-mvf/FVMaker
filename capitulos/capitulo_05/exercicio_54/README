@@ -1,14 +1,25 @@
-# Exercicio Computacional 5.4: Fonte constante e linear
+# Exercício Computacional 5.4: Condições de Contorno em uma Rotina Única
 
-Este programa usa malhas volume centradas da FVGridMaker para testar a regra de
-um ponto no termo fonte.
+Representa Dirichlet, Neumann e Robin por `alpha * phi + beta * dphi/dx = gamma`.
 
-As fontes constante e linear sao reproduzidas exatamente, salvo arredondamento,
-quando `x_C` e o centroide do volume.
+## O que o programa faz
 
-## Alvo CMake
+- Dirichlet, com `beta = 0`;
+- Neumann, com `alpha = 0`;
+- Robin, com ambos presentes;
+- lados oeste e leste;
+- contribuições para diagonal e termo independente;
+
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_54
 ```
-Exercicio 5.4: testa uma rotina unica para contornos Dirichlet, Neumann e Robin.
+
+## Saída esperada
+
+Imprime os coeficientes e verifica automaticamente as formas particulares.

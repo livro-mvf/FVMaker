@@ -1,1 +1,25 @@
-Exercicio 6.8: testa dominancia fraca e convergencia de Jacobi e Gauss-Seidel.
+# Exercício Computacional 6.8: Dominância Fraca e Convergência
+
+Estuda sistemas com dominância diagonal fraca e compara o comportamento de Jacobi e Gauss-Seidel.
+
+## O que o programa faz
+
+- testa a dominância linha a linha;
+- distingue dominância fraca de estrita;
+- executa Jacobi e Gauss-Seidel;
+- registra convergência, iterações e resíduos;
+- mostra que dominância apenas fraca exige análise adicional;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_68
+```
+
+## Saída esperada
+
+A saída relaciona a classificação da matriz ao comportamento observado dos métodos, sem tratar dominância fraca como garantia universal.

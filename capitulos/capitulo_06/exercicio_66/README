@@ -1,1 +1,24 @@
-Exercicio 6.6: verifica o piso util da tolerancia em float e double.
+# Exercício Computacional 6.6: O Piso Útil da Tolerância
+
+Investiga o que acontece quando a tolerância solicitada se aproxima ou fica abaixo da resolução do tipo numérico.
+
+## O que o programa faz
+
+- resolve o problema em `float` e `double`;
+- informa o epsilon de máquina de cada tipo;
+- varia a tolerância em várias ordens de grandeza;
+- registra convergência, iterações, resíduo e erro;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_66
+```
+
+## Saída esperada
+
+A redução da tolerância deixa de melhorar a resposta quando encontra o piso imposto pela aritmética de ponto flutuante.

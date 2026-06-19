@@ -9,19 +9,19 @@
 
 #pragma once
 
-// ----------------------------------------------------------------------------
-// C++ standard library includes
-// ----------------------------------------------------------------------------
 #include <string_view>
 
-// ----------------------------------------------------------------------------
-// FVMaker includes
-// ----------------------------------------------------------------------------
+#include <FVMaker/Algebra/DenseVector.h>
 #include <FVMaker/Core/ID.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 #include <FVMaker/Solver/SolveResult.h>
 
 namespace fvm {
+
+struct TDMAForwardSweep final {
+    DenseVector t;
+    DenseVector q;
+};
 
 class TDMA final {
 public:
@@ -40,6 +40,10 @@ public:
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
+
+    [[nodiscard]] static TDMAForwardSweep forward_sweep(
+        const TridiagonalSystem1D& system
+    );
 
     [[nodiscard]] static SolveResult solve(const TridiagonalSystem1D& system);
 };

@@ -1,1 +1,24 @@
-Exercicio 6.5: compara criterios de parada no metodo de Gauss-Seidel.
+# Exercício Computacional 6.5: Efeito do Critério de Parada
+
+Resolve o mesmo sistema por Gauss-Seidel usando diferentes critérios de parada.
+
+## O que o programa faz
+
+- compara variação da solução, resíduo absoluto e resíduo normalizado;
+- registra iterações, resíduo final e erro;
+- usa o mesmo sistema, chute inicial e tolerância nas comparações;
+- evidencia que critérios numericamente distintos não são intercambiáveis;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_65
+```
+
+## Saída esperada
+
+A tabela mostra respostas e contagens diferentes para critérios diferentes; a comparação deve considerar também o erro final.

@@ -1,15 +1,25 @@
-# Exercicio Computacional 5.2: Condicoes de contorno em uma rotina unica
+# Exercício Computacional 5.2: Coeficientes em Malha Não Uniforme
 
-Este programa usa `BoundaryCondition1D` do FVMaker para representar Dirichlet,
-Neumann e Robin pela forma unica `alpha phi + beta dphi/dx = gamma`.
+Repete a montagem anterior em uma malha não uniforme, sem mudar a rotina de discretização.
 
-A rotina didatica recebe lado, distancia ao contorno, termo fonte do volume e
-coeficiente do vizinho interno, e devolve os coeficientes em um
-`EquationContribution1D`, impresso com `std::cout << coeficientes << "\n"`.
+## O que o programa faz
 
-## Alvo CMake
+- imprime coordenadas e espaçamentos;
+- monta `A_W`, `A_P`, `A_E` e `B_P`;
+- reconstrói a matriz tridiagonal;
+- compara coeficientes oeste e leste;
+- troca deliberadamente `delta x_w` por `delta x_e`;
+
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_52
 ```
-Exercicio 5.2: monta coeficientes em uma malha nao uniforme e evidencia A_W != A_E.
+
+## Saída esperada
+
+Evidencia que, em geral, `A_W != A_E` e mostra o erro provocado pela troca das distâncias.

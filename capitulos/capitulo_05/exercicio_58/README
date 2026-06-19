@@ -1,1 +1,24 @@
-Exercicio 5.8: monta e imprime os coeficientes do problema pequeno do capitulo.
+# Exercício Computacional 5.8: Coeficientes de um Problema Próprio
+
+Monta, sem resolver, a equação de Poisson com fonte constante em `[0,1]`, com `phi(0) = 0` e derivada nula em `x = 1`, numa malha face centrada de três volumes.
+
+## O que o programa faz
+
+- imprime a malha;
+- monta `A_W`, `A_P`, `A_E` e `B_P`;
+- converte para sistema tridiagonal;
+- reconstrói matriz e lado direito;
+
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_58
+```
+
+## Saída esperada
+
+Contém a geometria, os coeficientes e a matriz completa. A resolução fica para o capítulo 6.

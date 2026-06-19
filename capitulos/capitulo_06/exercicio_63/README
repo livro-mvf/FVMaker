@@ -1,1 +1,24 @@
-Exercicio 6.3: compara Jacobi, Gauss-Seidel hibrido, BiCG e BiCGSTAB.
+# Exercício Computacional 6.3: Quatro Métodos Iterativos Lado a Lado
+
+Compara Jacobi, Gauss-Seidel híbrido, BiCG e BiCGSTAB no mesmo sistema.
+
+## O que o programa faz
+
+- imprime as primeiras iterações de Jacobi;
+- usa tolerância `1e-10` e até 10000 iterações;
+- informa convergência, iterações, resíduo e erro em relação a `phi = 1`;
+- verifica a ordenação esperada do número de iterações;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_63
+```
+
+## Saída esperada
+
+Todos devem convergir para `phi = 1`; Gauss-Seidel deve superar Jacobi e BiCGSTAB deve superar Gauss-Seidel no caso estudado.

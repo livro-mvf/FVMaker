@@ -1,1 +1,25 @@
-Exercicio 6.1: monta os coeficientes do sistema tridiagonal e imprime a matriz reconstruida.
+# Exercício Computacional 6.1: Montagem dos Coeficientes
+
+Monta o sistema tridiagonal de um problema de Poisson em malha uniforme, incluindo condições de contorno na forma de Robin.
+
+## O que o programa faz
+
+- aceita opcionalmente `L N xI aw bw gw ae be ge` na linha de comando;
+- gera e imprime a malha;
+- monta e imprime `A_W`, `A_P`, `A_E` e `B_P`;
+- reconstrói a matriz e o lado direito;
+- confere a matriz do caso padrão com a equação de referência;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_exercicio_61
+```
+
+## Saída esperada
+
+No caso padrão, a matriz reconstruída deve coincidir com a referência e o teste deve passar.

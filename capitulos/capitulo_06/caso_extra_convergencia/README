@@ -1,1 +1,24 @@
-Caso extra: gera as tabelas dos exemplos convergente e divergente da secao de criterio de convergencia.
+# Caso Extra: Exemplos Convergente e Divergente
+
+Gera as tabelas da seção sobre critério de convergência para dois sistemas lineares 2 por 2.
+
+## O que o programa faz
+
+- parte de uma estimativa inicial conhecida;
+- aplica as iterações dos exemplos convergente e divergente;
+- imprime solução aproximada e resíduo por iteração;
+- preserva a apresentação truncada usada no texto;
+
+## Pré-requisitos
+
+Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
+
+```bash
+cmake --build build --target run_cap_caso_extra_convergencia
+```
+
+## Saída esperada
+
+O primeiro caso se aproxima da solução e reduz o resíduo; o segundo evidencia crescimento e divergência.

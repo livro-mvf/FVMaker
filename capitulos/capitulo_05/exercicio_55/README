@@ -1,14 +1,25 @@
-# Exercicio Computacional 5.5: Consistencia vista pelo residuo
+# Exercício Computacional 5.5: Termo Fonte Aproximado e Exato
 
-Este programa aplica a equacao discreta interna a solucao analitica do problema
-`phi'' + 1 = 0`, com `phi(0)=0` e `phi'(1)=0`.
+Compara `B_P = f(x_C[P]) * Delta x[P]` com a integral exata em cada volume.
 
-As malhas sao geradas pela FVGridMaker. O programa compara arranjos face
-centrado e volume centrado em malhas nao uniformes refinadas.
+## O que o programa faz
 
-## Alvo CMake
+- `f(x) = x^2` em malha uniforme;
+- erro máximo e `erro/Delta x^3`;
+- refinamento de malha não uniforme;
+- erro total e ordem observada;
+- `f(x) = exp(x) sin(x)` sob refinamento;
+
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_55
 ```
-Exercicio 5.5: compara o termo fonte aproximado por um ponto com integrais exatas.
+
+## Saída esperada
+
+As tabelas mostram aproximação, integral, erros e ordens observadas.

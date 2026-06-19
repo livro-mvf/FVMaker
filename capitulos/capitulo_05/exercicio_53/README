@@ -1,18 +1,23 @@
-# Exercicio Computacional 5.3: Termo fonte aproximado e exato
+# Exercício Computacional 5.3: Um Coeficiente de Face Visto dos Dois Lados
 
-Este programa calcula `B_P = f(x_C[P]) Dx[P]` em malhas face centradas geradas
-pela FVGridMaker e compara com integrais exatas.
+Verifica a conservação na interface: `A_E[i] = A_W[i + 1]`.
 
-## Casos
+## O que o programa faz
 
-```text
-f(x) = x^2 em [0,5], N = 5
-f(x) = exp(x) sin(x), N = 10,20,40,80
-```
+- calcula o coeficiente pelos dois volumes vizinhos;
+- imprime ambos os valores e sua diferença;
+- verifica a identidade dentro da tolerância;
 
-## Alvo CMake
+## Pré-requisitos
+
+Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+
+## Execução
 
 ```bash
 cmake --build build --target run_cap_exercicio_53
 ```
-Exercicio 5.3: verifica a identidade A_E[i] = A_W[i+1] nas faces internas.
+
+## Saída esperada
+
+As diferenças devem ser nulas dentro da tolerância; o teste falha se a identidade não for satisfeita.
