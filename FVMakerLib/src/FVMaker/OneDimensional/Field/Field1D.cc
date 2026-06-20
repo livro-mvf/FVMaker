@@ -107,22 +107,23 @@ bool Field1D::history_enabled() const noexcept {
 }
 
 Size Field1D::history_size() const noexcept {
-    return history_.size();
+    return values_.empty() ? Size{} : history_.size() / values_.size();
 }
 
 std::span<const Real> Field1D::history_step(Size index) const {
     require(
-        index < history_.size(),
+        index < history_size(),
         error_catalog::kOutOfRange,
         Field1D::id()
     );
 
-    return history_[index];
+    const Size offset = index * values_.size();
+    return std::span<const Real>{history_.data() + offset, values_.size()};
 }
 
 void Field1D::save_state() {
     if (keep_history_) {
-        history_.push_back(values_);
+        history_.insert(history_.end(), values_.begin(), values_.end());
     }
 }
 
@@ -140,7 +141,7 @@ void Field1D::validate_size() const {
 
 void Field1D::record_initial_state() {
     if (keep_history_) {
-        history_.push_back(values_);
+        history_.insert(history_.end(), values_.begin(), values_.end());
     }
 }
 

@@ -12,16 +12,18 @@
 // ----------------------------------------------------------------------------
 // C++ standard library includes
 // ----------------------------------------------------------------------------
-// #include <functional>
+#include <algorithm>
+#include <cmath>
+#include <functional>
 
 // ----------------------------------------------------------------------------
 // FVMaker includes
 // ----------------------------------------------------------------------------
-// #include <FVMaker/Algebra/DenseVector.h>
+#include <FVMaker/Algebra/DenseVector.h>
 #include <FVMaker/Core/ID.h>
 #include <FVMaker/Core/Types.h>
-// #include <FVMaker/ErrorHandling/ErrorCatalog.h>
-// #include <FVMaker/ErrorHandling/ThrowError.h>
+#include <FVMaker/ErrorHandling/ErrorCatalog.h>
+#include <FVMaker/ErrorHandling/ThrowError.h>
 
 namespace fvm {
 

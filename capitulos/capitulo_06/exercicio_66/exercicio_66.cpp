@@ -2,14 +2,17 @@
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
 //==============================================================================
-// Exercicio Computacional 6.6
-// O piso da tolerancia
+// Exercicio Computacional 6.6 - O piso da tolerancia
 //==============================================================================
 
-//==============================================================================
-// Header FVGridMaker
-//==============================================================================
-#include "../comum/mvf_capitulo_06.h"
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <string_view>
+#include <vector>
 
 namespace {
 
@@ -22,30 +25,25 @@ struct Resultado {
 };
 
 template <class T>
-Resultado<T> gauss_seidel_phi_um(
+[[nodiscard]] Resultado<T> gauss_seidel_phi_um(
     std::size_t n,
     T eps,
     std::size_t max_iter
 ) {
-    std::vector<T> phi(n, T{0});
+    std::vector<T> phi(n, T{});
 
     for (std::size_t iter = 1; iter <= max_iter; ++iter) {
         T max_delta{};
 
         for (std::size_t i = 0; i < n; ++i) {
             const T antigo = phi[i];
-            T soma{};
-
             if (i == 0) {
-                soma = T{2} + phi[1];
-                phi[i] = soma / T{3};
+                phi[i] = (T{2} + phi[1]) / T{3};
             } else if (i + 1 == n) {
                 phi[i] = phi[i - 1];
             } else {
-                soma = phi[i - 1] + phi[i + 1];
-                phi[i] = soma / T{2};
+                phi[i] = (phi[i - 1] + phi[i + 1]) / T{2};
             }
-
             max_delta = std::max(max_delta, std::abs(phi[i] - antigo));
         }
 
@@ -54,8 +52,7 @@ Resultado<T> gauss_seidel_phi_um(
             for (T valor : phi) {
                 erro = std::max(erro, std::abs(valor - T{1}));
             }
-
-            return Resultado<T>{true, iter, max_delta, erro};
+            return {true, iter, max_delta, erro};
         }
     }
 
@@ -63,8 +60,7 @@ Resultado<T> gauss_seidel_phi_um(
     for (T valor : phi) {
         erro = std::max(erro, std::abs(valor - T{1}));
     }
-
-    return Resultado<T>{false, max_iter, T{}, erro};
+    return {false, max_iter, T{}, erro};
 }
 
 template <class T>
@@ -88,8 +84,7 @@ void executar(std::string_view nome, std::size_t n) {
                   << std::setw(12) << (r.convergiu ? "sim" : "nao")
                   << std::setw(14) << r.iteracoes
                   << std::setw(18) << static_cast<double>(r.correcao)
-                  << std::setw(18) << static_cast<double>(r.erro)
-                  << '\n';
+                  << std::setw(18) << static_cast<double>(r.erro) << '\n';
     }
 }
 
@@ -103,6 +98,4 @@ int main() {
     executar<float>("float", n);
     std::cout << '\n';
     executar<double>("double", n);
-
-    return 0;
 }

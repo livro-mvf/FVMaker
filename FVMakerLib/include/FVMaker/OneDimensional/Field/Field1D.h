@@ -131,7 +131,7 @@ private:
     std::string name_;
     std::vector<Real> values_;
     bool keep_history_{false};
-    std::vector<std::vector<Real>> history_;
+    std::vector<Real> history_;
 
     void validate_size() const;
     void record_initial_state();

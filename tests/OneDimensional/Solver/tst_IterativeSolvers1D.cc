@@ -226,4 +226,30 @@ TEST(IterativeSolvers1D, RejectsInvalidTolerance) {
     FAIL() << "Jacobi did not reject an invalid tolerance.";
 }
 
+
+TEST(IterativeSolvers1D, GaussSeidelAcceptsInitialGuess) {
+    const TridiagonalSystem1D system = make_spd_system();
+    DenseVector initial_guess{3, 1.0};
+
+    const SolveResult result = GaussSeidel::solve(
+        system,
+        std::move(initial_guess)
+    );
+
+    EXPECT_TRUE(result.converged);
+    EXPECT_EQ(result.iterations, static_cast<Size>(0));
+    expect_unit_solution(result);
+}
+
+TEST(IterativeSolvers1D, GaussSeidelRejectsWrongInitialGuessSize) {
+    const TridiagonalSystem1D system = make_spd_system();
+
+    EXPECT_THROW(
+        static_cast<void>(
+            GaussSeidel::solve(system, DenseVector{2})
+        ),
+        FVMException
+    );
+}
+
 }  // namespace fvm

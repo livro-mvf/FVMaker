@@ -1,24 +1,50 @@
 //==============================================================================
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
-//==============================================================================
-// Exercicio Computacional 6.4
-// Iteracoes nao sao tempo
+// Exercicio Computacional 6.4 - Iteracoes nao sao tempo
 //==============================================================================
 
-//==============================================================================
-// Header FVGridMaker
-//==============================================================================
-#include "../comum/mvf_capitulo_06.h"
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include <FVMaker/OneDimensional/Solver/BiCG.h>
 #include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
+#include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 
 namespace {
+using Real = fvm::Real;
+using Size = fvm::Size;
 
-using Real = capitulo_06::Real;
-using Size = capitulo_06::Size;
+[[nodiscard]] fvm::TridiagonalSystem1D sistema_phi_um(Size n) {
+    std::vector<Real> lower(n - 1, -1.0);
+    std::vector<Real> diagonal(n, 2.0);
+    std::vector<Real> upper(n - 1, -1.0);
+    fvm::DenseVector rhs(n);
+    diagonal.front() = 3.0;
+    diagonal.back() = 1.0;
+    rhs[0] = 2.0;
+    return {std::move(lower), std::move(diagonal), std::move(upper), std::move(rhs)};
+}
+
+template <class Function>
+[[nodiscard]] Real menor_tempo_de(int repeticoes, Function&& f) {
+    Real melhor = std::numeric_limits<Real>::max();
+    for (int i = 0; i < repeticoes; ++i) {
+        const auto inicio = std::chrono::steady_clock::now();
+        f();
+        const auto fim = std::chrono::steady_clock::now();
+        melhor = std::min(
+            melhor,
+            std::chrono::duration<Real>(fim - inicio).count()
+        );
+    }
+    return melhor;
+}
 
 template <class Solver>
 void medir(
@@ -29,31 +55,23 @@ void medir(
     const fvm::IterativeSolverOptions& opcoes
 ) {
     fvm::SolveResult resultado{};
-    const Real tempo = capitulo_06::menor_tempo_de(1, [&] {
+    const Real tempo = menor_tempo_de(1, [&] {
         resultado = Solver::solve(sistema, opcoes);
     });
-
-    const Real flops_estimados =
-        flops_por_volume * static_cast<Real>(n) *
-        static_cast<Real>(resultado.iterations);
-
+    const Real flops = flops_por_volume * static_cast<Real>(n)
+                     * static_cast<Real>(resultado.iterations);
     std::cout << std::setw(12) << n
               << std::setw(16) << nome
               << std::setw(12) << (resultado.converged ? "sim" : "nao")
               << std::setw(14) << resultado.iterations
-              << std::setw(18) << flops_estimados
+              << std::setw(18) << flops
               << std::setw(16) << tempo << '\n';
 }
-
 }  // namespace
 
 int main() {
     std::cout << std::fixed << std::setprecision(6);
     std::cout << "Exercicio 6.4 - iteracoes nao sao tempo\n\n";
-    std::cout << "Tamanhos didaticos usados no build automatico: "
-              << "100, 300, 1000.\n";
-    std::cout << "Para uma campanha longa, troque por 1e2, 1e3, 1e4, 1e5.\n\n";
-
     std::cout << std::setw(12) << "N"
               << std::setw(16) << "metodo"
               << std::setw(12) << "conv."
@@ -68,17 +86,11 @@ int main() {
     };
 
     for (Size n : {100u, 300u, 1000u}) {
-        const fvm::EquationContribution1D coeficientes =
-            capitulo_06::coeficientes_phi_um(n);
-        const fvm::TridiagonalSystem1D sistema =
-            fvm::to_tridiagonal_system(coeficientes);
-
+        const fvm::TridiagonalSystem1D sistema = sistema_phi_um(n);
         medir<fvm::Jacobi>("Jacobi", n, 7.0, sistema, opcoes);
         medir<fvm::GaussSeidel>("GS hibrido", n, 7.0, sistema, opcoes);
         medir<fvm::BiCG>("BiCG", n, 30.0, sistema, opcoes);
         medir<fvm::BiCGSTAB>("BiCGSTAB", n, 45.0, sistema, opcoes);
         std::cout << '\n';
     }
-
-    return 0;
 }

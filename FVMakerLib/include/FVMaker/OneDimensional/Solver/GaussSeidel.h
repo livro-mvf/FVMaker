@@ -40,6 +40,12 @@ public:
         const TridiagonalSystem1D& system,
         IterativeSolverOptions options = {}
     );
+
+    [[nodiscard]] static SolveResult solve(
+        const TridiagonalSystem1D& system,
+        DenseVector initial_guess,
+        IterativeSolverOptions options = {}
+    );
 };
 
 }  // namespace fvm

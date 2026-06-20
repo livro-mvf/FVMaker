@@ -164,6 +164,20 @@ TEST(Field1D, KeepsHistoryWhenRequested) {
     EXPECT_EQ(field.history_size(), static_cast<Size>(0));
 }
 
+
+TEST(Field1D, StoresHistoryInOneContiguousBuffer) {
+    Field1D field{make_grid(), "phi", 1.0, true};
+    field.fill(2.0);
+    field.save_state();
+
+    const std::span<const Real> first = field.history_step(0);
+    const std::span<const Real> second = field.history_step(1);
+
+    ASSERT_EQ(first.size(), field.size());
+    ASSERT_EQ(second.size(), field.size());
+    EXPECT_EQ(second.data(), first.data() + field.size());
+}
+
 TEST(Field1D, DoesNotKeepHistoryByDefault) {
     Field1D field{make_grid(), "phi", 1.0};
 

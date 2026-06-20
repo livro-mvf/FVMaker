@@ -114,9 +114,22 @@ SolveResult GaussSeidel::solve(
     const TridiagonalSystem1D& system,
     IterativeSolverOptions options
 ) {
+    return solve(system, DenseVector{system.size()}, std::move(options));
+}
+
+SolveResult GaussSeidel::solve(
+    const TridiagonalSystem1D& system,
+    DenseVector initial_guess,
+    IterativeSolverOptions options
+) {
     validate_options(options, GaussSeidel::id());
 
     const Size n = system.size();
+    require(
+        initial_guess.size() == n,
+        error_catalog::kInvalidSystemSize,
+        GaussSeidel::id()
+    );
     const auto diagonal = system.diagonal();
 
     for (Size row = 0; row < n; ++row) {
@@ -127,7 +140,7 @@ SolveResult GaussSeidel::solve(
         );
     }
 
-    DenseVector solution{n};
+    DenseVector solution = std::move(initial_guess);
     DenseVector residual = algebraic_residual(system, solution);
     Real residual_norm = norm_infinity(residual);
     const Real initial_residual_norm = residual_norm;
