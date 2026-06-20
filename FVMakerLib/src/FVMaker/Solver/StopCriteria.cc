@@ -112,10 +112,14 @@ namespace {
             require(state.residual != nullptr, error_catalog::kInvalidArgument, StopCriteria::id());
             return VectorNorms::evaluate(*state.residual, criterion.norm);
 
-        case StopCriterionKind::residual_relative_initial:
+        case StopCriterionKind::residual_relative_initial: {
             require(state.residual != nullptr, error_catalog::kInvalidArgument, StopCriteria::id());
+            const Real initial_norm = state.initial_residual != nullptr
+                ? VectorNorms::evaluate(*state.initial_residual, criterion.norm)
+                : std::abs(state.initial_residual_norm);
             return VectorNorms::evaluate(*state.residual, criterion.norm)
-                   / safe_reference(state.initial_residual_norm);
+                   / std::max(initial_norm, std::numeric_limits<Real>::min());
+        }
 
         case StopCriterionKind::max_iterations:
             return static_cast<Real>(state.iteration);
@@ -141,7 +145,8 @@ std::string_view name(StopCriterionKind kind) noexcept {
         case StopCriterionKind::residual_absolute:
             return "residual_absolute";
         case StopCriterionKind::residual_relative_initial:
-            return "residual_relative_initial";
+            return std::string_view{"residual_relative_initial"};
+
         case StopCriterionKind::max_iterations:
             return "max_iterations";
     }

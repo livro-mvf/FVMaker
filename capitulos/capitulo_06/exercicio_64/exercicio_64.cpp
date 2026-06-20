@@ -7,11 +7,10 @@
 #include <iostream>
 #include <limits>
 #include <string_view>
+#include <thread>
 #include <utility>
 #include <vector>
 
-#include <FVMaker/OneDimensional/Solver/BiCG.h>
-#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
@@ -55,13 +54,15 @@ void medir(
     const fvm::IterativeSolverOptions& opcoes
 ) {
     fvm::SolveResult resultado{};
-    const Real tempo = menor_tempo_de(1, [&] {
+    constexpr int repeticoes = 3;
+    const Real tempo = menor_tempo_de(repeticoes, [&] {
         resultado = Solver::solve(sistema, opcoes);
     });
     const Real flops = flops_por_volume * static_cast<Real>(n)
                      * static_cast<Real>(resultado.iterations);
+
     std::cout << std::setw(12) << n
-              << std::setw(16) << nome
+              << std::setw(18) << nome
               << std::setw(12) << (resultado.converged ? "sim" : "nao")
               << std::setw(14) << resultado.iterations
               << std::setw(18) << flops
@@ -69,11 +70,32 @@ void medir(
 }
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
+    const bool campanha_completa =
+        argc > 1 && std::string_view{argv[1]} == "--full";
+    const std::vector<Size> tamanhos = campanha_completa
+        ? std::vector<Size>{100u, 1000u, 10000u, 100000u}
+        : std::vector<Size>{20u, 50u, 100u};
+
     std::cout << std::fixed << std::setprecision(6);
-    std::cout << "Exercicio 6.4 - iteracoes nao sao tempo\n\n";
+    std::cout << "Exercicio 6.4 - iteracoes nao sao tempo\n\n"
+              << "compilador: " << __VERSION__ << '\n'
+              << "threads informadas pelo hardware: "
+              << std::thread::hardware_concurrency() << '\n'
+              << "build: "
+#ifdef NDEBUG
+              << "Release"
+#else
+              << "Debug"
+#endif
+              << "\nrepeticoes por medida: 3\n"
+              << "campanha: "
+              << (campanha_completa ? "10^2, 10^3, 10^4, 10^5"
+                                    : "rapida; use --full para a campanha do texto")
+              << "\n\n";
+
     std::cout << std::setw(12) << "N"
-              << std::setw(16) << "metodo"
+              << std::setw(18) << "metodo"
               << std::setw(12) << "conv."
               << std::setw(14) << "iter"
               << std::setw(18) << "flops aprox."
@@ -81,16 +103,14 @@ int main() {
 
     const fvm::IterativeSolverOptions opcoes{
         .tolerance = 1.0e-8,
-        .max_iterations = 50000,
+        .max_iterations = campanha_completa ? 200000u : 50000u,
         .gauss_seidel_sweep = fvm::GaussSeidelSweep::hybrid
     };
 
-    for (Size n : {100u, 300u, 1000u}) {
+    for (Size n : tamanhos) {
         const fvm::TridiagonalSystem1D sistema = sistema_phi_um(n);
         medir<fvm::Jacobi>("Jacobi", n, 7.0, sistema, opcoes);
         medir<fvm::GaussSeidel>("GS hibrido", n, 7.0, sistema, opcoes);
-        medir<fvm::BiCG>("BiCG", n, 30.0, sistema, opcoes);
-        medir<fvm::BiCGSTAB>("BiCGSTAB", n, 45.0, sistema, opcoes);
         std::cout << '\n';
     }
 }

@@ -84,6 +84,7 @@ SolveResult Jacobi::solve(
     DenseVector residual = algebraic_residual(system, current);
     Real residual_norm = norm_infinity(residual);
     const Real initial_residual_norm = residual_norm;
+    const DenseVector initial_residual = residual;
     const StopCriteria criteria = options.stop_criteria.empty()
         ? StopCriteria::residual_absolute(options.tolerance)
         : options.stop_criteria;
@@ -95,6 +96,7 @@ SolveResult Jacobi::solve(
             .converged = true,
             .iterations = 0,
             .residual_norm = residual_norm,
+            .initial_residual_norm = initial_residual_norm,
         };
     }
 
@@ -126,6 +128,7 @@ SolveResult Jacobi::solve(
                 .solution = &current,
                 .correction = &correction,
                 .residual = &residual,
+                .initial_residual = &initial_residual,
                 .initial_residual_norm = initial_residual_norm
             }
         );
@@ -137,6 +140,7 @@ SolveResult Jacobi::solve(
                 .converged = true,
                 .iterations = iteration,
                 .residual_norm = residual_norm,
+                .initial_residual_norm = initial_residual_norm,
             };
             apply_stop_evaluation(result, stop);
             return result;
@@ -149,6 +153,7 @@ SolveResult Jacobi::solve(
         .converged = false,
         .iterations = options.max_iterations,
         .residual_norm = residual_norm,
+        .initial_residual_norm = initial_residual_norm,
     };
     result.reached_iteration_limit = true;
     result.stop_criterion = StopCriterionKind::max_iterations;

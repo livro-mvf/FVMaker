@@ -26,13 +26,13 @@ void imprimir_sistema(const fvm::TridiagonalSystem1D& sistema) {
               << std::setw(18) << "A_E"
               << std::setw(18) << "B_P" << '\n';
     for (Size p = 0; p < sistema.size(); ++p) {
-        const Real aw = p > 0 ? -sistema.lower()[p - 1] : 0.0;
-        const Real ae = p + 1 < sistema.size() ? -sistema.upper()[p] : 0.0;
+        const Real aw = p > 0 ? sistema.lower()[p - 1] : 0.0;
+        const Real ae = p + 1 < sistema.size() ? sistema.upper()[p] : 0.0;
         std::cout << std::setw(6) << p
                   << std::setw(18) << aw
-                  << std::setw(18) << sistema.diagonal()[p]
+                  << std::setw(18) << -sistema.diagonal()[p]
                   << std::setw(18) << ae
-                  << std::setw(18) << sistema.rhs()[p] << '\n';
+                  << std::setw(18) << -sistema.rhs()[p] << '\n';
     }
 }
 

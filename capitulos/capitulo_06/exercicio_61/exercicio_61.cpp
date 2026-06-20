@@ -59,13 +59,13 @@ void imprimir_sistema(const fvm::TridiagonalSystem1D& sistema) {
               << std::setw(16) << "A_E"
               << std::setw(16) << "B_P" << '\n';
     for (Size p = 0; p < sistema.size(); ++p) {
-        const Real aw = p > 0 ? -sistema.lower()[p - 1] : 0.0;
-        const Real ae = p + 1 < sistema.size() ? -sistema.upper()[p] : 0.0;
+        const Real aw = p > 0 ? sistema.lower()[p - 1] : 0.0;
+        const Real ae = p + 1 < sistema.size() ? sistema.upper()[p] : 0.0;
         std::cout << std::setw(6) << p
                   << std::setw(16) << aw
-                  << std::setw(16) << sistema.diagonal()[p]
+                  << std::setw(16) << -sistema.diagonal()[p]
                   << std::setw(16) << ae
-                  << std::setw(16) << sistema.rhs()[p] << '\n';
+                  << std::setw(16) << -sistema.rhs()[p] << '\n';
     }
 }
 
@@ -77,9 +77,9 @@ void imprimir_sistema(const fvm::TridiagonalSystem1D& sistema) {
         std::vector<Real>(sistema.size())
     );
     for (Size i = 0; i < sistema.size(); ++i) {
-        matriz[i][i] = sistema.diagonal()[i];
-        if (i > 0) matriz[i][i - 1] = sistema.lower()[i - 1];
-        if (i + 1 < sistema.size()) matriz[i][i + 1] = sistema.upper()[i];
+        matriz[i][i] = -sistema.diagonal()[i];
+        if (i > 0) matriz[i][i - 1] = -sistema.lower()[i - 1];
+        if (i + 1 < sistema.size()) matriz[i][i + 1] = -sistema.upper()[i];
     }
     return matriz;
 }
@@ -129,11 +129,11 @@ int main(int argc, char** argv) {
     }
 
     const std::vector<std::vector<Real>> esperada{
-        {-3.0, 1.0, 0.0, 0.0, 0.0},
-        {1.0, -2.0, 1.0, 0.0, 0.0},
-        {0.0, 1.0, -2.0, 1.0, 0.0},
-        {0.0, 0.0, 1.0, -2.0, 1.0},
-        {0.0, 0.0, 0.0, 1.0, -1.0}
+        {3.0, -1.0, 0.0, 0.0, 0.0},
+        {-1.0, 2.0, -1.0, 0.0, 0.0},
+        {0.0, -1.0, 2.0, -1.0, 0.0},
+        {0.0, 0.0, -1.0, 2.0, -1.0},
+        {0.0, 0.0, 0.0, -1.0, 1.0}
     };
     const auto obtida = matriz_densa(sistema);
     bool ok = true;

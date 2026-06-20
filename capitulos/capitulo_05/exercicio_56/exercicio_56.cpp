@@ -13,6 +13,7 @@
 #include "../comum/mvf_capitulo_05.h"
 
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
+#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
 
 
 namespace {

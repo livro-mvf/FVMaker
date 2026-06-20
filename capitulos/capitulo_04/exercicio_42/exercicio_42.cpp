@@ -17,6 +17,7 @@
 // Header FVGridMaker
 //==============================================================================
 #include <FVGridMaker/OneDimensional/Distribution1D/Random1D.h>
+#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
 #include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
 
 

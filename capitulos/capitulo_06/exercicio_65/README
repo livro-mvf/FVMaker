@@ -1,24 +1,27 @@
-# Exercício Computacional 6.5: Efeito do Critério de Parada
+# Exercicio Computacional 6.5: Criterios de parada
 
-Resolve o mesmo sistema por Gauss-Seidel usando diferentes critérios de parada.
+Corresponde a `exc_06:parada-prog`.
 
-## O que o programa faz
+Resolve o sistema por Gauss-Seidel e compara, de `1e-4` a `1e-11`:
 
-- compara variação da solução, resíduo absoluto e resíduo normalizado;
-- registra iterações, resíduo final e erro;
-- usa o mesmo sistema, chute inicial e tolerância nas comparações;
-- evidencia que critérios numericamente distintos não são intercambiáveis;
+- correcao absoluta;
+- correcao relativa pela norma da solucao;
+- correcao relativa pela amplitude;
+- residuo absoluto;
+- residuo normalizado pelo residuo inicial.
 
-## Pré-requisitos
+A tabela informa criterio, tolerancia, iteracoes, valor do criterio, residuo e
+erro real contra `phi=1`.
 
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+O modo padrao usa 120 volumes. Para a malha de 256 volumes usada como campanha
+refinada:
 
-## Execução
+```bash
+./bin/capitulos/cap_exercicio_65 --full
+```
+
+## Execucao rapida
 
 ```bash
 cmake --build build --target run_cap_exercicio_65
 ```
-
-## Saída esperada
-
-A tabela mostra respostas e contagens diferentes para critérios diferentes; a comparação deve considerar também o erro final.

@@ -42,6 +42,7 @@ struct StopCriteriaState final {
     const DenseVector* solution{};
     const DenseVector* correction{};
     const DenseVector* residual{};
+    const DenseVector* initial_residual{};
     Real initial_residual_norm{};
     std::span<const Real> weights{};
 };

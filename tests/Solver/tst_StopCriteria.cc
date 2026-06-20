@@ -119,4 +119,22 @@ TEST(StopCriteria, ReportsIterationLimitAfterCriteriaFail) {
     EXPECT_EQ(result.criterion, StopCriterionKind::max_iterations);
 }
 
+
+TEST(StopCriteria, NormalizesByActualSmallInitialResidual) {
+    const DenseVector initial{std::vector<Real>{0.1}};
+    const DenseVector residual{std::vector<Real>{0.01}};
+    StopCriteriaState state = make_state();
+    state.residual = &residual;
+    state.initial_residual = &initial;
+
+    const StopCriteria criteria{{StopCriterion{
+        StopCriterionKind::residual_relative_initial,
+        0.05,
+        NormType::l2
+    }}};
+    const StopCriteriaEvaluation result = criteria.evaluate(state);
+
+    EXPECT_FALSE(result.converged);
+}
+
 }  // namespace fvm

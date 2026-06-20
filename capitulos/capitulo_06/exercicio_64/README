@@ -1,25 +1,24 @@
-# Exercício Computacional 6.4: Iterações Não São Tempo
+# Exercicio Computacional 6.4: Iteracoes nao sao tempo
 
-Mede custo e tempo de Jacobi, Gauss-Seidel híbrido, BiCG e BiCGSTAB para sistemas crescentes.
+Corresponde a `exc_06:tempo-iteracoes`.
 
-## O que o programa faz
+Compara somente Jacobi e Gauss-Seidel hibrido, com a mesma tolerancia e chute.
+Para cada caso imprime iteracoes, estimativa de operacoes e o menor tempo de
+tres repeticoes. A saida registra compilador, tipo de build e concorrencia
+informada pelo hardware.
 
-- usa `N = 100, 300, 1000` no teste automático;
-- registra convergência e iterações;
-- estima operações por volume e iteração;
-- mede o tempo de execução;
-- mostra que menos iterações não implica necessariamente menor tempo;
+O modo padrao usa `N=20,50,100` para terminar rapidamente em integracao.
+A campanha sugerida no texto usa `N=10^2,10^3,10^4,10^5`:
 
-## Pré-requisitos
+```bash
+./bin/capitulos/cap_exercicio_64 --full
+```
 
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+A campanha completa e deliberadamente longa: metodos estacionarios podem
+exigir um numero de iteracoes que cresce aproximadamente como `N^2`.
 
-## Execução
+## Execucao rapida
 
 ```bash
 cmake --build build --target run_cap_exercicio_64
 ```
-
-## Saída esperada
-
-A tabela contém `N`, método, convergência, iterações, operações estimadas e tempo. Tempos dependem da máquina e do build.

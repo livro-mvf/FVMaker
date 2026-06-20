@@ -22,6 +22,7 @@
 //==============================================================================
 #include <FVGridMaker/OneDimensional/Distribution1D/Custom1D.h>
 #include <FVGridMaker/OneDimensional/GridPattern1D/FaceCentered1D.h>
+#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
 #include <FVMaker/OneDimensional/Boundary/BoundaryCondition1D.h>
 #include <FVMaker/OneDimensional/System/EquationContribution1D.h>
 

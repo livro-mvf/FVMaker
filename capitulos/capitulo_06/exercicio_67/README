@@ -1,24 +1,23 @@
-# Exercício Computacional 6.7: Efeito da Estimativa Inicial
+# Exercicio Computacional 6.7: O efeito da estimativa inicial
 
-Compara estimativas iniciais diferentes sob critérios baseados em atualização e em resíduo.
+Corresponde a `exc_06:estimativa-inicial`.
 
-## O que o programa faz
+O Gauss-Seidel da FVMaker recebe os chutes constantes `0`, `0.9` e `0.99`.
+O programa imprime `||R0||2`, `||R||2`, iteracoes, valor do criterio e erro
+para:
 
-- usa um sistema de 80 incógnitas;
-- repete o cálculo para diferentes chutes constantes;
-- mantém a tolerância em `1e-8`;
-- imprime critério, chute, convergência, iterações, resíduo e erro;
+- `||R||2 / ||R0||2 <= epsilon`;
+- `||R||2 <= epsilon`.
 
-## Pré-requisitos
+Ressalva importante: neste problema linear, esses tres erros iniciais sao
+multiplos escalares entre si. A evolucao do residuo tambem e proporcional;
+portanto, a normalizacao por `||R0||2` cancela a escala e produz a mesma
+contagem de iteracoes, salvo arredondamento. Assim, o exemplo nao demonstra que
+um chute melhor exige mais iteracoes relativas. O criterio absoluto, por sua
+vez, beneficia o chute melhor.
 
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
-
-## Execução
+## Execucao
 
 ```bash
 cmake --build build --target run_cap_exercicio_67
 ```
-
-## Saída esperada
-
-O número de iterações pode depender fortemente do chute e do critério, embora a solução convergida seja a mesma.

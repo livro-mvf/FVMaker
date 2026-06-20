@@ -1,24 +1,17 @@
-# Exercício Computacional 6.6: O Piso Útil da Tolerância
+# Exercicio Computacional 6.6: O piso da tolerancia
 
-Investiga o que acontece quando a tolerância solicitada se aproxima ou fica abaixo da resolução do tipo numérico.
+Corresponde a `exc_06:piso-epsilon`.
 
-## O que o programa faz
+Uma implementacao generica do mesmo Gauss-Seidel e executada em `float` e
+`double`. A tolerancia desce de `1e-3` ate valores abaixo do epsilon de
+maquina. Para cada caso sao registrados convergencia, iteracoes, maior
+correcao e erro real.
 
-- resolve o problema em `float` e `double`;
-- informa o epsilon de máquina de cada tipo;
-- varia a tolerância em várias ordens de grandeza;
-- registra convergência, iterações, resíduo e erro;
+A implementacao permanece local porque trocar o tipo escalar e observar a
+aritmetica de cada tipo e o proprio experimento.
 
-## Pré-requisitos
-
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
-
-## Execução
+## Execucao
 
 ```bash
 cmake --build build --target run_cap_exercicio_66
 ```
-
-## Saída esperada
-
-A redução da tolerância deixa de melhorar a resposta quando encontra o piso imposto pela aritmética de ponto flutuante.

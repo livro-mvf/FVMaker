@@ -61,7 +61,7 @@ struct FacesPonderadasDosCentros1D final {
         return fvgrid::AxisGeometry1D{
             .faces = std::move(faces),
             .centers = std::move(centers),
-            .pattern_name = name(),
+            .pattern_name = std::string{name()},
         };
     }
 };

@@ -1,40 +1,24 @@
-# Exercício Computacional 6.2: Malha, Sistema e TDMA
+# Exercicio Computacional 6.2: Implementar o TDMA
 
-O exercício resolve um problema unidimensional de Poisson nesta ordem:
+Corresponde a `exc_06:tdma` no final do Capitulo 6.
 
-1. geração da malha pela FVGridMaker;
-2. definição das condições de contorno;
-3. montagem do sistema pela FVMaker;
-4. solução com `fvm::TDMA`;
-5. impressão dos coeficientes `T` e `Q`;
-6. comparação das soluções analítica e numérica.
+Fluxo do programa:
 
-## Problema
+1. gera a malha com FVGridMaker;
+2. declara Dirichlet `phi(0)=1` e Neumann `dphi/dx(5)=0`;
+3. monta a equacao e o sistema com FVMaker;
+4. resolve com `fvm::TDMA`;
+5. obtem `T` e `Q` por `TDMA::forward_sweep`;
+6. imprime a solucao numerica e a analitica em `Variable1D`.
 
-A equação é `d²phi/dx² = -x²` em `[0, 5]`. As condições são declaradas explicitamente antes da montagem:
+Os coeficientes sao apresentados na convencao do algoritmo e do livro. O
+solver permanece centralizado na biblioteca, evitando uma segunda
+implementacao apenas para o exercicio.
 
-- `contorno_esquerdo = dirichlet_1d(1.0)`, isto é, `phi(0) = 1`;
-- `contorno_direito = neumann_1d(0.0)`, isto é, `dphi/dx(5) = 0`.
-
-A solução analítica é:
-
-```text
-phi(x) = -x^4/12 + 125x/3 + 1
-```
-
-## Uso das bibliotecas
-
-- `fvgrid::uniform_axis_1d` gera a malha;
-- `Equation1D` representa a equação, a fonte e os contornos;
-- `assemble_steady_1d` monta `TridiagonalSystem1D`;
-- `TDMA::solve` calcula a solução;
-- `TDMA::forward_sweep` fornece conjuntamente `T` e `Q`;
-- `Variable1D` armazena e imprime `phi` e `phi_analit`.
-
-O exercício não depende do arquivo `comum/mvf_capitulo_06.h`. A única rotina local relevante apenas formata o sistema para impressão.
-
-## Execução
+## Execucao
 
 ```bash
 cmake --build build --target run_cap_exercicio_62
 ```
+
+Requer C++20, FVMaker e FVGridMaker.

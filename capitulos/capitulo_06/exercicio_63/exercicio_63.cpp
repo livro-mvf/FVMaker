@@ -1,5 +1,5 @@
 //==============================================================================
-// Exercicio Computacional 6.3 - Metodos iterativos lado a lado
+// Exercicio Computacional 6.3 - Jacobi e Gauss-Seidel lado a lado
 //==============================================================================
 
 #include <iomanip>
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include <FVMaker/Algebra/ErrorNorms.h>
-#include <FVMaker/OneDimensional/Solver/BiCG.h>
-#include <FVMaker/OneDimensional/Solver/BiCGSTAB.h>
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
@@ -30,33 +28,53 @@ using Size = fvm::Size;
     return {std::move(lower), std::move(diagonal), std::move(upper), std::move(rhs)};
 }
 
-void imprimir_primeiras_iteracoes_jacobi(
-    const fvm::TridiagonalSystem1D& sistema,
-    Size numero
+void jacobi_step(
+    fvm::DenseVector& phi,
+    const fvm::TridiagonalSystem1D& sistema
 ) {
-    fvm::DenseVector atual{sistema.size()};
-    fvm::DenseVector proximo{sistema.size()};
-    const auto aW = sistema.lower();
-    const auto aP = sistema.diagonal();
-    const auto aE = sistema.upper();
-    const auto b = sistema.rhs().values();
-
-    std::cout << "Jacobi: primeiras iteracoes\n";
-    for (Size k = 0; k <= numero; ++k) {
-        std::cout << "k = " << k << "  ";
-        for (Real valor : atual.values()) {
-            std::cout << std::setw(12) << valor;
-        }
-        std::cout << '\n';
-
-        for (Size i = 0; i < atual.size(); ++i) {
-            Real soma = b[i];
-            if (i > 0) soma -= aW[i - 1] * atual[i - 1];
-            if (i + 1 < atual.size()) soma -= aE[i] * atual[i + 1];
-            proximo[i] = soma / aP[i];
-        }
-        atual = proximo;
+    const fvm::DenseVector anterior = phi;
+    for (Size i = 0; i < phi.size(); ++i) {
+        Real soma = sistema.rhs()[i];
+        if (i > 0) soma -= sistema.lower()[i - 1] * anterior[i - 1];
+        if (i + 1 < phi.size()) soma -= sistema.upper()[i] * anterior[i + 1];
+        phi[i] = soma / sistema.diagonal()[i];
     }
+}
+
+void gauss_seidel_step(
+    fvm::DenseVector& phi,
+    const fvm::TridiagonalSystem1D& sistema,
+    bool crescente
+) {
+    const auto atualizar = [&](Size i) {
+        Real soma = sistema.rhs()[i];
+        if (i > 0) soma -= sistema.lower()[i - 1] * phi[i - 1];
+        if (i + 1 < phi.size()) soma -= sistema.upper()[i] * phi[i + 1];
+        phi[i] = soma / sistema.diagonal()[i];
+    };
+
+    if (crescente) {
+        for (Size i = 0; i < phi.size(); ++i) atualizar(i);
+    } else {
+        for (Size i = phi.size(); i > 0; --i) atualizar(i - 1);
+    }
+}
+
+template <class Step>
+void imprimir_duas_iteracoes(
+    std::string_view nome,
+    const fvm::TridiagonalSystem1D& sistema,
+    Step&& step
+) {
+    fvm::DenseVector phi{sistema.size()};
+    std::cout << nome << '\n';
+    for (Size k = 0; k <= 2; ++k) {
+        std::cout << "k = " << k << "  ";
+        for (Real valor : phi.values()) std::cout << std::setw(12) << valor;
+        std::cout << '\n';
+        if (k < 2) step(phi, sistema, k + 1);
+    }
+    std::cout << '\n';
 }
 
 void imprimir_resultado(
@@ -65,7 +83,7 @@ void imprimir_resultado(
     const fvm::DenseVector& exata
 ) {
     const Real erro = fvm::norm_infinity(resultado.solution - exata);
-    std::cout << std::setw(16) << nome
+    std::cout << std::setw(22) << nome
               << std::setw(12) << (resultado.converged ? "sim" : "nao")
               << std::setw(14) << resultado.iterations
               << std::setw(18) << resultado.residual_norm
@@ -83,41 +101,52 @@ int main() {
     const fvm::TridiagonalSystem1D sistema = sistema_phi_um();
     const fvm::DenseVector exata(sistema.size(), 1.0);
 
-    std::cout << "Exercicio 6.3 - quatro metodos iterativos\n\n";
-    imprimir_primeiras_iteracoes_jacobi(sistema, 6);
-    std::cout << '\n';
+    std::cout << "Exercicio 6.3 - Jacobi e Gauss-Seidel\n\n";
+    imprimir_duas_iteracoes("Jacobi", sistema,
+        [](auto& phi, const auto& a, Size) { jacobi_step(phi, a); });
+    imprimir_duas_iteracoes("Gauss-Seidel crescente", sistema,
+        [](auto& phi, const auto& a, Size) { gauss_seidel_step(phi, a, true); });
+    imprimir_duas_iteracoes("Gauss-Seidel decrescente", sistema,
+        [](auto& phi, const auto& a, Size) { gauss_seidel_step(phi, a, false); });
+    imprimir_duas_iteracoes("Gauss-Seidel hibrido", sistema,
+        [](auto& phi, const auto& a, Size k) {
+            gauss_seidel_step(phi, a, k % 2 == 1);
+        });
 
-    const fvm::IterativeSolverOptions opcoes{
+    const fvm::IterativeSolverOptions base{
         .tolerance = 1.0e-10,
-        .max_iterations = 10000,
-        .gauss_seidel_sweep = fvm::GaussSeidelSweep::hybrid
+        .max_iterations = 10000
     };
-    const auto jacobi = fvm::Jacobi::solve(sistema, opcoes);
-    const auto gs = fvm::GaussSeidel::solve(sistema, opcoes);
-    const auto bicg = fvm::BiCG::solve(sistema, opcoes);
-    const auto bicgstab = fvm::BiCGSTAB::solve(sistema, opcoes);
+    const auto jacobi = fvm::Jacobi::solve(sistema, base);
 
-    std::cout << std::setw(16) << "metodo"
+    auto opcoes = base;
+    opcoes.gauss_seidel_sweep = fvm::GaussSeidelSweep::forward;
+    const auto crescente = fvm::GaussSeidel::solve(sistema, opcoes);
+    opcoes.gauss_seidel_sweep = fvm::GaussSeidelSweep::backward;
+    const auto decrescente = fvm::GaussSeidel::solve(sistema, opcoes);
+    opcoes.gauss_seidel_sweep = fvm::GaussSeidelSweep::hybrid;
+    const auto hibrido = fvm::GaussSeidel::solve(sistema, opcoes);
+
+    std::cout << std::setw(22) << "metodo"
               << std::setw(12) << "conv."
               << std::setw(14) << "iteracoes"
               << std::setw(18) << "residuo"
               << std::setw(18) << "erro vs 1" << '\n';
     imprimir_resultado("Jacobi", jacobi, exata);
-    imprimir_resultado("GS hibrido", gs, exata);
-    imprimir_resultado("BiCG", bicg, exata);
-    imprimir_resultado("BiCGSTAB", bicgstab, exata);
+    imprimir_resultado("GS crescente", crescente, exata);
+    imprimir_resultado("GS decrescente", decrescente, exata);
+    imprimir_resultado("GS hibrido", hibrido, exata);
 
-    const bool todos = registrar(
+    const bool convergiram = registrar(
         "todos convergem para phi = 1",
-        jacobi.converged && gs.converged && bicg.converged && bicgstab.converged
+        jacobi.converged && crescente.converged
+            && decrescente.converged && hibrido.converged
     );
-    const bool gs_melhor = registrar(
-        "Gauss-Seidel usa menos iteracoes que Jacobi",
-        gs.iterations < jacobi.iterations
+    const bool gs_mais_rapido = registrar(
+        "as tres varreduras de Gauss-Seidel superam Jacobi",
+        crescente.iterations < jacobi.iterations
+            && decrescente.iterations < jacobi.iterations
+            && hibrido.iterations < jacobi.iterations
     );
-    const bool bicgstab_melhor = registrar(
-        "BiCGSTAB usa menos iteracoes que Gauss-Seidel",
-        bicgstab.iterations < gs.iterations
-    );
-    return todos && gs_melhor && bicgstab_melhor ? 0 : 1;
+    return convergiram && gs_mais_rapido ? 0 : 1;
 }

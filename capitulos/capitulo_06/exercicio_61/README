@@ -1,25 +1,29 @@
-# Exercício Computacional 6.1: Montagem dos Coeficientes
+# Exercicio Computacional 6.1: Montar os coeficientes
 
-Monta o sistema tridiagonal de um problema de Poisson em malha uniforme, incluindo condições de contorno na forma de Robin.
+Corresponde a `exc_06:coeficientes` no final do Capitulo 6.
 
-## O que o programa faz
+O programa le opcionalmente
 
-- aceita opcionalmente `L N xI aw bw gw ae be ge` na linha de comando;
-- gera e imprime a malha;
-- monta e imprime `A_W`, `A_P`, `A_E` e `B_P`;
-- reconstrói a matriz e o lado direito;
-- confere a matriz do caso padrão com a equação de referência;
+```text
+L N xI alphaW betaW gammaW alphaE betaE gammaE
+```
 
-## Pré-requisitos
+e executa:
 
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+1. geracao da malha uniforme pela FVGridMaker;
+2. definicao das condicoes de contorno de Robin;
+3. montagem do sistema pela FVMaker;
+4. impressao de `A_W`, `A_P`, `A_E` e `B_P` na convencao do livro;
+5. verificacao da matriz da equacao de referencia.
 
-## Execução
+A FVMaker armazena internamente a matriz na forma algebrica. A impressao troca
+os sinais necessarios para reproduzir
+`A_P phi_P = A_W phi_W + A_E phi_E + B_P`.
+
+## Execucao
 
 ```bash
 cmake --build build --target run_cap_exercicio_61
 ```
 
-## Saída esperada
-
-No caso padrão, a matriz reconstruída deve coincidir com a referência e o teste deve passar.
+Requer C++20, FVMaker e FVGridMaker.

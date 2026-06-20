@@ -64,9 +64,10 @@ void resolver(
 }
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(6);
-    constexpr Size n = 120;
+    const Size n = argc > 1 && std::string_view{argv[1]} == std::string_view{"--full"}
+        ? 256u : 120u;
     const fvm::TridiagonalSystem1D sistema = sistema_phi_um(n);
     const fvm::DenseVector exata(n, 1.0);
 

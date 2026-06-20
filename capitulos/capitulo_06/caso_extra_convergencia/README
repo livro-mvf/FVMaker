@@ -1,24 +1,20 @@
-# Caso Extra: Exemplos Convergente e Divergente
+# Caso auxiliar: o mesmo sistema convergindo e divergindo
 
-Gera as tabelas da seção sobre critério de convergência para dois sistemas lineares 2 por 2.
+Este programa corresponde a `exc_06:converge-diverge`, que aparece no bloco
+de exercicios conceituais do LaTeX, antes da secao `No computador`. Portanto,
+nao e o exercicio computacional 6.9.
 
-## O que o programa faz
+Ele gera as tabelas dos dois arranjos do sistema 2 por 2:
 
-- parte de uma estimativa inicial conhecida;
-- aplica as iterações dos exemplos convergente e divergente;
-- imprime solução aproximada e resíduo por iteração;
-- preserva a apresentação truncada usada no texto;
+- parte de `x0=y0=0`;
+- aplica as formas convergente e divergente;
+- imprime `x`, `y` e o residuo por iteracao;
+- preserva a apresentacao truncada utilizada no texto.
 
-## Pré-requisitos
-
-Requer C++17, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
-
-## Execução
+## Execucao
 
 ```bash
 cmake --build build --target run_cap_caso_extra_convergencia
 ```
 
-## Saída esperada
-
-O primeiro caso se aproxima da solução e reduz o resíduo; o segundo evidencia crescimento e divergência.
+Requer C++20.

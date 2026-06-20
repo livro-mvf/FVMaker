@@ -238,6 +238,7 @@ TEST(IterativeSolvers1D, GaussSeidelAcceptsInitialGuess) {
 
     EXPECT_TRUE(result.converged);
     EXPECT_EQ(result.iterations, static_cast<Size>(0));
+    EXPECT_DOUBLE_EQ(result.initial_residual_norm, 0.0);
     expect_unit_solution(result);
 }
 
