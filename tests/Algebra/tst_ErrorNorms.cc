@@ -6,6 +6,7 @@
 // Author: FVMaker Team
 // License: GPL-3.0-or-later
 // ----------------------------------------------------------------------------
+#include <cmath>
 
 // ----------------------------------------------------------------------------
 // FVMaker includes
@@ -49,6 +50,12 @@ TEST(ErrorNorms, ComputesL2Norm) {
     EXPECT_DOUBLE_EQ(norm_l2(vector), 5.0);
     EXPECT_DOUBLE_EQ(VectorNorms::l2(vector), 5.0);
     EXPECT_DOUBLE_EQ(VectorNorms::evaluate(vector, NormType::l2), 5.0);
+}
+
+TEST(ErrorNorms, ComputesRmsNorm) {
+    const DenseVector vector{std::vector<Real>{3.0, 4.0}};
+    EXPECT_DOUBLE_EQ(norm_rms(vector), std::sqrt(12.5));
+    EXPECT_DOUBLE_EQ(VectorNorms::evaluate(vector, NormType::rms), std::sqrt(12.5));
 }
 
 }  // namespace fvm

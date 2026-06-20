@@ -12,6 +12,7 @@
 #include <FVMaker/OneDimensional/Solver/GaussSeidel.h>
 #include <FVMaker/OneDimensional/Solver/Jacobi.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
+#include <FVMaker/Solver/StopCriteria.h>
 
 namespace {
 using Real = fvm::Real;
@@ -28,51 +29,20 @@ using Size = fvm::Size;
     return {std::move(lower), std::move(diagonal), std::move(upper), std::move(rhs)};
 }
 
-void jacobi_step(
-    fvm::DenseVector& phi,
-    const fvm::TridiagonalSystem1D& sistema
-) {
-    const fvm::DenseVector anterior = phi;
-    for (Size i = 0; i < phi.size(); ++i) {
-        Real soma = sistema.rhs()[i];
-        if (i > 0) soma -= sistema.lower()[i - 1] * anterior[i - 1];
-        if (i + 1 < phi.size()) soma -= sistema.upper()[i] * anterior[i + 1];
-        phi[i] = soma / sistema.diagonal()[i];
-    }
-}
-
-void gauss_seidel_step(
-    fvm::DenseVector& phi,
-    const fvm::TridiagonalSystem1D& sistema,
-    bool crescente
-) {
-    const auto atualizar = [&](Size i) {
-        Real soma = sistema.rhs()[i];
-        if (i > 0) soma -= sistema.lower()[i - 1] * phi[i - 1];
-        if (i + 1 < phi.size()) soma -= sistema.upper()[i] * phi[i + 1];
-        phi[i] = soma / sistema.diagonal()[i];
-    };
-
-    if (crescente) {
-        for (Size i = 0; i < phi.size(); ++i) atualizar(i);
-    } else {
-        for (Size i = phi.size(); i > 0; --i) atualizar(i - 1);
-    }
-}
 
 template <class Step>
-void imprimir_duas_iteracoes(
+void imprimir_seis_iteracoes(
     std::string_view nome,
     const fvm::TridiagonalSystem1D& sistema,
     Step&& step
 ) {
     fvm::DenseVector phi{sistema.size()};
     std::cout << nome << '\n';
-    for (Size k = 0; k <= 2; ++k) {
+    for (Size k = 0; k <= 6; ++k) {
         std::cout << "k = " << k << "  ";
         for (Real valor : phi.values()) std::cout << std::setw(12) << valor;
         std::cout << '\n';
-        if (k < 2) step(phi, sistema, k + 1);
+        if (k < 6) step(phi, sistema, k + 1);
     }
     std::cout << '\n';
 }
@@ -86,7 +56,7 @@ void imprimir_resultado(
     std::cout << std::setw(22) << nome
               << std::setw(12) << (resultado.converged ? "sim" : "nao")
               << std::setw(14) << resultado.iterations
-              << std::setw(18) << resultado.residual_norm
+              << std::setw(18) << resultado.stop_value
               << std::setw(18) << erro << '\n';
 }
 
@@ -102,20 +72,29 @@ int main() {
     const fvm::DenseVector exata(sistema.size(), 1.0);
 
     std::cout << "Exercicio 6.3 - Jacobi e Gauss-Seidel\n\n";
-    imprimir_duas_iteracoes("Jacobi", sistema,
-        [](auto& phi, const auto& a, Size) { jacobi_step(phi, a); });
-    imprimir_duas_iteracoes("Gauss-Seidel crescente", sistema,
-        [](auto& phi, const auto& a, Size) { gauss_seidel_step(phi, a, true); });
-    imprimir_duas_iteracoes("Gauss-Seidel decrescente", sistema,
-        [](auto& phi, const auto& a, Size) { gauss_seidel_step(phi, a, false); });
-    imprimir_duas_iteracoes("Gauss-Seidel hibrido", sistema,
-        [](auto& phi, const auto& a, Size k) {
-            gauss_seidel_step(phi, a, k % 2 == 1);
+    fvm::DenseVector workspace{sistema.size()};
+    imprimir_seis_iteracoes("Jacobi", sistema,
+        [&workspace](auto& phi, const auto& a, Size) {
+            fvm::Jacobi::sweep(a, phi, workspace);
         });
-
+    imprimir_seis_iteracoes("GS_crescente", sistema,
+        [](auto& phi, const auto& a, Size) {
+            fvm::GaussSeidel::sweep(a, phi, fvm::GaussSeidelSweep::forward);
+        });
+    imprimir_seis_iteracoes("GS_decrescente", sistema,
+        [](auto& phi, const auto& a, Size) {
+            fvm::GaussSeidel::sweep(a, phi, fvm::GaussSeidelSweep::backward);
+        });
+    imprimir_seis_iteracoes("GS_simetrico", sistema,
+        [](auto& phi, const auto& a, Size) {
+            fvm::GaussSeidel::sweep(a, phi, fvm::GaussSeidelSweep::hybrid);
+        });
     const fvm::IterativeSolverOptions base{
         .tolerance = 1.0e-10,
-        .max_iterations = 10000
+        .max_iterations = 10000,
+        .stop_criteria = fvm::StopCriteria::residual_absolute(
+            1.0e-10, fvm::NormType::rms
+        )
     };
     const auto jacobi = fvm::Jacobi::solve(sistema, base);
 
@@ -125,7 +104,7 @@ int main() {
     opcoes.gauss_seidel_sweep = fvm::GaussSeidelSweep::backward;
     const auto decrescente = fvm::GaussSeidel::solve(sistema, opcoes);
     opcoes.gauss_seidel_sweep = fvm::GaussSeidelSweep::hybrid;
-    const auto hibrido = fvm::GaussSeidel::solve(sistema, opcoes);
+    const auto simetrico = fvm::GaussSeidel::solve(sistema, opcoes);
 
     std::cout << std::setw(22) << "metodo"
               << std::setw(12) << "conv."
@@ -135,18 +114,18 @@ int main() {
     imprimir_resultado("Jacobi", jacobi, exata);
     imprimir_resultado("GS crescente", crescente, exata);
     imprimir_resultado("GS decrescente", decrescente, exata);
-    imprimir_resultado("GS hibrido", hibrido, exata);
+    imprimir_resultado("GS simetrico", simetrico, exata);
 
     const bool convergiram = registrar(
         "todos convergem para phi = 1",
         jacobi.converged && crescente.converged
-            && decrescente.converged && hibrido.converged
+            && decrescente.converged && simetrico.converged
     );
     const bool gs_mais_rapido = registrar(
         "as tres varreduras de Gauss-Seidel superam Jacobi",
         crescente.iterations < jacobi.iterations
             && decrescente.iterations < jacobi.iterations
-            && hibrido.iterations < jacobi.iterations
+            && simetrico.iterations < jacobi.iterations
     );
     return convergiram && gs_mais_rapido ? 0 : 1;
 }

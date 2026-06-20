@@ -1,0 +1,7 @@
+# Exercicio Computacional 7.3
+
+Compara o residuo de truncamento em malhas uniformes e em faces perturbadas.
+Usa Custom1D/Uniform1D da FVGridMaker e a montagem, os contornos, o residuo
+algebrico e a norma RMS da FVMaker. A ordem interna converge para 2.
+
+Execucao: cmake --build build --target run_cap_exercicio_73

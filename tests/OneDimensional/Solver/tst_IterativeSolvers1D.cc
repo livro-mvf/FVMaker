@@ -6,6 +6,7 @@
 // Author: FVMaker Team
 // License: GPL-3.0-or-later
 // ----------------------------------------------------------------------------
+#include <array>
 
 #include <string_view>
 #include <vector>
@@ -39,6 +40,15 @@ namespace {
         std::vector<Real>{4.0, 5.0, 6.0},
         std::vector<Real>{-2.0, -1.0},
         DenseVector{std::vector<Real>{2.0, 4.0, 8.0}}
+    };
+}
+
+[[nodiscard]] TridiagonalSystem1D make_boundary_system() {
+    return TridiagonalSystem1D{
+        {-1.0, -1.0, -1.0, -1.0},
+        {3.0, 2.0, 2.0, 2.0, 3.0},
+        {-1.0, -1.0, -1.0, -1.0},
+        DenseVector{std::vector<Real>{0.0, 0.0, 0.0, 0.0, 20.0}}
     };
 }
 
@@ -149,6 +159,22 @@ TEST(IterativeSolvers1D, GaussSeidelSupportsHybridSweep) {
     );
 
     expect_unit_solution(result);
+}
+
+TEST(IterativeSolvers1D, BoundaryRowsAreUpdatedByAllSweepDirections) {
+    const DenseVector exact{std::vector<Real>{1.0, 3.0, 5.0, 7.0, 9.0}};
+    const auto check = [&exact](const SolveResult& result) {
+        ASSERT_TRUE(result.converged);
+        for (Size i = 0; i < exact.size(); ++i)
+            EXPECT_NEAR(result.solution[i], exact[i], 1.0e-8);
+    };
+    check(Jacobi::solve(make_boundary_system()));
+    for (const auto direction : std::array{GaussSeidelSweep::forward,
+                                           GaussSeidelSweep::backward,
+                                           GaussSeidelSweep::hybrid}) {
+        check(GaussSeidel::solve(make_boundary_system(),
+            IterativeSolverOptions{.gauss_seidel_sweep = direction}));
+    }
 }
 
 TEST(IterativeSolvers1D, JacobiUsesCustomStopCriteria) {

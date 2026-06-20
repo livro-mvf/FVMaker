@@ -59,6 +59,42 @@ void apply_stop_evaluation(
 
 }  // namespace
 
+void Jacobi::sweep(
+    const TridiagonalSystem1D& system,
+    DenseVector& solution,
+    DenseVector& workspace
+) {
+    const Size n = system.size();
+    require(
+        solution.size() == n && workspace.size() == n,
+        error_catalog::kInvalidSystemSize,
+        Jacobi::id()
+    );
+    const auto lower = system.lower();
+    const auto diagonal = system.diagonal();
+    const auto upper = system.upper();
+    const auto rhs = system.rhs().values();
+
+    for (Size row = 0; row < n; ++row) {
+        require(
+            std::abs(diagonal[row]) > Real{},
+            error_catalog::kSingularSystem,
+            Jacobi::id()
+        );
+        Real sum = rhs[row];
+        if (row > 0) {
+            sum -= lower[row - 1] * solution[row - 1];
+        }
+        if (row + 1 < n) {
+            sum -= upper[row] * solution[row + 1];
+        }
+        workspace[row] = sum / diagonal[row];
+    }
+
+    using std::swap;
+    swap(solution, workspace);
+}
+
 SolveResult Jacobi::solve(
     const TridiagonalSystem1D& system,
     IterativeSolverOptions options
@@ -66,10 +102,7 @@ SolveResult Jacobi::solve(
     validate_options(options, Jacobi::id());
 
     const Size n = system.size();
-    const auto lower = system.lower();
     const auto diagonal = system.diagonal();
-    const auto upper = system.upper();
-    const auto rhs = system.rhs().values();
 
     for (Size row = 0; row < n; ++row) {
         require(
@@ -103,21 +136,7 @@ SolveResult Jacobi::solve(
     for (Size iteration = 1; iteration <= options.max_iterations; ++iteration) {
         const DenseVector previous = current;
 
-        for (Size row = 0; row < n; ++row) {
-            Real sum = rhs[row];
-
-            if (row > 0) {
-                sum -= lower[row - 1] * current[row - 1];
-            }
-
-            if (row + 1 < n) {
-                sum -= upper[row] * current[row + 1];
-            }
-
-            next[row] = sum / diagonal[row];
-        }
-
-        current = next;
+        sweep(system, current, next);
         residual = algebraic_residual(system, current);
         residual_norm = norm_infinity(residual);
         const DenseVector correction = difference(current, previous);

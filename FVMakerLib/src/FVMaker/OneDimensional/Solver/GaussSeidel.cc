@@ -110,6 +110,36 @@ void sweep_backward(
 
 }  // namespace
 
+void GaussSeidel::sweep(
+    const TridiagonalSystem1D& system,
+    DenseVector& solution,
+    GaussSeidelSweep direction
+) {
+    const Size n = system.size();
+    require(
+        solution.size() == n,
+        error_catalog::kInvalidSystemSize,
+        GaussSeidel::id()
+    );
+    for (Real value : system.diagonal()) {
+        require(
+            std::abs(value) > Real{},
+            error_catalog::kSingularSystem,
+            GaussSeidel::id()
+        );
+    }
+
+    if (direction == GaussSeidelSweep::backward) {
+        sweep_backward(solution, system);
+        return;
+    }
+
+    sweep_forward(solution, system);
+    if (direction == GaussSeidelSweep::hybrid) {
+        sweep_backward(solution, system);
+    }
+}
+
 SolveResult GaussSeidel::solve(
     const TridiagonalSystem1D& system,
     IterativeSolverOptions options
@@ -163,14 +193,7 @@ SolveResult GaussSeidel::solve(
     for (Size iteration = 1; iteration <= options.max_iterations; ++iteration) {
         const DenseVector previous = solution;
 
-        if (options.gauss_seidel_sweep == GaussSeidelSweep::backward) {
-            sweep_backward(solution, system);
-        } else if (options.gauss_seidel_sweep == GaussSeidelSweep::hybrid
-                   && iteration % 2 == 0) {
-            sweep_backward(solution, system);
-        } else {
-            sweep_forward(solution, system);
-        }
+        sweep(system, solution, options.gauss_seidel_sweep);
 
         residual = algebraic_residual(system, solution);
         residual_norm = norm_infinity(residual);

@@ -1,0 +1,6 @@
+# Exercicio Computacional 7.1
+
+Programa autocontido para a regra do trapezio composta. Imprime a convergencia
+e gera dados CSV para o grafico log-log.
+
+Execucao: cmake --build build --target run_cap_exercicio_71

@@ -36,6 +36,12 @@ public:
         const TridiagonalSystem1D& system,
         IterativeSolverOptions options = {}
     );
+    static void sweep(
+        const TridiagonalSystem1D& system,
+        DenseVector& solution,
+        DenseVector& workspace
+    );
+
 };
 
 }  // namespace fvm

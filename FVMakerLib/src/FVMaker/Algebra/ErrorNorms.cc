@@ -28,6 +28,8 @@ Real VectorNorms::evaluate(const DenseVector& vector, NormType type) noexcept {
             return l1(vector);
         case NormType::l2:
             return l2(vector);
+        case NormType::rms:
+            return rms(vector);
     }
 
     return infinity(vector);
@@ -63,6 +65,13 @@ Real VectorNorms::l2(const DenseVector& vector) noexcept {
     return std::sqrt(sum);
 }
 
+Real VectorNorms::rms(const DenseVector& vector) noexcept {
+    if (vector.size() == 0) {
+        return Real{};
+    }
+    return l2(vector) / std::sqrt(static_cast<Real>(vector.size()));
+}
+
 Real norm_infinity(const DenseVector& vector) noexcept {
     return VectorNorms::infinity(vector);
 }
@@ -73,6 +82,10 @@ Real norm_l1(const DenseVector& vector) noexcept {
 
 Real norm_l2(const DenseVector& vector) noexcept {
     return VectorNorms::l2(vector);
+}
+
+Real norm_rms(const DenseVector& vector) noexcept {
+    return VectorNorms::rms(vector);
 }
 
 }  // namespace fvm

@@ -1,0 +1,7 @@
+# Exercicio Computacional 7.5
+
+Solucao manufaturada phi=1+x^2+0.2 sin(2 pi x), com equacao e contornos
+derivados no programa. A montagem e a verificacao usam FVGridMaker/FVMaker e
+recuperam ordem observada aproximadamente 2.
+
+Execucao: cmake --build build --target run_cap_exercicio_75

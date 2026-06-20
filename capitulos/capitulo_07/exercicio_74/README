@@ -1,0 +1,6 @@
+# Exercicio Computacional 7.4
+
+Repete o teste de truncamento para n=1,2,4,8. Mostra o aumento da magnitude do
+residuo e o deslocamento da faixa assintotica, preservando a segunda ordem.
+
+Execucao: cmake --build build --target run_cap_exercicio_74

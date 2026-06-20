@@ -72,8 +72,8 @@ public:
         return id().class_id();
     }
 
-    [[nodiscard]] static StopCriteria residual_absolute(Real tolerance);
-    [[nodiscard]] static StopCriteria residual_relative_initial(Real tolerance);
+    [[nodiscard]] static StopCriteria residual_absolute(Real tolerance, NormType norm = NormType::infinity);
+    [[nodiscard]] static StopCriteria residual_relative_initial(Real tolerance, NormType norm = NormType::infinity);
     [[nodiscard]] static StopCriteria correction_absolute(Real tolerance);
     [[nodiscard]] static StopCriteria chapter_defaults(Real tolerance);
 

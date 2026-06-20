@@ -1,0 +1,6 @@
+# Exercicio Computacional 7.2
+
+Programa autocontido. Soma 0.1 ate 10^8 vezes com float, double e long double,
+imprimindo erros absoluto e percentual.
+
+Execucao: cmake --build build --target run_cap_exercicio_72

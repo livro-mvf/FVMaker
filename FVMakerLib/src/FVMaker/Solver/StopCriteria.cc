@@ -159,12 +159,12 @@ StopCriteria::StopCriteria(std::vector<StopCriterion> criteria)
     validate();
 }
 
-StopCriteria StopCriteria::residual_absolute(Real tolerance) {
-    return StopCriteria{{StopCriterion{StopCriterionKind::residual_absolute, tolerance}}};
+StopCriteria StopCriteria::residual_absolute(Real tolerance, NormType norm) {
+    return StopCriteria{{StopCriterion{StopCriterionKind::residual_absolute, tolerance, norm}}};
 }
 
-StopCriteria StopCriteria::residual_relative_initial(Real tolerance) {
-    return StopCriteria{{StopCriterion{StopCriterionKind::residual_relative_initial, tolerance}}};
+StopCriteria StopCriteria::residual_relative_initial(Real tolerance, NormType norm) {
+    return StopCriteria{{StopCriterion{StopCriterionKind::residual_relative_initial, tolerance, norm}}};
 }
 
 StopCriteria StopCriteria::correction_absolute(Real tolerance) {

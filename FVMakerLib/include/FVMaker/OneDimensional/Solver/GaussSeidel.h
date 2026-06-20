@@ -46,6 +46,12 @@ public:
         DenseVector initial_guess,
         IterativeSolverOptions options = {}
     );
+    static void sweep(
+        const TridiagonalSystem1D& system,
+        DenseVector& solution,
+        GaussSeidelSweep direction
+    );
+
 };
 
 }  // namespace fvm
