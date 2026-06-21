@@ -73,51 +73,25 @@ DiffusionCoefficient1D arithmetic_field_coefficient_1d(
     const GridView1D& grid,
     const DenseVector& cell_values
 ) {
-    require(
-        cell_values.size() == grid.num_volumes(),
-        error_catalog::kInvalidCoefficient,
-        DiffusionCoefficient1D::id()
+    return interpolated_field_coefficient_1d(
+        grid, cell_values, ArithmeticFaceInterpolation1D{}
     );
-
-    DenseVector face_values{grid.num_faces()};
-    face_values[0] = cell_values[0];
-    face_values[grid.num_faces() - 1] = cell_values[grid.num_volumes() - 1];
-
-    for (Size face = 1; face + 1 < grid.num_faces(); ++face) {
-        face_values[face] = Real{0.5} * (cell_values[face - 1] + cell_values[face]);
-    }
-
-    return DiffusionCoefficient1D{std::move(face_values)};
 }
 
 DiffusionCoefficient1D harmonic_field_coefficient_1d(
     const GridView1D& grid,
     const DenseVector& cell_values
 ) {
-    require(
-        cell_values.size() == grid.num_volumes(),
-        error_catalog::kInvalidCoefficient,
-        DiffusionCoefficient1D::id()
-    );
-
-    DenseVector face_values{grid.num_faces()};
-    face_values[0] = cell_values[0];
-    face_values[grid.num_faces() - 1] = cell_values[grid.num_volumes() - 1];
-
-    for (Size face = 1; face + 1 < grid.num_faces(); ++face) {
-        const Real west = cell_values[face - 1];
-        const Real east = cell_values[face];
-
+    for (const Real value : cell_values.values()) {
         require(
-            west * east > Real{},
+            value > Real{},
             error_catalog::kInvalidCoefficient,
             DiffusionCoefficient1D::id()
         );
-
-        face_values[face] = Real{2.0} * west * east / (west + east);
     }
-
-    return DiffusionCoefficient1D{std::move(face_values)};
+    return interpolated_field_coefficient_1d(
+        grid, cell_values, HarmonicFaceInterpolation1D{}
+    );
 }
 
 DiffusionCoefficient1D field_coefficient_1d(

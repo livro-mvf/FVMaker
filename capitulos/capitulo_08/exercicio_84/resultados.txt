@@ -1,0 +1,10 @@
+
+Interface x=5.00000000e-01 (alinhada a face)
+metodo          gamma_face       erro RMS          fluxo
+   harmonica    1.98019802e+00    1.59690722e-14    1.98019802e+00
+  aritmetica    5.05000000e+01    9.94524659e-03    2.02893237e+00
+
+Interface x=5.30000000e-01 (corta um volume)
+metodo          gamma_face       erro RMS          fluxo
+   harmonica    1.98019802e+00    3.83703113e-03    1.88768287e+00
+  aritmetica    5.05000000e+01    1.35499161e-02    1.93191898e+00

@@ -1,0 +1,6 @@
+# Exercicio Computacional 8.3
+
+Resolve o problema sem fonte com Gamma=1+C0 sin^2(n pi x/L), contornos
+phi(xI)=0 e phi(xI+L)=1. L, xI e N podem ser passados na linha de comando.
+
+Execucao: ./build/bin/capitulos/cap_exercicio_83 [L] [xI] [N]

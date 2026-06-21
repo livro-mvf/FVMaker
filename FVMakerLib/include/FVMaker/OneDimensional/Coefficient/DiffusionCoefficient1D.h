@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <concepts>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -16,10 +17,42 @@
 #include <FVMaker/Algebra/DenseVector.h>
 #include <FVMaker/Core/ID.h>
 #include <FVMaker/Core/Types.h>
+#include <FVMaker/ErrorHandling/ErrorCatalog.h>
+#include <FVMaker/ErrorHandling/ThrowError.h>
 #include <FVMaker/Functions/FunctionTypes.h>
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
 
 namespace fvm {
+struct FaceInterpolationData1D final {
+    Real west_value{};
+    Real east_value{};
+    Real west_distance{};
+    Real east_distance{};
+};
+
+struct ArithmeticFaceInterpolation1D final {
+    [[nodiscard]] Real operator()(FaceInterpolationData1D data) const noexcept {
+        const Real distance = data.west_distance + data.east_distance;
+        return (data.east_distance * data.west_value
+              + data.west_distance * data.east_value) / distance;
+    }
+};
+
+struct HarmonicFaceInterpolation1D final {
+    [[nodiscard]] Real operator()(FaceInterpolationData1D data) const noexcept {
+        const Real distance = data.west_distance + data.east_distance;
+        return distance / (data.west_distance / data.west_value
+                         + data.east_distance / data.east_value);
+    }
+};
+
+template <class Interpolator>
+concept FaceInterpolator1D = requires(
+    const Interpolator& interpolation,
+    FaceInterpolationData1D data
+) {
+    { interpolation(data) } -> std::convertible_to<Real>;
+};
 
 class DiffusionCoefficient1D final {
 public:
@@ -74,6 +107,37 @@ template <ScalarFunction1D Function>
     const GridView1D& grid,
     DenseVector face_values
 );
+
+template <FaceInterpolator1D Interpolator>
+[[nodiscard]] DiffusionCoefficient1D interpolated_field_coefficient_1d(
+    const GridView1D& grid,
+    const DenseVector& cell_values,
+    Interpolator interpolation
+) {
+    require(
+        cell_values.size() == grid.num_volumes(),
+        error_catalog::kInvalidCoefficient,
+        DiffusionCoefficient1D::id()
+    );
+
+    DenseVector face_values{grid.num_faces()};
+    face_values[0] = cell_values[0];
+    face_values[grid.num_faces() - 1] = cell_values[grid.num_volumes() - 1];
+
+    for (Size face = 1; face + 1 < grid.num_faces(); ++face) {
+        const Size west = face - 1;
+        const Size east = face;
+        const FaceInterpolationData1D data{
+            .west_value = cell_values[west],
+            .east_value = cell_values[east],
+            .west_distance = grid.faces()[face] - grid.centers()[west],
+            .east_distance = grid.centers()[east] - grid.faces()[face]
+        };
+        face_values[face] = static_cast<Real>(interpolation(data));
+    }
+
+    return DiffusionCoefficient1D{std::move(face_values)};
+}
 
 [[nodiscard]] DiffusionCoefficient1D arithmetic_field_coefficient_1d(
     const GridView1D& grid,

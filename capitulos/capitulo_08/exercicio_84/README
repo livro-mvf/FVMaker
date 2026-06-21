@@ -1,0 +1,7 @@
+# Exercicio Computacional 8.4
+
+Dois materiais no mesmo campo Gamma(x), com Gamma1=1 e Gamma2=100. Compara
+media harmonica e aritmetica para interface alinhada a uma face e para uma
+interface que atravessa um volume.
+
+Execucao: cmake --build build --target run_cap_exercicio_84

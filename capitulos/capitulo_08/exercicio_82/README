@@ -1,0 +1,6 @@
+# Exercicio Computacional 8.2
+
+Solucao fabricada phi=sin(pi x), Gamma=1+x^2. Usa FVGridMaker, montagem
+conservativa da FVMaker, media harmonica e TDMA. A tabela recupera ordem 2.
+
+Execucao: cmake --build build --target run_cap_exercicio_82
