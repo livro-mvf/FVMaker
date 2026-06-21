@@ -144,11 +144,11 @@ int main() {
     // VolumeCentered1D informa que as faces são as coordenadas primárias e que
     // os centros devem ser calculados pela biblioteca.
     // -------------------------------------------------------------------------
+
     const fvgrid::Axis1D eixo = fvgrid::Uniform1D::make(
         fvgrid::NVol{n},
         fvgrid::Length{comprimento},
-        fvgrid::XInit{x_inicial},
-        fvgrid::VolumeCentered1D{}
+        fvgrid::XInit{x_inicial}
     );
 
     const auto xF = eixo.faces();

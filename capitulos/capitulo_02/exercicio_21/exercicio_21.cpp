@@ -1,75 +1,78 @@
 // SPDX-FileCopyrightText: 2026 FVMaker Team
 // SPDX-License-Identifier: MIT
 //
-// Exercicio Computacional 2.1
-// Titulo: Refatoracao da funcao da abertura.
+// Exercicio Computacional 2.1 -- Refatoracao da funcao da abertura
 //
 // Objetivo:
-//   Refatorar a funcao calc apresentada na abertura do capitulo, preservando
-//   o resultado numerico e melhorando nomes, validacao e flexibilidade.
+//   Reescrever a funcao 'calc' da abertura do capitulo de modo que o
+//   resultado numerico seja preservado, mas o codigo fique mais claro,
+//   mais seguro e mais facil de reutilizar.
 //
 // Modelo numerico:
-//   Integral aproximada pela regra dos trapezios em um intervalo finito.
+//   Integral de f em [a, b] aproximada pela regra dos trapezios composta
+//   com n subintervalos de mesmo tamanho h = (b - a) / n:
 //
-// Verificacoes:
-//   O programa compara a versao original com a versao refatorada, testa uma
-//   integral conhecida e confirma que parametros invalidos sao rejeitados.
+//       I ~= h * ( f(a)/2 + f(x_1) + ... + f(x_{n-1}) + f(b)/2 ).
+//
+//   O erro dessa regra cai com h^2; ao dobrar n, o erro tende a cair
+//   por um fator de quatro.
+//
+// O que este programa demonstra:
+//   - separar o algoritmo (integrar) da funcao que esta sendo integrada;
+//   - receber a integranda como argumento, em vez de depender de uma
+//     funcao global fixa;
+//   - validar os dados de entrada antes de calcular;
+//   - verificar o resultado contra valores conhecidos por meio de testes.
 
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 using Real = double;
 
 namespace {
 
-[[nodiscard]] inline Real f_da_abertura(Real x)
+// ----------------------------------------------------------------------------
+// Integranda usada em todos os testes deste exercicio.
+//
+// E a mesma funcao f(x) = x^2 da abertura do capitulo. Definimo-la uma
+// unica vez, aqui, para nao repetir a expressao ao longo do programa.
+// ----------------------------------------------------------------------------
+[[nodiscard]] Real quadratica(Real x)
 {
     return x * x;
 }
 
-[[nodiscard]] inline Real calc_original(Real a, Real b, int n)
-{
-    const Real h = (b - a) / static_cast<Real>(n);
-    Real soma =
-        Real{0.5} * (f_da_abertura(a) + f_da_abertura(b));
-
-    for (int indice = 1; indice < n; ++indice) {
-        soma += f_da_abertura(a + static_cast<Real>(indice) * h);
-    }
-
-    return soma * h;
-}
-
-//==============================================================================
-// Regra dos trapezios refatorada
-//==============================================================================
-
+// ----------------------------------------------------------------------------
+// Regra dos trapezios composta.
+//
+// 'funcao' e a integranda; pode ser uma funcao livre, uma lambda ou
+// qualquer objeto chamavel que receba um Real e devolva um Real. O tipo
+// e mantido generico (template) justamente para que o mesmo algoritmo
+// sirva a qualquer integranda, sem reescrita.
+//
+// As quatro verificacoes iniciais garantem que o calculo so prossegue
+// com dados validos: limites finitos, intervalo bem orientado e ao menos
+// um subintervalo (o que tambem evita a divisao por zero no passo h).
+// ----------------------------------------------------------------------------
 template <typename Funcao>
-[[nodiscard]] inline Real integrar_trapezios(
+[[nodiscard]] Real integrar_trapezios(
     Funcao funcao,
     Real limite_inferior,
     Real limite_superior,
     std::size_t numero_subintervalos
 )
 {
-    if (!std::isfinite(limite_inferior)) {
-        throw std::invalid_argument("O limite inferior deve ser finito.");
+    if (!std::isfinite(limite_inferior) || !std::isfinite(limite_superior)) {
+        throw std::invalid_argument("Os limites de integracao devem ser finitos.");
     }
-
-    if (!std::isfinite(limite_superior)) {
-        throw std::invalid_argument("O limite superior deve ser finito.");
-    }
-
     if (!(limite_superior > limite_inferior)) {
         throw std::invalid_argument(
             "O limite superior deve ser maior que o limite inferior."
         );
     }
-
     if (numero_subintervalos == 0) {
         throw std::invalid_argument(
             "O numero de subintervalos deve ser maior que zero."
@@ -80,277 +83,117 @@ template <typename Funcao>
         (limite_superior - limite_inferior)
         / static_cast<Real>(numero_subintervalos);
 
-    Real soma =
-        Real{0.5}
-        * (funcao(limite_inferior) + funcao(limite_superior));
+    // As extremidades entram com peso 1/2; os pontos internos, com peso 1.
+    Real soma = Real{0.5} * (funcao(limite_inferior) + funcao(limite_superior));
 
-    for (std::size_t indice = 1; indice < numero_subintervalos; ++indice) {
-        soma += funcao(limite_inferior + static_cast<Real>(indice) * passo);
+    for (std::size_t i = 1; i < numero_subintervalos; ++i) {
+        soma += funcao(limite_inferior + static_cast<Real>(i) * passo);
     }
 
     return soma * passo;
 }
 
-//==============================================================================
-// Funcoes auxiliares de teste
-//==============================================================================
+// ----------------------------------------------------------------------------
+// Contagem dos testes.
+//
+// Em vez de espalhar contadores pelo programa, guardamos os totais nesta
+// struct simples e deixamos as funcoes de teste atualiza-los. Nao ha
+// necessidade de classe nem de encapsulamento: sao apenas dois numeros.
+// ----------------------------------------------------------------------------
+struct Placar {
+    unsigned aprovados = 0;
+    unsigned total     = 0;
+};
 
-[[nodiscard]] inline bool aproximadamente_igual(
-    Real a,
-    Real b,
-    Real tolerancia
-)
+// Registra o resultado de um teste e imprime PASSOU ou FALHOU.
+void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
-    return std::abs(a - b) <= tolerancia;
+    ++placar.total;
+    if (passou) {
+        ++placar.aprovados;
+    }
+    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
-inline bool testar_valor(
+// Teste de valor: 'obtido' deve ficar dentro de 'tolerancia' do 'esperado'.
+void testar_valor(
+    Placar& placar,
     const std::string& descricao,
     Real obtido,
     Real esperado,
     Real tolerancia
 )
 {
-    const bool passou = aproximadamente_igual(obtido, esperado, tolerancia);
-
-    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
+    const bool passou = std::abs(obtido - esperado) <= tolerancia;
+    registrar(placar, descricao, passou);
 
     if (!passou) {
         std::cout << std::fixed << std::setprecision(16)
-                  << "  obtido     = " << obtido << '\n'
-                  << "  esperado   = " << esperado << '\n'
-                  << "  tolerancia = " << tolerancia << '\n';
+                  << "    obtido     = " << obtido     << '\n'
+                  << "    esperado   = " << esperado   << '\n'
+                  << "    tolerancia = " << tolerancia << '\n';
     }
-
-    return passou;
 }
 
-inline bool testar_excecao(
-    const std::string& descricao,
-    Real limite_inferior,
-    Real limite_superior,
-    std::size_t numero_subintervalos
-)
+// Teste de excecao: a chamada 'acao' deve lancar std::invalid_argument.
+template <typename Acao>
+void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
 {
-    bool excecao_lancada = false;
-
+    bool lancou = false;
     try {
-        const auto funcao = [](Real x) {
-            return x * x;
-        };
-
-        (void)integrar_trapezios(
-            funcao,
-            limite_inferior,
-            limite_superior,
-            numero_subintervalos
-        );
+        acao();
     } catch (const std::invalid_argument&) {
-        excecao_lancada = true;
+        lancou = true;
     } catch (...) {
-        excecao_lancada = false;
+        lancou = false;
     }
+    registrar(placar, descricao, lancou);
 
-    std::cout << (excecao_lancada ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
-
-    if (!excecao_lancada) {
-        std::cout << "  A chamada deveria ter lancado std::invalid_argument.\n";
+    if (!lancou) {
+        std::cout << "    a chamada deveria ter lancado std::invalid_argument.\n";
     }
-
-    return excecao_lancada;
-}
-
-//==============================================================================
-// Mensagem final didatica
-//==============================================================================
-
-inline void imprimir_mensagem_final()
-{
-    constexpr int size = 80;
-
-    std::cout << "\nAplicacoes e recomendacoes\n";
-    std::cout << std::string(size, '=') << '\n';
-    std::cout << "1. A funcao refatorada recebe a integranda como ";
-    std::cout << "argumento.\n";
-    std::cout << "2. O somatorio dos pontos internos usa um laco direto ";
-    std::cout << "para favorecer velocidade.\n";
-    std::cout << "3. Os nomes indicam o significado fisico ou numerico ";
-    std::cout << "de cada parametro.\n";
-    std::cout << "4. As pre-condicoes sao verificadas antes do calculo ";
-    std::cout << "da integral.\n";
-    std::cout << "5. A versao refatorada preserva o resultado numerico ";
-    std::cout << "da versao original.\n";
-    std::cout << "6. A separacao entre algoritmo e funcao integranda ";
-    std::cout << "facilita novos testes.\n";
-    std::cout << std::string(size, '=') << '\n';
-
-    std::cout << "\nConceitos demonstrados\n";
-    std::cout << std::string(size, '=') << '\n';
-    std::cout << "1. Refatoracao de nomes sem alterar o algoritmo ";
-    std::cout << "matematico.\n";
-    std::cout << "2. Remocao da dependencia obrigatoria de uma funcao ";
-    std::cout << "global.\n";
-    std::cout << "3. Uso de uma funcao generica para aceitar lambdas, ";
-    std::cout << "funcoes livres ou objetos chamaveis.\n";
-    std::cout << "4. Uso de um laco contado, simples e previsivel para ";
-    std::cout << "o compilador otimizar.\n";
-    std::cout << "5. Validacao do numero de subintervalos antes da ";
-    std::cout << "divisao por n.\n";
-    std::cout << "6. Comparacao entre o resultado numerico e uma ";
-    std::cout << "integral conhecida.\n";
-    std::cout << std::string(size, '=') << '\n';
 }
 
 } // namespace
 
 int main()
 {
-    try {
-        std::cout << "Exercicio Computacional 2.1\n";
-        std::cout << "Refatoracao da funcao da abertura\n";
-        std::cout << "=================================\n\n";
+    std::cout << "Exercicio Computacional 2.1 -- Regra dos trapezios\n\n";
+    std::cout << std::fixed << std::setprecision(12);
 
-        unsigned testes_passaram = 0;
-        unsigned testes_total = 0;
+    Placar placar;
 
-        const Real limite_inferior = Real{0.0};
-        const Real limite_superior = Real{1.0};
-        const std::size_t numero_subintervalos = 1000;
+    // -- Caso principal: integral de x^2 em [0, 1], cujo valor exato e 1/3. --
+    const Real aproximada = integrar_trapezios(quadratica, Real{0.0}, Real{1.0}, 1000);
+    const Real exata      = Real{1.0} / Real{3.0};
 
-        const auto quadratica = [](Real x) {
-            return x * x;
-        };
+    std::cout << "Integral de x^2 em [0, 1] com 1000 subintervalos:\n";
+    std::cout << "    aproximada = " << aproximada << '\n';
+    std::cout << "    exata      = " << exata      << "\n\n";
 
-        const Real resultado_refatorado =
-            integrar_trapezios(
-                quadratica,
-                limite_inferior,
-                limite_superior,
-                numero_subintervalos
-            );
+    testar_valor(placar, "aproximacao de x^2 em [0,1] proxima de 1/3",
+                 aproximada, exata, Real{2e-7});
 
-        const Real resultado_original =
-            calc_original(
-                limite_inferior,
-                limite_superior,
-                static_cast<int>(numero_subintervalos)
-            );
+    // -- A regra e exata para retas: integral de 2x + 1 em [0, 2] vale 6. --
+    const Real reta = integrar_trapezios(
+        [](Real x) { return Real{2.0} * x + Real{1.0}; },
+        Real{0.0}, Real{2.0}, 8
+    );
+    testar_valor(placar, "integral de 2x + 1 em [0,2] igual a 6 (exata para retas)",
+                 reta, Real{6.0}, Real{1e-14});
 
-        const Real integral_exata_quadratica = Real{1.0} / Real{3.0};
+    // -- Dados invalidos devem ser rejeitados. --
+    // Aqui a chamada deve falhar antes de retornar, entao descartamos o
+    // valor de retorno de proposito com (void), ja que a funcao e nodiscard.
+    testar_excecao(placar, "n = 0 e rejeitado",
+        [] { (void)integrar_trapezios(quadratica, Real{0.0}, Real{1.0}, 0); });
+    testar_excecao(placar, "intervalo de comprimento nulo e rejeitado",
+        [] { (void)integrar_trapezios(quadratica, Real{1.0}, Real{1.0}, 10); });
+    testar_excecao(placar, "intervalo invertido e rejeitado",
+        [] { (void)integrar_trapezios(quadratica, Real{2.0}, Real{1.0}, 10); });
 
-        std::cout << std::fixed << std::setprecision(12);
-        std::cout << "Integral aproximada de f(x) = x^2 em [0, 1]\n";
-        std::cout << "================================================\n";
-        std::cout << "Numero de subintervalos = " << numero_subintervalos
-                  << '\n';
-        std::cout << "Resultado original      = " << resultado_original
-                  << '\n';
-        std::cout << "Resultado refatorado    = " << resultado_refatorado
-                  << '\n';
-        std::cout << "Integral exata          = "
-                  << integral_exata_quadratica << "\n\n";
+    std::cout << "\nResumo: " << placar.aprovados << " de " << placar.total
+              << " testes aprovados.\n";
 
-        testes_total += 2;
-
-        if (
-            testar_valor(
-                "A versao refatorada reproduz a versao original",
-                resultado_refatorado,
-                resultado_original,
-                Real{1e-15}
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        if (
-            testar_valor(
-                "A aproximacao fica proxima da integral exata",
-                resultado_refatorado,
-                integral_exata_quadratica,
-                Real{2e-7}
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        std::cout << '\n';
-        std::cout << "Teste com outra funcao integranda\n";
-        std::cout << "=================================\n";
-
-        const auto linear = [](Real x) {
-            return Real{2.0} * x + Real{1.0};
-        };
-
-        const Real integral_linear =
-            integrar_trapezios(linear, Real{0.0}, Real{2.0}, 8);
-
-        ++testes_total;
-
-        if (
-            testar_valor(
-                "Integral de 2x + 1 em [0, 2]",
-                integral_linear,
-                Real{6.0},
-                Real{1e-14}
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        std::cout << '\n';
-        std::cout << "Testes de validacao das pre-condicoes\n";
-        std::cout << "=====================================\n";
-
-        testes_total += 3;
-
-        if (
-            testar_excecao(
-                "n = 0 deve ser rejeitado",
-                Real{0.0},
-                Real{1.0},
-                0
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        if (
-            testar_excecao(
-                "limite superior igual ao inferior deve ser rejeitado",
-                Real{1.0},
-                Real{1.0},
-                10
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        if (
-            testar_excecao(
-                "limite superior menor que o inferior deve ser rejeitado",
-                Real{2.0},
-                Real{1.0},
-                10
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        std::cout << '\n';
-        std::cout << "Resumo\n";
-        std::cout << "======\n";
-        std::cout << "Testes aprovados: " << testes_passaram
-                  << " de " << testes_total << '\n';
-
-        imprimir_mensagem_final();
-
-        return (testes_passaram == testes_total) ? 0 : 1;
-
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro inesperado: " << erro.what() << '\n';
-        return 1;
-    }
+    return (placar.aprovados == placar.total) ? 0 : 1;
 }
