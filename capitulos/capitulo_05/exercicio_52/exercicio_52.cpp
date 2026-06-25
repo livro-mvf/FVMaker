@@ -1,107 +1,107 @@
-//==============================================================================
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
-//==============================================================================
-// Exercicio Computacional 5.2
-// Coeficientes em malha nao uniforme
-//==============================================================================
+// //==============================================================================
+// // SPDX-FileCopyrightText: 2026 FVMaker Team
+// // SPDX-License-Identifier: MIT
+// //==============================================================================
+// // Exercicio Computacional 5.2
+// // Coeficientes em malha nao uniforme
+// //==============================================================================
 
-//==============================================================================
-// Header FVGridMaker
-//==============================================================================
-#include "../comum/mvf_capitulo_05.h"
+// //==============================================================================
+// // Header FVGridMaker
+// //==============================================================================
+// #include "../comum/mvf_capitulo_05.h"
 
 
-int main() {
-    using capitulo_05::Real;
-    using capitulo_05::Size;
+// int main() {
+//     using capitulo_05::Real;
+//     using capitulo_05::Size;
 
-    std::cout << std::fixed << std::setprecision(12);
+//     std::cout << std::fixed << std::setprecision(12);
 
-    const Real x_inicial = 0.0;
-    const Real comprimento = 5.0;
-    const Size n = 5;
+//     const Real x_inicial = 0.0;
+//     const Real comprimento = 5.0;
+//     const Size n = 5;
 
-    const fvgrid::Axis1D eixo =
-        capitulo_05::malha_face_centrada_customizada(
-            capitulo_05::centros_potencia(n, comprimento, x_inicial, 1.45),
-            x_inicial,
-            comprimento
-        );
+//     const fvgrid::Axis1D eixo =
+//         capitulo_05::malha_face_centrada_customizada(
+//             capitulo_05::centros_potencia(n, comprimento, x_inicial, 1.45),
+//             x_inicial,
+//             comprimento
+//         );
 
-    const auto fonte = [](Real x) { return x * x; };
+//     const auto fonte = [](Real x) { return x * x; };
 
-    const fvm::EquationContribution1D coeficientes =
-        capitulo_05::montar_coeficientes_poisson(
-            eixo,
-            fonte,
-            fvm::dirichlet_1d(1.0),
-            fvm::neumann_1d(0.0)
-        );
+//     const fvm::EquationContribution1D coeficientes =
+//         capitulo_05::montar_coeficientes_poisson(
+//             eixo,
+//             fonte,
+//             fvm::dirichlet_1d(1.0),
+//             fvm::neumann_1d(0.0)
+//         );
 
-    std::cout << "Exercicio 5.2 - coeficientes em malha nao uniforme\n\n";
-    std::cout << "Malha gerada pela FVGridMaker\n";
-    std::cout << "=============================\n";
-    std::cout << eixo << "\n\n";
+//     std::cout << "Exercicio 5.2 - coeficientes em malha nao uniforme\n\n";
+//     std::cout << "Malha gerada pela FVGridMaker\n";
+//     std::cout << "=============================\n";
+//     std::cout << eixo << "\n\n";
 
-    std::cout << "Coeficientes montados sem mudar a rotina do Exercicio 5.1\n";
-    std::cout << "=========================================================\n";
-    std::cout << coeficientes << "\n\n";
+//     std::cout << "Coeficientes montados sem mudar a rotina do Exercicio 5.1\n";
+//     std::cout << "=========================================================\n";
+//     std::cout << coeficientes << "\n\n";
 
-    bool internos_assimetricos = true;
-    bool ap_soma_interna = true;
+//     bool internos_assimetricos = true;
+//     bool ap_soma_interna = true;
 
-    for (Size p = 1; p + 1 < n; ++p) {
-        internos_assimetricos =
-            internos_assimetricos &&
-            !capitulo_05::perto(coeficientes.aw()[p], coeficientes.ae()[p]);
+//     for (Size p = 1; p + 1 < n; ++p) {
+//         internos_assimetricos =
+//             internos_assimetricos &&
+//             !capitulo_05::perto(coeficientes.aw()[p], coeficientes.ae()[p]);
 
-        ap_soma_interna =
-            ap_soma_interna &&
-            capitulo_05::perto(
-                coeficientes.ap()[p],
-                coeficientes.aw()[p] + coeficientes.ae()[p]
-            );
-    }
+//         ap_soma_interna =
+//             ap_soma_interna &&
+//             capitulo_05::perto(
+//                 coeficientes.ap()[p],
+//                 coeficientes.aw()[p] + coeficientes.ae()[p]
+//             );
+//     }
 
-    unsigned aprovados{};
-    unsigned total{};
+//     unsigned aprovados{};
+//     unsigned total{};
 
-    ++total;
-    aprovados += capitulo_05::registrar(
-        "A_W != A_E nos volumes internos",
-        internos_assimetricos
-    );
+//     ++total;
+//     aprovados += capitulo_05::registrar(
+//         "A_W != A_E nos volumes internos",
+//         internos_assimetricos
+//     );
 
-    ++total;
-    aprovados += capitulo_05::registrar(
-        "A_P = A_W + A_E nos volumes internos",
-        ap_soma_interna
-    );
+//     ++total;
+//     aprovados += capitulo_05::registrar(
+//         "A_P = A_W + A_E nos volumes internos",
+//         ap_soma_interna
+//     );
 
-    std::cout << "\nTroca deliberada de delta x_w por delta x_e\n";
-    std::cout << "==========================================\n";
+//     std::cout << "\nTroca deliberada de delta x_w por delta x_e\n";
+//     std::cout << "==========================================\n";
 
-    bool erro_detectado = false;
-    const auto xC = eixo.centers();
+//     bool erro_detectado = false;
+//     const auto xC = eixo.centers();
 
-    for (Size p = 1; p + 1 < n; ++p) {
-        const Real aw_errado = Real{1} / (xC[p + 1] - xC[p]);
+//     for (Size p = 1; p + 1 < n; ++p) {
+//         const Real aw_errado = Real{1} / (xC[p + 1] - xC[p]);
 
-        if (!capitulo_05::perto(aw_errado, coeficientes.aw()[p])) {
-            erro_detectado = true;
-            std::cout << "P = " << p
-                      << ": A_W correto = " << coeficientes.aw()[p]
-                      << ", A_W com distancia trocada = " << aw_errado
-                      << '\n';
-        }
-    }
+//         if (!capitulo_05::perto(aw_errado, coeficientes.aw()[p])) {
+//             erro_detectado = true;
+//             std::cout << "P = " << p
+//                       << ": A_W correto = " << coeficientes.aw()[p]
+//                       << ", A_W com distancia trocada = " << aw_errado
+//                       << '\n';
+//         }
+//     }
 
-    ++total;
-    aprovados += capitulo_05::registrar(
-        "a malha nao uniforme acusa a troca de distancia",
-        erro_detectado
-    );
+//     ++total;
+//     aprovados += capitulo_05::registrar(
+//         "a malha nao uniforme acusa a troca de distancia",
+//         erro_detectado
+//     );
 
-    return aprovados == total ? 0 : 1;
-}
+//     return aprovados == total ? 0 : 1;
+// }

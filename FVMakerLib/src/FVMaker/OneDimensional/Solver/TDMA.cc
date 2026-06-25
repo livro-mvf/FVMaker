@@ -44,11 +44,13 @@ TDMAForwardSweep TDMA::forward_sweep(
     require(!is_zero_pivot(pivot), error_catalog::kSingularSystem, TDMA::id());
 
     if (n > 1) {
-        sweep.t[0] = -upper[0] / pivot;
+        sweep.t[0] = - upper[0] / pivot;
     }
+
     sweep.q[0] = rhs[0] / pivot;
 
     for (Size row = 1; row < n; ++row) {
+    
         pivot = diagonal[row] + lower[row - 1] * sweep.t[row - 1];
 
         require(
@@ -71,7 +73,6 @@ TDMAForwardSweep TDMA::forward_sweep(
 SolveResult TDMA::solve(const TridiagonalSystem1D& system) {
     TDMAForwardSweep sweep = forward_sweep(system);
     const Size n = system.size();
-
     DenseVector solution{n};
     solution[n - 1] = sweep.q[n - 1];
 
