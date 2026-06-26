@@ -12,7 +12,7 @@
 // #include "../comum/mvf_capitulo_05.h"
 
 
-// int main() {
+int main() {
 //     using capitulo_05::Real;
 //     using capitulo_05::Size;
 
@@ -104,4 +104,4 @@
 //     );
 
 //     return aprovados == total ? 0 : 1;
-// }
+}

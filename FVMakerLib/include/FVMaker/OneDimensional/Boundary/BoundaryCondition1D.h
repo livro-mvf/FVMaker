@@ -9,11 +9,17 @@
 
 #pragma once
 
+// Adicione ESTES includes no início do arquivo
+#include <iostream>   // Para std::ostream
+#include <ostream>    // Para operadores << padrão
+#include <string>     // Para std::string
 #include <functional>
 #include <string_view>
 
 #include <FVMaker/Core/ID.h>
 #include <FVMaker/Core/Types.h>
+
+
 
 namespace fvm {
 
@@ -32,6 +38,10 @@ enum class BoundaryConditionKind1D {
 };
 
 class BoundaryCondition1D final {
+public:
+
+
+
 public:
     BoundaryCondition1D(Real alpha, Real beta, Real gamma);
 
@@ -170,3 +180,7 @@ private:
 );
 
 }  // namespace fvm
+
+
+std::ostream& operator<<(std::ostream&, const fvm::BoundaryCondition1D&);
+

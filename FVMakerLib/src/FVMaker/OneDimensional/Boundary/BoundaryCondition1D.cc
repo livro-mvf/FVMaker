@@ -307,3 +307,12 @@ BoundaryCondition1D robin_1d(
 }
 
 }  // namespace fvm
+
+std::ostream& operator<<(std::ostream& os, const fvm::BoundaryCondition1D& bc) {
+    os << static_cast<std::string>(bc.kind_name())
+       << " { alpha=" << bc.alpha(0.0)
+       << ", beta=" << bc.beta(0.0)
+       << ", gamma=" << bc.gamma(0.0)
+       << " }";
+    return os;
+}

@@ -41,7 +41,7 @@ using Size = fvm::Size;
 
 
     std::cout << "Exercicio 5.1 - malha do Exemplo 5.2\n\n";
-    std::cout << eixo << '\n';
+    std::cout << eixo << "\n\n";
 
 //==============================================================================
 // Definição das condições de contorno
@@ -50,10 +50,20 @@ using Size = fvm::Size;
     const fvm::BoundaryCondition1D esquerda = fvm::dirichlet_1d(1.0);
     const fvm::BoundaryCondition1D direita = fvm::neumann_1d(0.0);
 
-    std::cout << esquerda << '\n';
+    std::cout << "Exercicio 5.1 - condicoes de contorno do Exemplo 5.2\n\n";
+    std::cout << "Condicao de contorno esquerda: " << esquerda << '\n';
+    std::cout << "Condicao de contorno direita: " << direita << '\n';
 
 
-    // const auto fonte = [](Real x) { return x * x; };
+//==============================================================================
+// Definição da função fonte
+//==============================================================================
+
+    const auto fonte = [](Real x) { return x * x; };
+
+    //==============================================================================
+// Definição da função fonte
+//==============================================================================
 
     // const fvm::EquationContribution1D coeficientes =
     //     capitulo_05::montar_coeficientes_poisson(
