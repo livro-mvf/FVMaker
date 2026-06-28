@@ -1,5 +1,3 @@
-# Exercício Computacional 2.3: Design Orientado a Dados em um Laço Simples
-
 Este programa compara duas formas de organizar os dados de uma malha com
 `N = 10^6` volumes. Na primeira versão, cada volume é representado por uma
 estrutura contendo posição, solução e termo fonte. Na segunda versão, as mesmas

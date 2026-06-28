@@ -1,5 +1,3 @@
-# Exercício Computacional 4.11: Aleatórias: qual arranjo transiciona pior?
-
 Este programa usa a FVGridMaker para gerar duas malhas aleatórias com
 `N = 50` volumes no domínio `[0, 1]`:
 

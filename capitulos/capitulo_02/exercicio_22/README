@@ -1,5 +1,3 @@
-# Exercício Computacional 2.2: Malha 1D Uniforme
-
 Implementa `Malha1D`, uma malha uniforme autocontida, com validação e testes de geometria.
 
 ## O que o programa faz

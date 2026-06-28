@@ -1,4 +1,3 @@
-# CMakeLists.txt com verificação automática
 cmake_minimum_required(VERSION 3.15)
 project(Aleatoria VERSION 1.0.0 LANGUAGES CXX)
 

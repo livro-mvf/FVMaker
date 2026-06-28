@@ -1,12 +1,28 @@
-//==============================================================================
-// Nome        : CellSizeAnalyser1D.hpp
-// Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 2.0
-// Descrição   : Analisa o tamanho das células (Δx) em malhas 1D. Calcula
-//               Δx mínimo, máximo e médio usando o vetor Δx das faces
-//               (DFaceCoordinate) fornecido pela própria malha.
-// Licença     : GNU GPL v3
-//==============================================================================
+// ============================================================================
+// Arquivo: cellSizeAnalyser1D.hpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara cell Size Analyser 1 D no contexto de Grid / GridAnalysis / 1D.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #pragma once
 

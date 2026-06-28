@@ -1,5 +1,3 @@
-# Exercício Computacional 5.6: Fontes Constante e Linear como Regressão
-
 Usa fontes cuja integral é reproduzida pela regra de um ponto quando `x_C` é o centroide.
 
 ## O que o programa faz

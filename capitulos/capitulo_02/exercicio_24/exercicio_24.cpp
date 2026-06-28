@@ -1,25 +1,29 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_24.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 24 no contexto de capitulos / capitulo_02 / exercicio_24.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 2.4
-// Titulo: Plano minimo de testes para a malha 1D.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Retomar a classe Malha1D e escrever testes manuais pequenos, legiveis e
-//   capazes de apanhar erros comuns de implementacao.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   Dominio [xmin, xmax] dividido em N volumes uniformes, com centros em
-//   xmin + (i + 1/2) dx.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa testa uma malha valida, rejeicao de parametros invalidos e
-//   acesso a indice fora do intervalo permitido.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <cmath>
 #include <iostream>
 

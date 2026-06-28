@@ -1,103 +1,28 @@
-// //==============================================================================
-// // SPDX-FileCopyrightText: 2026 FVMaker Team
-// // SPDX-License-Identifier: MIT
-// //==============================================================================
-// // Exercicio Computacional 5.7
-// // Consistencia vista pelo residuo normalizado
-// //==============================================================================
-
-
-// //==============================================================================
-// // Header FVGridMaker
-// //==============================================================================
-// #include "../comum/mvf_capitulo_05.h"
-
-
-// namespace {
-
-// using Real = capitulo_05::Real;
-// using Size = capitulo_05::Size;
-
-// [[nodiscard]] Real solucao(Real x) {
-//     return x - Real{0.5} * x * x;
-// }
-
-// [[nodiscard]] std::vector<Real> faces_suaves(Size n) {
-//     constexpr Real pi = 3.141592653589793238462643383279502884;
-
-//     std::vector<Real> faces(n + 1);
-//     const Real amplitude = Real{0.12} / static_cast<Real>(n);
-
-//     for (Size i = 0; i <= n; ++i) {
-//         const Real s = static_cast<Real>(i) / static_cast<Real>(n);
-//         faces[i] = s + amplitude * std::sin(Real{2} * pi * s);
-//     }
-
-//     faces.front() = 0.0;
-//     faces.back() = 1.0;
-//     return faces;
-// }
-
-// [[nodiscard]] Real residuo_integrado(
-//     const fvgrid::Axis1D& eixo,
-//     Size p
-// ) {
-//     const Real phi_w = solucao(eixo.centers()[p - 1]);
-//     const Real phi_p = solucao(eixo.centers()[p]);
-//     const Real phi_e = solucao(eixo.centers()[p + 1]);
-
-//     const Real fluxo_e =
-//         (phi_e - phi_p) / (eixo.centers()[p + 1] - eixo.centers()[p]);
-//     const Real fluxo_w =
-//         (phi_p - phi_w) / (eixo.centers()[p] - eixo.centers()[p - 1]);
-
-//     return fluxo_e - fluxo_w + eixo.cell_lengths()[p];
-// }
-
-// [[nodiscard]] Real residuo_normalizado(
-//     const fvgrid::Axis1D& eixo,
-//     Size p
-// ) {
-//     return residuo_integrado(eixo, p) / eixo.cell_lengths()[p];
-// }
-
-// struct Residuos {
-//     Real integrado_max{};
-//     Real normalizado_max{};
-// };
-
-// [[nodiscard]] Residuos medir_residuos(const fvgrid::Axis1D& eixo) {
-//     Residuos r{};
-
-//     for (Size p = 1; p + 1 < eixo.num_cells(); ++p) {
-//         r.integrado_max = std::max(
-//             r.integrado_max,
-//             std::abs(residuo_integrado(eixo, p))
-//         );
-//         r.normalizado_max = std::max(
-//             r.normalizado_max,
-//             std::abs(residuo_normalizado(eixo, p))
-//         );
-//     }
-
-//     return r;
-// }
-
-// void imprimir_linha(
-//     Size n,
-//     const Residuos& face_centrada,
-//     const Residuos& volume_suave,
-//     const Residuos& volume_persistente
-// ) {
-//     std::cout << std::setw(4) << n
-//               << std::setw(18) << face_centrada.normalizado_max
-//               << std::setw(18) << volume_suave.normalizado_max
-//               << std::setw(18) << volume_persistente.normalizado_max
-//               << std::setw(18) << volume_persistente.integrado_max
-//               << '\n';
-// }
-
-// }  // namespace
+// ============================================================================
+// Arquivo: exercicio_57.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 57 no contexto de capitulos / capitulo_05 / exercicio_57.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 int main() {
 //     std::cout << std::fixed << std::setprecision(12);

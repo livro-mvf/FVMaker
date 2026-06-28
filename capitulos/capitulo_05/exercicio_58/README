@@ -1,5 +1,3 @@
-# Exercício Computacional 5.8: Coeficientes de um Problema Próprio
-
 Monta, sem resolver, a equação de Poisson com fonte constante em `[0,1]`, com `phi(0) = 0` e derivada nula em `x = 1`, numa malha face centrada de três volumes.
 
 ## O que o programa faz

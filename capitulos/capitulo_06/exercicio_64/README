@@ -1,5 +1,3 @@
-# Exercicio Computacional 6.4: Iteracoes nao sao tempo
-
 Corresponde a `exc_06:tempo-iteracoes`.
 
 Compara somente Jacobi e Gauss-Seidel hibrido, com a mesma tolerancia e chute.

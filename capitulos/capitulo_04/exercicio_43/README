@@ -1,5 +1,3 @@
-# Exercicio Computacional 4.3: Refinamento nas fronteiras de Roberts
-
 Este programa usa a `Roberts1D` da FVGridMaker para gerar malhas refinadas nas
 fronteiras.
 

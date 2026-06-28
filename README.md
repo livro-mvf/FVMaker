@@ -97,4 +97,4 @@ Contribuições são bem-vindas! Para colaborar:
 4. Abra um Pull Request para revisão.
 
 ## Licença
-FVMaker é um software livre licenciado sob a **GNU General Public License v3.0**. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+FVMaker é distribuído sob a licença **BSD 3-Clause**. Consulte o arquivo [LICENSE.md](LICENSE.md) para o texto completo.

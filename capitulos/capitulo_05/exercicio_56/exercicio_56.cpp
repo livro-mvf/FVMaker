@@ -1,63 +1,28 @@
-// //==============================================================================
-// // SPDX-FileCopyrightText: 2026 FVMaker Team
-// // SPDX-License-Identifier: MIT
-// //==============================================================================
-// // Exercicio Computacional 5.6
-// // Fonte constante e fonte linear como testes de regressao
-// //==============================================================================
-
-
-// //==============================================================================
-// // Header FVGridMaker
-// //==============================================================================
-// #include "../comum/mvf_capitulo_05.h"
-
-// #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
-// #include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
-
-
-// namespace {
-
-// using Real = capitulo_05::Real;
-// using Size = capitulo_05::Size;
-
-// template <class Function, class Integral>
-// bool testar_fonte(
-//     std::string_view nome,
-//     const fvgrid::Axis1D& eixo,
-//     Function&& f,
-//     Integral&& integral
-// ) {
-//     bool passou = true;
-
-//     std::cout << nome << '\n';
-//     std::cout << "P              B_P          integral          erro\n";
-
-//     for (Size p = 0; p < eixo.num_cells(); ++p) {
-//         const Real aproximado = capitulo_05::fonte_um_ponto(eixo, p, f);
-//         const Real exato = integral(eixo.faces()[p], eixo.faces()[p + 1]);
-//         const Real erro = std::abs(aproximado - exato);
-
-//         passou = passou && capitulo_05::perto(aproximado, exato);
-
-//         std::cout << std::setw(2) << p
-//                   << std::setw(16) << aproximado
-//                   << std::setw(16) << exato
-//                   << std::setw(16) << erro << '\n';
-//     }
-
-//     static_cast<void>(
-//         capitulo_05::registrar(
-//             "aproximacao de um ponto reproduz a integral",
-//             passou
-//         )
-//     );
-//     std::cout << '\n';
-
-//     return passou;
-// }
-
-// }  // namespace
+// ============================================================================
+// Arquivo: exercicio_56.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 56 no contexto de capitulos / capitulo_05 / exercicio_56.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 int main() {
 //     std::cout << std::fixed << std::setprecision(12);

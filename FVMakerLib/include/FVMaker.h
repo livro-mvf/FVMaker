@@ -1,44 +1,28 @@
-//==============================================================================
-// Nome        : FVMaker.h
-// Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Declaração da classe FVMaker para organizar simulações de
-//               volumes finitos.
+// ============================================================================
+// Arquivo: FVMaker.h
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara a interface agregadora principal do FVMaker.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Direitos autorais : Copyright (C) 2024 João Flávio Vasconcellos
-//                     (jflavio at iprj.uerj.br)
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Licença     : Este programa é software livre: você pode redistribuí-lo e/ou
-//               modificá-lo sob os termos da Licença Pública Geral GNU como
-//               publicada pela Free Software Foundation, tanto a versão 3
-//               da licença, como (a seu critério) qualquer versão posterior.
+// Este arquivo faz parte do FVMaker.
 //
-//               Este programa é distribuído na esperança de que seja útil,
-//               mas SEM NENHUMA GARANTIA; sem mesmo a garantia implícita de
-//               COMERCIABILIDADE ou ADEQUAÇÃO A QUALQUER PROPÓSITO
-//               EM PARTICULAR.
-//               Consulte a Licença Pública Geral GNU para mais detalhes.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-//               Você deve ter recebido uma cópia da Licença Pública Geral GNU
-//               junto com este programa.
-//               Se não, veja <https://www.gnu.org/licenses/>.
-//==============================================================================
-
-/**
- * @file FVMaker.h
- * @brief Cabeçalho para a classe principal da biblioteca FVMaker.
- *
- * Este arquivo define a classe FVMaker que é usada para gerenciar a criação
- * e manipulação de volumes finitos em malhas estruturadas.
- *
- * @version 1.1
- * @date 2024-11-30
- *
- * @author João
- *
- * @copyright Copyright (c) 2024
- * @license GNU GPL v3
- */
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #ifndef FVMAKER_H
 #define FVMAKER_H

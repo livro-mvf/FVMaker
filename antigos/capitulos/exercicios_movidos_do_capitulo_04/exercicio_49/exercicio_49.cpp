@@ -1,23 +1,28 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_49.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 49 no contexto de antigos / capitulos / exercicios_movidos_do_capitulo_04 / exercicio_49.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 4.9
-// Titulo: Primeiro contato: malha face centrada.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Usar a FVGridMaker para gerar uma malha face centrada com N = 50 volumes
-//   em [0, 1], obter faces e centros e verificar que cada face interna e o
-//   ponto medio entre os centros vizinhos.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   A distribuicao uniforme fornece os centros primarios da malha face
-//   centrada. A FVGridMaker reconstrói as faces internas pela media entre
-//   centros consecutivos e impoe as faces de contorno no dominio.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa confirma o ponto medio nas faces internas, calcula a razao
-//   global max(Delta xP)/min(Delta xP), a suavidade local G_i e gera os
-//   arquivos de relatorio, CSV e grafico SVG.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
 #include <FVGridMaker/OneDimensional/GridPattern1D/FaceCentered1D.h>

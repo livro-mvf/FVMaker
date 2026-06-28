@@ -1,5 +1,3 @@
-# Exercicio Computacional 4.4: Malha simetrica definida pelo usuario
-
 Este programa usa a FVGridMaker sem modificar a biblioteca. A rotina local gera
 centros simetricos, espelha a metade esquerda em relacao ao centro do dominio e
 entrega esses centros ao construtor customizado `Custom1D`.

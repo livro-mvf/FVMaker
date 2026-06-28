@@ -1,5 +1,3 @@
-# Exercicio Computacional 4.2: Malha aleatoria
-
 Este programa usa a `Random1D` da FVGridMaker para gerar uma malha aleatoria
 volume centrada no dominio `[xI, xI + L]`.
 

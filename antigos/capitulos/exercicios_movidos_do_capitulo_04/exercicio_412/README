@@ -1,5 +1,3 @@
-# Exercício Computacional 4.12: Refinamento nas fronteiras de Roberts
-
 Este programa usa a distribuição `Roberts1D` da FVGridMaker para gerar malhas
 com refinamento nas fronteiras.
 

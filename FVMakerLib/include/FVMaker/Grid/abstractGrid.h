@@ -1,21 +1,28 @@
-//==============================================================================
-// Nome        : AbstractGrid.h
-// Autor       : Joao Flavio Vieira de Vasconcellos
-// Versao      : 1.0
-// Descricao   : Classe base para todas as classes de geracao de malhas
+// ============================================================================
+// Arquivo: abstractGrid.h
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara abstract Grid no contexto de Grid.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Este programa e software livre: voce pode redistribui-lo e/ou
-// modifica-lo sob os termos da Licenca Publica Geral GNU, versao 3
-// ou qualquer versao posterior.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Este programa e distribuido na esperanca de que seja util,
-// mas SEM QUALQUER GARANTIA; sem mesmo a garantia implicita de
-// COMERCIABILIDADE ou ADEQUACAO A UM DETERMINADO PROPOSITO.
-// Consulte a Licenca Publica Geral GNU para mais detalhes.
+// Este arquivo faz parte do FVMaker.
 //
-// Voce deve ter recebido uma copia da Licenca Publica Geral GNU
-// junto com este programa. Se nao, veja <https://www.gnu.org/licenses/>.
-//==============================================================================
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #pragma once
 
@@ -30,7 +37,7 @@
  * @author Joao Flavio Vasconcellos
  * @version 1.0
  * @date 2025-05-20
- * @copyright GNU General Public License v3.0
+ * @copyright Copyright (c) 2026, João Flávio Vieira de Vasconcellos
  */
 
 //==============================================================================

@@ -1,5 +1,3 @@
-# Exercício Computacional 5.3: Um Coeficiente de Face Visto dos Dois Lados
-
 Verifica a conservação na interface: `A_E[i] = A_W[i + 1]`.
 
 ## O que o programa faz

@@ -1,23 +1,28 @@
-// ----------------------------------------------------------------------------
-// File: ex_MontaSistemaCapitulo05.cpp
-// Project: FVMaker
-// Description: Exercise 5.3 - assemble, but do not solve, the Chapter 5 system.
-// ----------------------------------------------------------------------------
+// ============================================================================
+// Arquivo: ex_MontaSistemaCapitulo05.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa ex Monta Sistema Capitulo 05 no contexto de antigos / capitulos / Capitulo_205 / Exercicio_53.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Problem from Chapter 5:
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-//     d2(phi)/dx2 + x^2 = 0,  0 <= x <= 5,
-//     phi(0) = 1,
-//     dphi/dx(5) = 0.
+// Este arquivo faz parte do FVMaker.
 //
-// The mesh is generated with FVGridMaker. FVMaker then consumes the mesh through
-// GridView1D and assembles the equation into a TridiagonalSystem1D. The final
-// printout uses the book convention
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-//     AP[i] phi[i] = AW[i] phi[i - 1] + AE[i] phi[i + 1] + BP[i].
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
 //
-// The system is intentionally not solved here.
-// ----------------------------------------------------------------------------
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <array>
 #include <cmath>

@@ -1,35 +1,28 @@
-//==============================================================================
-// Nome        : CellCentered.cpp
-// Autor       : João Flávio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Implementação dos métodos da classe CellCentered
+// ============================================================================
+// Arquivo: cellCentered.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa cell Centered no contexto de Grid / GridPattern.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU, versão 3
-// da licença, ou (a seu critério) qualquer versão posterior.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Este programa é distribuído na esperança de que seja útil, mas SEM
-// QUALQUER GARANTIA; sem mesmo a garantia implícita de COMERCIABILIDADE
-// ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Consulte a Licença Pública
-// Geral GNU para mais detalhes.
+// Este arquivo faz parte do FVMaker.
 //
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-// com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
-//==============================================================================
-
-/**
- * @file CellCentered.cpp
- * @brief Implementação dos métodos da classe CellCentered
- * @ingroup GridPattern
- *
- * Contém as implementações dos métodos declarados na classe CellCentered,
- * incluindo a criação de clones e identificação do tipo de padrão de malha.
- *
- * @author João Flávio Vasconcellos
- * @version 1.1
- * @date 2025-05-20
- * @copyright GNU General Public License v3.0
- */
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <FVMaker/Grid/GridPattern/cellCentered.h>
 

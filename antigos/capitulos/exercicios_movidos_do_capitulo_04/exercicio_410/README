@@ -1,5 +1,3 @@
-# Exercício Computacional 4.10: Malha uniforme: as duas garantias
-
 Este programa usa a FVGridMaker para gerar uma malha uniforme
 unidimensional a partir de um intervalo e de um número de volumes.
 

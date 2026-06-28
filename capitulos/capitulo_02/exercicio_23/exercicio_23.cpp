@@ -1,26 +1,29 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_23.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 23 no contexto de capitulos / capitulo_02 / exercicio_23.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 2.3
-// Titulo: Design orientado a dados em um laco simples.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Comparar duas organizacoes de memoria para dados de volumes finitos:
-//   array de estruturas e vetores separados.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   Um laco atualiza phi usando apenas phi e fonte. A coordenada x faz parte
-//   do estado do problema, mas nao participa desse laco.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa mede os tempos das duas organizacoes e confirma que ambas
-//   produzem a mesma soma final de phi.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-
-
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <chrono>
 #include <cmath>
 #include <iomanip>

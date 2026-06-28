@@ -1,47 +1,28 @@
-//------------------------------------------------------------------------------
-// Aleatoria.cpp
-//------------------------------------------------------------------------------
-// Programa de exemplo para demonstração do método de diferenças finitas
-// na geração de malhas unidimensionais com distribuição aleatória.
-//
-// Este programa implementa geração de malhas aleatórias para testes de robustez
-// de métodos numéricos.
-//
+// ============================================================================
+// Arquivo: Aleatoria1.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Aleatoria 1 no contexto de antigos / capitulos / Capitulo_103a / Aleatoria.
 // Autor: João Flávio Vieira de Vasconcellos
-// Versão: 2.3
-// Data: 2025-12-01
-// Testado: GCC 14.2.0 em 2025-12-01
-//------------------------------------------------------------------------------
-
-/**
- * @file Aleatoria.cpp
- * @brief Exemplo didático de geração de malha unidimensional aleatória
- * 
- * Este programa demonstra técnicas modernas de C++ para gerar uma malha
- * unidimensional com distribuição aleatória.
- * 
- * Características da malha aleatória:
- * - Distribuição uniforme dos nós no intervalo [x_I, x_I + L]
- * - Extremidades fixas nas bordas do domínio
- * - Nós internos ordenados para garantir sequência crescente
- * - Ordenação paralela para otimização de desempenho
- * 
- * Objetivos pedagógicos:
- * 1. Demonstrar técnicas modernas de geração de números aleatórios em C++
- * 2. Mostrar o uso de algoritmos STL com execução paralela
- * 3. Ilustrar aplicação de malhas aleatórias em stress tests
- * 4. Apresentar boas práticas de manipulação de contêineres
- * 
- * Referência: Livro "Solução Numérica de Equações Diferenciais - 
- *              O Método de Volumes Finitos"
- * 
- * @copyright Copyright (c) 2024
- * @license GNU GPL v3
- */
-
-//------------------------------------------------------------------------------
-// Seção 1: Inclusões Necessárias
-//------------------------------------------------------------------------------
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <algorithm>    // Para algoritmos de ordenação e geração
 #include <chrono>       // Para medir tempo de execução

@@ -1,5 +1,3 @@
-# Exercício Computacional 5.1: Coeficientes do Exemplo 5.2
-
 Gera a malha uniforme face centrada do exemplo e monta `A_W`, `A_P`, `A_E` e `B_P`.
 
 ## O que o programa faz

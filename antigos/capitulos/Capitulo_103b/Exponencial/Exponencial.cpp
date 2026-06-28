@@ -1,56 +1,28 @@
-//------------------------------------------------------------------------------
-// Exponencial.cpp
-//------------------------------------------------------------------------------
-// Programa de exemplo para demonstração do método de diferenças finitas
-// na geração de malhas unidimensionais com distribuição exponencial.
-//
-// Este programa implementa a formulação exponencial para concentração de nós
-// em uma extremidade do domínio, conforme exemplo do livro.
-//
+// ============================================================================
+// Arquivo: Exponencial.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Exponencial no contexto de antigos / capitulos / Capitulo_103b / Exponencial.
 // Autor: João Flávio Vieira de Vasconcellos
-// Versão: 1.0.0
-// Data: 2025-12-01
-// Testado: GCC 14.2.0 em 2025-12-01
-//------------------------------------------------------------------------------
-
-/**
- * @file Exponencial.cpp
- * @brief Exemplo didático de geração de malha unidimensional exponencial
- * 
- * Este programa demonstra o uso do método de diferenças finitas para
- * gerar uma malha unidimensional com espaçamento variável segundo uma
- * distribuição exponencial, concentrando nós em uma extremidade.
- * 
- * Equação implementada:
- * x_i = x_I + L * (exp(beta·i) - 1) / (exp(beta·(N-1)) - 1)
- * 
- * Onde:
- * - x_I: coordenada inicial do domínio
- * - L: comprimento total do domínio
- * - beta: parâmetro de concentração (beta > 0)
- * - N: número total de nós
- * - i: índice do nó (0 <= i <= N-1)
- * 
- * Características:
- * - beta → 0: recupera malha uniforme
- * - beta grande: concentra nós na extremidade inicial (x = x_I)
- * 
- * Objetivos pedagógicos:
- * 1. Demonstrar distribuição exponencial em malhas
- * 2. Mostrar transição suave entre malhas uniformes e concentradas
- * 3. Ilustrar boas práticas de programação numérica
- * 4. Apresentar validação rigorosa de parâmetros
- * 
- * Referência: Livro "Solução Numérica de Equações Diferenciais - 
- *              O Método de Volumes Finitos" (Exemplo 2.2)
- * 
- * @copyright Copyright (c) 2024
- * @license GNU GPL v3
- */
-
-//------------------------------------------------------------------------------
-// Seção 1: Inclusões Necessárias
-//------------------------------------------------------------------------------
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <cmath>        // Para funções matemáticas (exp, fabs)
 #include <execution>    // Para execução paralela  

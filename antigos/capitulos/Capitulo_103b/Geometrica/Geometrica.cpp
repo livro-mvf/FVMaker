@@ -1,42 +1,28 @@
-//------------------------------------------------------------------------------
-// Exemplo_32.cpp
-//------------------------------------------------------------------------------
-// Programa de exemplo para demonstração do método de diferenças finitas
-// na geração de malhas unidimensionais com progressão geométrica.
-//
-// Este programa é uma versão simplificada e didática que mostra os conceitos
-// fundamentais da geração de malhas sem dependências externas complexas.
-//
+// ============================================================================
+// Arquivo: Geometrica.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Geometrica no contexto de antigos / capitulos / Capitulo_103b / Geometrica.
 // Autor: João Flávio Vieira de Vasconcellos
-// Versão: 1.0.0
-// Data: 2025-12-01
-// Testado: GCC 14.2.0 em 2025-12-01
-//------------------------------------------------------------------------------
-
-/**
- * @file Exemplo_32.cpp
- * @brief Exemplo didático de geração de malha unidimensional
- * 
- * Este programa demonstra o uso do método de diferenças finitas para
- * gerar uma malha unidimensional com espaçamento variável segundo uma
- * progressão geométrica.
- * 
- * Objetivos pedagógicos:
- * 1. Demonstrar o conceito de progressão geométrica em malhas
- * 2. Mostrar a implementação de algoritmos sequenciais e paralelos
- * 3. Ilustrar boas práticas de documentação em C++
- * 4. Apresentar técnicas de validação de entrada
- * 
- * Referência: Livro "Solução Numérica de Equações Diferenciais - 
- *              O Método de Volumes Finitos"
- * 
- * @copyright Copyright (c) 2024
- * @license GNU GPL v3
- */
-
-//------------------------------------------------------------------------------
-// Seção 1: Inclusões Necessárias
-//------------------------------------------------------------------------------
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <chrono>       // Para medir tempo de execução
 #include <execution>    // Para execução paralela  

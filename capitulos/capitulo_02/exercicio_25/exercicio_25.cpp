@@ -1,24 +1,29 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_25.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 25 no contexto de capitulos / capitulo_02 / exercicio_25.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 2.5
-// Titulo: Reprodutibilidade de um experimento numerico.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Gerar numeros pseudoaleatorios, calcular a media e registrar os dados que
-//   tornam o experimento repetivel: N, semente e resultado obtido.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   Media aritmetica de N amostras uniformes no intervalo [0, 1).
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa compara duas execucoes com a mesma semente e uma terceira com
-//   semente diferente, usando igualdade exata e uma tolerancia numerica.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <fstream>
 #include <iomanip>
 #include <iostream>

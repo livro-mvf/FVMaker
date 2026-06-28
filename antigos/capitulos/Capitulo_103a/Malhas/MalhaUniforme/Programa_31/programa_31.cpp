@@ -1,7 +1,28 @@
-//==============================================================================
-// Nome        : Programa_31.cpp
-// Versão      : 1.2 (com análise de malha)
-//==============================================================================
+// ============================================================================
+// Arquivo: programa_31.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa programa 31 no contexto de antigos / capitulos / Capitulo_103a / Malhas / MalhaUniforme / Programa_31.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <FVMaker/Grid/Grid1D/uniformGrid1D.h>
 #include <FVMaker/Grid/GridAnalysis/gridReport.h>

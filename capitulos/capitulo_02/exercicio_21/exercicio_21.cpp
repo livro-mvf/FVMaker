@@ -1,28 +1,28 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_21.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 21 no contexto de capitulos / capitulo_02 / exercicio_21.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 2.1 -- Refatoracao da funcao da abertura
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Reescrever a funcao 'calc' da abertura do capitulo de modo que o
-//   resultado numerico seja preservado, mas o codigo fique mais claro,
-//   mais seguro e mais facil de reutilizar.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   Integral de f em [a, b] aproximada pela regra dos trapezios composta
-//   com n subintervalos de mesmo tamanho h = (b - a) / n:
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-//       I ~= h * ( f(a)/2 + f(x_1) + ... + f(x_{n-1}) + f(b)/2 ).
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
 //
-//   O erro dessa regra cai com h^2; ao dobrar n, o erro tende a cair
-//   por um fator de quatro.
-//
-// O que este programa demonstra:
-//   - separar o algoritmo (integrar) da funcao que esta sendo integrada;
-//   - receber a integranda como argumento, em vez de depender de uma
-//     funcao global fixa;
-//   - validar os dados de entrada antes de calcular;
-//   - verificar o resultado contra valores conhecidos por meio de testes.
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <cmath>
 #include <iomanip>

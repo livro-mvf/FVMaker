@@ -1,5 +1,3 @@
-# Exercicio Computacional 4.1: Primeira malha
-
 Este programa usa prioritariamente a FVGridMaker para gerar uma malha uniforme
 volume centrada no dominio `[xI, xI + L]`, com:
 

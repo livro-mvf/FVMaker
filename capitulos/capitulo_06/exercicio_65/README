@@ -1,5 +1,3 @@
-# Exercicio Computacional 6.5: Criterios de parada
-
 Corresponde a `exc_06:parada-prog`.
 
 Resolve o sistema por Gauss-Seidel e compara, de `1e-4` a `1e-11`:

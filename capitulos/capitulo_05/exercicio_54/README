@@ -1,5 +1,3 @@
-# Exercício Computacional 5.4: Condições de Contorno em uma Rotina Única
-
 Representa Dirichlet, Neumann e Robin por `alpha * phi + beta * dphi/dx = gamma`.
 
 ## O que o programa faz

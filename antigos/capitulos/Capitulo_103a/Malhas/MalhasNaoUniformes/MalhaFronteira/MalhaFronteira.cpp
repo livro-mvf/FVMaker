@@ -1,65 +1,28 @@
-//==============================================================================
-// Nome        : MalhaUniforme.cpp
-// Autor       : Joao Flavio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Programa que calcula as coordenadas 
-//               para uma malha nao uniforme de volumes finitos. Os volumes
-//               estarao concentrados nas fronteiras
-// Livro       : Código 2.2 do livro
-//               Solução Numérica de Equações Diferenciais - 
-//               O Método de Volumes Finitos
-// Testado     : gcc 10.2 usando c++20 em 17 / fev / 2025 
+// ============================================================================
+// Arquivo: MalhaFronteira.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Malha Fronteira no contexto de antigos / capitulos / Capitulo_103a / Malhas / MalhasNaoUniformes / MalhaFronteira.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Direitos autorais : Copyright (C) <2025> Joao Flavio Vasconcellos 
-//                    (jflavio at iprj.uerj.br)
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU como
-// publicada pela Free Software Foundation, tanto a versão 3 da
-// Licença como (a seu critério) qualquer versão posterior.
+// Este arquivo faz parte do FVMaker.
 //
-// Este programa é distribuído na esperança de que seja útil,
-// mas SEM NENHUMA GARANTIA; sem mesmo a garantia implícita de
-// COMERCIABILIDADE ou ADEQUAÇÃO A QUALQUER PROPÓSITO EM
-// PARTICULAR. Consulte a Licença Pública Geral GNU para mais
-// detalhes.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU
-// junto com este programa. Se não, veja <http://www.gnu.org/licenses/>.
-//==============================================================================
-
-/**
- * @file MalhaUniforme.cpp
- * @brief Calcula as coordenadas dos nós para uma malha uniforme unidimensional.
- * 
- * @details
- * Este programa demonstra como gerar uma malha uniforme unidimensional para o método dos volumes finitos
- * utilizando a classe UniformGrid1D da biblioteca FVMaker.
- * 
- * A malha é definida pelos seguintes parâmetros:
- *  - Comprimento total do domínio.
- *  - Coordenada inicial do domínio.
- *  - Número de volumes (ou células) da malha.
- * 
- * O fluxo do programa é o seguinte:
- *  1. Configura os parâmetros de entrada e exibe-os formatadamente.
- *  2. Gera a malha uniforme utilizando a classe UniformGrid1D.
- *  3. Imprime as coordenadas dos nós resultantes.
- *    ```
- * 
- * @version 1.1
- * @date 2024-11-30
- * @author 
- *         João Flávio Vasconcellos
- * 
- * @copyright
- *         Copyright (c) 2025 João Flávio Vasconcellos.
- * @license GNU GPL v3
- */
-
-//==============================================================================
-//      Includes da Biblioteca FVMaker
-//==============================================================================
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <FVMaker/Grid/Grid1D/RMGrid1D.h> ///< Definição da classe RMGrid para geração da malha nao uniforme
 #include <FVMaker/Grid/GridPattern/cellCentered.h>

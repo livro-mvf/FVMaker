@@ -1,68 +1,28 @@
-//==============================================================================
-// Nome        : MalhaAleatoria1D.cpp
-// Autor       : Joao Flavio Vieira de Vasconcellos
-// Versão      : 1.1
-// Descrição   : Programa que calcula as coordenadas das faces e dos centros
-//               dos volumes para uma malha aleatória unidimensional de
-//               volumes finitos
-// Livro       : Código do livro
-//               Solução Numérica de Equações Diferenciais -
-//               O Método de Volumes Finitos
-// Testado     : gcc 10.2 usando c++20 em 12 / mar / 2025
+// ============================================================================
+// Arquivo: MalhaAleatoria1D.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Malha Aleatoria 1 D no contexto de antigos / capitulos / Capitulo_103a / Malhas / MalhasNaoUniformes / MalhaAleatoria.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Direitos autorais : Copyright (C) <2025> Joao Flavio Vasconcellos
-//                    (jflavio at iprj.uerj.br)
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Este programa é software livre: você pode redistribuí-lo e/ou
-// modificá-lo sob os termos da Licença Pública Geral GNU, conforme
-// publicada pela Free Software Foundation, na versão 3 da Licença ou
-// (a seu critério) qualquer versão posterior.
+// Este arquivo faz parte do FVMaker.
 //
-// Este programa é distribuído na esperança de que seja útil, mas SEM
-// NENHUMA GARANTIA; sem mesmo a garantia implícita de COMERCIABILIDADE
-// ou ADEQUAÇÃO A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença
-// Pública Geral GNU para mais detalhes.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-// com este programa. Se não, veja <http://www.gnu.org/licenses/>.
-//==============================================================================
-
-/**
- * @file MalhaAleatoria1D.cpp
- * @brief Calcula as coordenadas das faces e dos centros dos volumes para uma
- *        malha aleatória.
- *
- * @details
- * Este programa demonstra como gerar uma malha aleatória unidimensional
- * para o método dos volumes finitos, utilizando a classe RandomGrid1D da
- * biblioteca FVMaker.
- *
- * A malha é definida pelos seguintes parâmetros:
- *  - Comprimento total do domínio.
- *  - Coordenada inicial do domínio.
- *  - Número de volumes (ou células) da malha.
- *
- * O fluxo do programa é o seguinte:
- *  1. Configura os parâmetros de entrada e os exibe formatadamente.
- *  2. Gera a malha aleatória utilizando a classe RandomGrid1D.
- *  3. Imprime as coordenadas dos centros dos volumes e das faces,
- *     demonstrando dois exemplos:
- *      - Volume Centrado.
- *      - Face Centrada.
- *
- * @version 1.1
- * @date 2025-03-12
- * @author 
- *         João Flávio Vasconcellos
- *
- * @copyright
- *         Copyright (c) 2025 João Flávio Vasconcellos.
- * @license GNU GPL v3
- */
-
-//==============================================================================
-//      Inclusões da Biblioteca FVMaker
-//==============================================================================
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <FVMaker/Grid/Grid1D/randomGrid1D.h>  ///< Definição da classe RandomGrid1D para geração
                                                ///< da malha aleatória

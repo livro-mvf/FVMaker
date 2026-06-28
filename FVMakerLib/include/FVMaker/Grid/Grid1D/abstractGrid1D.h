@@ -1,26 +1,28 @@
-//==============================================================================
-// Name        : AbstractGrid1D.h
-// Author      : Joao Flavio Vieira de Vasconcellos
-// Version     : 1.1
-// Description : Definicao da classe AbstractGrid1D, que representa uma grade unidimensional
-//               na biblioteca FVMaker.
+// ============================================================================
+// Arquivo: abstractGrid1D.h
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara abstract Grid 1 D no contexto de Grid / Grid1D.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Copyright   : Copyright (C) 2025 Joao Flavio Vasconcellos
-//               (jflavio at iprj.uerj.br)
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// License     : Este programa e software livre: voce pode redistribui-lo e/ou
-//               modifica-lo sob os termos da Licenca Publica Geral GNU, conforme
-//               publicada pela Free Software Foundation, versao 3 da licenca,
-//               ou (a seu criterio) qualquer versao posterior.
+// Este arquivo faz parte do FVMaker.
 //
-//               Este programa e distribuido na esperanca de que seja util,
-//               mas SEM QUALQUER GARANTIA; sem mesmo a garantia implicita de
-//               COMERCIABILIDADE ou ADEQUACAO A UM DETERMINADO PROPOSITO. Consulte
-//               a Licenca Publica Geral GNU para mais detalhes.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-//               Voce deve ter recebido uma copia da Licenca Publica Geral GNU
-//               junto com este programa. Caso contrario, veja <https://www.gnu.org/licenses/>.
-//==============================================================================
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #pragma once
 

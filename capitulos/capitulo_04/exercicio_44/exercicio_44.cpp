@@ -1,30 +1,36 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_44.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 44 no contexto de capitulos / capitulo_04 / exercicio_44.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 4.4
-// Titulo: Malha simetrica definida pelo usuario.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Criar uma malha unidimensional simetrica fora da FVGridMakerLib e usar
-//   Custom1D para construir a Axis1D final validada pela biblioteca.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   Centros aleatorios sao sorteados na metade esquerda do dominio e
-//   espelhados na metade direita. As faces internas sao reconstruidas pela
-//   regra ponderada 25/75 entre centros vizinhos.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa confirma a simetria dos centros e a regra das faces ponderadas,
-//   imprime a razao Dx_max/Dx_min e resume as verificacoes automaticas.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-
-
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <random>
+#include <string>
+#include <string_view>
+#include <vector>
 
 //==============================================================================
 // Header FVGridMaker
@@ -35,14 +41,12 @@
 namespace {
 
 struct FacesPonderadasDosCentros1D final {
+    using primary_coordinates = fvgrid::CenterCoordinates1D;
+
     [[nodiscard]] static constexpr std::string_view name() noexcept {
         return "FacesPonderadasDosCentros1D";
     }
 
-    [[nodiscard]] static constexpr fvgrid::CoordinateKind1D input_kind()
-        noexcept {
-        return fvgrid::CoordinateKind1D::Centers;
-    }
 
     [[nodiscard]] static fvgrid::AxisGeometry1D complete_geometry(
         std::vector<fvgrid::Real> centers,

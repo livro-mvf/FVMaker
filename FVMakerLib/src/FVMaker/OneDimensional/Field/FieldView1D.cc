@@ -1,15 +1,29 @@
-// ----------------------------------------------------------------------------
-// File: FieldView1D.cc
-// Project: FVMaker
-// Version: 0.1.0
-// Description: Implements a non-owning mutable view over 1D field data.
-// Author: FVMaker Team
-// License: GPL-3.0-or-later
-// ----------------------------------------------------------------------------
+// ============================================================================
+// Arquivo: FieldView1D.cc
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Field View 1 D no contexto de OneDimensional / Field.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-// ----------------------------------------------------------------------------
-// FVMaker includes
-// ----------------------------------------------------------------------------
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
 #include <FVMaker/OneDimensional/Field/FieldView1D.h>

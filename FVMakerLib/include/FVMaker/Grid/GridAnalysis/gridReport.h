@@ -1,33 +1,28 @@
-//==============================================================================
-// Nome        : GridReport.h
-// Autor       : Joao Flavio Vieira de Vasconcellos
-// Versao      : 1.1
-// Descricao   : Agregador de analisadores de qualidade de malha no FVMaker.
-//               Gera relatorios especificos por dimensao em tempo de
-//               compilacao sem ramos condicionais em tempo de execucao.
-// Licenca     : GNU GPL v3
-//==============================================================================
-
-/**
- * @file GridReport.h
- * @brief Gerador de relatorio para grades estruturadas
- * @ingroup GridAnalysis
- *
- * `GridReport<GridT>` reune todas as classes de analise aplicaveis a um tipo
- * de grade e executa-as em uma unica chamada. A escolha da dimensao ocorre em
- * tempo de compilacao via especializacao de template e concepts, sem enums ou
- * ifs.
- *
- * Exemplo de uso
- * @code
- * UniformGrid1D grade{ 200, 1.0 };
- * GridReport<UniformGrid1D> relatorio{ grade };
- * relatorio.analyse();
- * std::cout << relatorio;
- * @endcode
- *
- * Observacao: Comentarios e blocos Doxygen estao em portugues sem acentos.
- */
+// ============================================================================
+// Arquivo: gridReport.h
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara grid Report no contexto de Grid / GridAnalysis.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #pragma once
 

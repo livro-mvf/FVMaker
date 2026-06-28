@@ -1,60 +1,28 @@
-// //==============================================================================
-// // SPDX-FileCopyrightText: 2026 FVMaker Team
-// // SPDX-License-Identifier: MIT
-// //==============================================================================
-// // Exercicio Computacional 5.4
-// // Condicoes de contorno em uma rotina unica
-// //==============================================================================
-
-// //==============================================================================
-// // Header FVGridMaker
-// //==============================================================================
-// #include "../comum/mvf_capitulo_05.h"
-
-
-// namespace {
-
-// using Real = capitulo_05::Real;
-
-// bool testar(
-//     std::string_view nome,
-//     fvm::BoundarySide1D lado,
-//     const fvm::BoundaryCondition1D& condicao,
-//     Real x_contorno,
-//     Real distancia,
-//     Real termo_fonte,
-//     Real coeficiente_vizinho,
-//     capitulo_05::CoeficientesContorno esperado
-// ) {
-//     const capitulo_05::CoeficientesContorno c =
-//         capitulo_05::coeficientes_contorno(
-//             lado,
-//             condicao,
-//             x_contorno,
-//             distancia,
-//             termo_fonte,
-//             coeficiente_vizinho
-//         );
-
-//     fvm::EquationContribution1D coeficientes{1};
-//     coeficientes.aw()[0] = c.aw;
-//     coeficientes.ae()[0] = c.ae;
-//     coeficientes.ap()[0] = c.ap;
-//     coeficientes.bp()[0] = c.bp;
-
-//     std::cout << nome << '\n';
-//     std::cout << "  alpha = " << condicao.alpha(x_contorno)
-//               << ", beta = " << condicao.beta(x_contorno)
-//               << ", gamma = " << condicao.gamma(x_contorno) << '\n';
-//     std::cout << coeficientes << "\n\n";
-
-//     return capitulo_05::perto(c.aw, esperado.aw) &&
-//            capitulo_05::perto(c.ae, esperado.ae) &&
-//            capitulo_05::perto(c.ap, esperado.ap) &&
-//            capitulo_05::perto(c.bp, esperado.bp);
-// }
-
-// }  // namespace
+// ============================================================================
+// Arquivo: exercicio_54.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 54 no contexto de capitulos / capitulo_05 / exercicio_54.
+// Autor: João Flávio Vieira de Vasconcellos
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 int main() {
 //     std::cout << std::fixed << std::setprecision(12);

@@ -1,26 +1,29 @@
-// SPDX-FileCopyrightText: 2026 FVMaker Team
-// SPDX-License-Identifier: MIT
+// ============================================================================
+// Arquivo: exercicio_31.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa exercicio 31 no contexto de capitulos / capitulo_03 / exercicio_31.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Exercicio Computacional 3.1
-// Titulo: Gerador de malhas aleatorias.
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// Objetivo:
-//   Gerar uma malha unidimensional aleatoria em [xI, xI + L], mantendo os
-//   extremos fixos e ordenando os nos internos.
+// Este arquivo faz parte do FVMaker.
 //
-// Modelo numerico:
-//   N - 2 posicoes internas sao amostradas no intervalo aberto e depois
-//   ordenadas para formar uma malha nao uniforme valida.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-// Verificacoes:
-//   O programa confirma extremos, monotonicidade, espacamentos positivos e
-//   soma dos espacamentos igual ao comprimento do dominio. Em seguida avalia
-//   f(x) = exp(x), estima f'' nos nos internos pela formula nao uniforme e
-//   compara os erros em uma malha aleatoria e em uma malha uniforme.
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
-//==============================================================================
-// Header c++
-//==============================================================================
 #include <algorithm>
 #include <iomanip>
 #include <iostream>

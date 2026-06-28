@@ -1,5 +1,3 @@
-# Exercicio Computacional 8.1
-
 Calcula Gamma nas faces por medias aritmetica e harmonica ponderadas pela
 posicao da face. Inclui uma media geometrica definida pelo usuario para
 demonstrar a extensibilidade da API.

@@ -1,5 +1,3 @@
-# Exercício Computacional 2.1: Refatoração da Função da Abertura
-
 Este programa refatora a função `calc` apresentada na abertura do capítulo. A função original calcula uma integral aproximada pela regra dos trapézios, mas possui nomes pouco expressivos, depende de uma função global `f` e não protege explicitamente o caso `n = 0`.
 
 O objetivo do exercício é mostrar uma primeira aplicação de boas práticas de programação científica: melhorar nomes, documentar a intenção do algoritmo, separar a regra de integração da função integranda e validar as precondições antes do cálculo.

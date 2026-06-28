@@ -1,48 +1,28 @@
-//------------------------------------------------------------------------------
-// Simetrica.cpp
-//------------------------------------------------------------------------------
-// Programa de exemplo para demonstração do método de diferenças finitas
-// na geração de malhas unidimensionais com distribuição simétrica.
-//
-// Este programa implementa geração de malhas simétricas em relação ao centro
-// do domínio, usando pontos aleatórios e espelhamento.
-//
+// ============================================================================
+// Arquivo: Simetrica.cpp
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Implementa Simetrica no contexto de antigos / capitulos / Capitulo_103b / Simetrica.
 // Autor: João Flávio Vieira de Vasconcellos
-// Versão: 1.6
-// Data: 2025-12-01
-// Testado: GCC 14.2.0 em 2025-12-01
-//------------------------------------------------------------------------------
-
-/**
- * @file Simetrica.cpp
- * @brief Exemplo didático de geração de malha unidimensional simétrica
- * 
- * Este programa demonstra técnicas modernas de C++ para gerar uma malha
- * unidimensional simétrica em relação ao centro do domínio.
- * 
- * Características da malha simétrica:
- * - Distribuição aleatória na metade esquerda do domínio
- * - Espelhamento dos pontos para a metade direita
- * - Extremidades fixas nas bordas do domínio
- * - Nó central fixo no centro (para número ímpar de nós)
- * - Ordenação paralela para otimização de desempenho
- * 
- * Objetivos pedagógicos:
- * 1. Demonstrar técnicas de simetria em malhas
- * 2. Mostrar o uso de algoritmos STL com execução paralela
- * 3. Ilustrar aplicação de malhas simétricas para problemas físicos simétricos
- * 4. Apresentar tratamento especial para paridade do número de nós
- * 
- * Referência: Livro "Solução Numérica de Equações Diferenciais - 
- *              O Método de Volumes Finitos"
- * 
- * @copyright Copyright (c) 2024
- * @license GNU GPL v3
- */
-
-//------------------------------------------------------------------------------
-// Seção 1: Inclusões Necessárias
-//------------------------------------------------------------------------------
+//
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Este arquivo faz parte do FVMaker.
+//
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
+//
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #include <execution>    // Para execução paralela  
 #include <iomanip>      // Para formatação de saída

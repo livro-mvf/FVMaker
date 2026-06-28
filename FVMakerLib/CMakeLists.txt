@@ -1,8 +1,3 @@
-#==============================================================================#
-#                          Configuração do CMake para FVMaker                   #
-#==============================================================================#
-
-# Versão mínima do CMake necessária
 cmake_minimum_required(VERSION 3.15)
 
 # Definir o nome do projeto e a versão

@@ -1,28 +1,28 @@
-#pragma once
-
-//==============================================================================
-// Name        : FVMakerException.h
-// Author      : João Flávio Vieira de Vasconcellos
-// Version     : 1.1
-// Description : Definição da classe FVMakerException, para lidar com 
-//               as exceptions da biblioteca FVMaker.
+// ============================================================================
+// Arquivo: FVMakerException.h
+// Projeto: FVMaker
+// Versão: consulte <FVMaker/Core/Version.h>
+// Descrição: Declara FVMaker Exception no contexto de Error.
+// Autor: João Flávio Vieira de Vasconcellos
 //
-// Copyright   : Copyright (C) 2025 João Flávio Vasconcellos
-//               (jflavio at iprj.uerj.br)
+// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-License-Identifier: BSD-3-Clause
 //
-// License     : Este programa é software livre: você pode redistribuí-lo e/ou
-//               modificá-lo sob os termos da Licença Pública Geral GNU, conforme
-//               publicada pela Free Software Foundation, versão 3 da licença,
-//               ou (a seu critério) qualquer versão posterior.
+// Este arquivo faz parte do FVMaker.
 //
-//               Este programa é distribuído na esperança de que seja útil,
-//               mas SEM QUALQUER GARANTIA; sem mesmo a garantia implícita de
-//               COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Consulte
-//               a Licença Pública Geral GNU para mais detalhes.
+// Licença: BSD 3-Clause.
+// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
+// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
+// de copyright, esta identificação de licença e as condições descritas no arquivo
+// LICENSE.md.
 //
-//               Você deve ter recebido uma cópia da Licença Pública Geral GNU
-//               junto com este programa. Caso contrário, veja <https://www.gnu.org/licenses/>.
-//==============================================================================
+// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
+// pode ser usado para endossar ou promover produtos derivados sem autorização
+// prévia por escrito.
+//
+// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
+// LICENSE.md, na raiz do repositório, para o texto completo da licença.
+// ============================================================================
 
 #pragma once
 
@@ -34,7 +34,7 @@
  * @date 2025-05-20
  * 
  * @copyright Copyright (C) 2025 Joao Flavio Vasconcellos
- * @license GNU GPLv3
+ * @license BSD-3-Clause
  */
 
 //==============================================================================

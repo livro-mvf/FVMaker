@@ -1,5 +1,3 @@
-# Exercicio Computacional 6.7: O efeito da estimativa inicial
-
 Corresponde a `exc_06:estimativa-inicial`.
 
 O Gauss-Seidel da FVMaker recebe os chutes constantes `0`, `0.9` e `0.99`.
