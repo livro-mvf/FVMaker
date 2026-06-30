@@ -71,12 +71,14 @@
 #include <FVMaker/OneDimensional/Solver/LinearSolverOptions1D.h>
 #include <FVMaker/OneDimensional/Solver/NonlinearSolve1D.h>
 #include <FVMaker/OneDimensional/Solver/SolveController1D.h>
+#include <FVMaker/OneDimensional/Operator/DiffusionOperator1D.h>
 #include <FVMaker/OneDimensional/Operator/Laplacian1D.h>
 #include <FVMaker/OneDimensional/Solver/TDMA.h>
 #include <FVMaker/OneDimensional/Source/LinearizedSource1D.h>
 #include <FVMaker/OneDimensional/System/AlgebraicResidual1D.h>
 #include <FVMaker/OneDimensional/System/PentadiagonalSystem1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
+#include <FVMaker/OneDimensional/Term/Terms1D.h>
 #include <FVMaker/OneDimensional/Variable/Variable1D.h>
 #include <FVMaker/Output/VTK/Variable1DVTKWriter.h>
 #include <FVMaker/Roadmap/FakeBlocks.h>

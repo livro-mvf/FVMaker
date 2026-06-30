@@ -81,48 +81,56 @@ if(BUILD_MEMCHECK)
 endif()
 
 foreach(FVM_TEST_SOURCE IN LISTS FVM_TEST_SOURCES)
-    get_filename_component(FVM_TEST_NAME
+    file(RELATIVE_PATH
+        FVM_TEST_RELATIVE_PATH
+        "${FVM_TESTS_DIR}"
         "${FVM_TEST_SOURCE}"
+    )
+
+    get_filename_component(FVM_TEST_NAME
+        "${FVM_TEST_RELATIVE_PATH}"
         NAME_WE
     )
 
-    get_filename_component(FVM_TEST_PARENT_DIR
-        "${FVM_TEST_SOURCE}"
+    get_filename_component(FVM_TEST_RELATIVE_DIR
+        "${FVM_TEST_RELATIVE_PATH}"
         DIRECTORY
     )
 
-    get_filename_component(FVM_TEST_PARENT_TOKEN
-        "${FVM_TEST_PARENT_DIR}"
-        NAME
-    )
+    set(FVM_TEST_NAME_TOKEN "${FVM_TEST_NAME}")
 
-    string(REGEX REPLACE "^tst_" "" FVM_TEST_NAME_TOKEN
-        "${FVM_TEST_NAME}"
-    )
-
-    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_TEST_PARENT_TOKEN
-        "${FVM_TEST_PARENT_TOKEN}"
-    )
+    if(FVM_TEST_NAME_TOKEN MATCHES "^tst_(.+)$")
+        set(FVM_TEST_NAME_TOKEN "${CMAKE_MATCH_1}")
+    endif()
 
     string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_TEST_NAME_TOKEN
         "${FVM_TEST_NAME_TOKEN}"
     )
 
-    if(FVM_TEST_PARENT_TOKEN STREQUAL "tests" OR
-       FVM_TEST_PARENT_TOKEN STREQUAL "Tests")
+    if(FVM_TEST_RELATIVE_DIR)
+        string(REPLACE "/" "_" FVM_TEST_DIR_TOKEN
+            "${FVM_TEST_RELATIVE_DIR}"
+        )
+        string(REPLACE "\\" "_" FVM_TEST_DIR_TOKEN
+            "${FVM_TEST_DIR_TOKEN}"
+        )
+        string(REGEX REPLACE "[^A-Za-z0-9_]" "_" FVM_TEST_DIR_TOKEN
+            "${FVM_TEST_DIR_TOKEN}"
+        )
+
         set(FVM_TEST_TARGET
-            "tst_${FVM_TEST_NAME_TOKEN}"
+            "tst_${FVM_TEST_DIR_TOKEN}_${FVM_TEST_NAME_TOKEN}"
         )
     else()
         set(FVM_TEST_TARGET
-            "tst_${FVM_TEST_PARENT_TOKEN}_${FVM_TEST_NAME_TOKEN}"
+            "tst_${FVM_TEST_NAME_TOKEN}"
         )
     endif()
 
     if(TARGET "${FVM_TEST_TARGET}")
         message(FATAL_ERROR
             "Duplicate test target detected: ${FVM_TEST_TARGET}. "
-            "Rename one test file or move it to a distinct parent directory."
+            "Test executable names must be unique relative to the tests tree."
         )
     endif()
 
