@@ -71,9 +71,9 @@ public:
   SourceTerm(const SourceTerm&) noexcept = default;
 
   /**
-   * @brief Destrutor virtual padrão.
+   * @brief Destrutor padrão.
    */
-  virtual ~SourceTerm() noexcept = default;
+  ~SourceTerm() noexcept = default;
 
   /**
    * @brief Construtor que recebe uma referência para a malha.

@@ -58,7 +58,7 @@ class Equation {
 public:
         
     Equation(const Equation&) noexcept = default;
-    virtual ~Equation() noexcept = default;
+    ~Equation() noexcept = default;
     Equation(Equation&&) = delete; 
     Equation    (   const T&                        _grid
                 ,   const AbstractCoefficient<T>    _coeff

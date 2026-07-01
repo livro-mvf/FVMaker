@@ -61,7 +61,7 @@ GRID_NAMESPACE_OPEN
  *
  * @ingroup GridPattern
  */
-class CellCentered : public AbstractGridPattern
+class CellCentered
 {
 //==============================================================================
 // Construtores/Destrutora
@@ -79,7 +79,7 @@ public:
      * @post offset_ é inicializado com o valor fornecido
      */
     explicit CellCentered(const Real& _offset) noexcept
-        : AbstractGridPattern(_offset)
+        : offset_{_offset}
     {
     }
 
@@ -89,9 +89,9 @@ public:
     CellCentered(const CellCentered&) noexcept = default;
 
     /**
-     * @brief Destrutor virtual padrão
+     * @brief Destrutor padrão
      */
-    ~CellCentered() noexcept override = default;
+    ~CellCentered() noexcept = default;
 
     /**
      * @brief Construtor de movimento deletado
@@ -128,8 +128,8 @@ public:
      *       2. Calcula os centros com base no offset
      *       3. Calcula as distâncias entre elementos
      */
-    template <typename T>
-    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>* _grid) const;
+    template <typename Grid>
+    [[nodiscard]] bool BuildMesh(Grid* _grid) const;
 
 //==============================================================================
 // Funções puramente virtuais (implementadas)
@@ -139,22 +139,24 @@ public:
      * @brief Cria uma cópia do objeto
      * @return shared_ptr para a nova instância
      *
-     * @note Implementação do método virtual puro da classe base
+     * @note Implementação do método puro da classe base
      */
-    [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
+    [[nodiscard]] std::shared_ptr<CellCentered> Clone() const;
 
     /**
      * @brief Obtém o nome do padrão de malha
      * @return "Volume Centrado"
      *
-     * @note Implementação do método virtual puro da classe base
+     * @note Implementação do método puro da classe base
      */
-    std::string TipoPadraoMalha() const override;
+    std::string TipoPadraoMalha() const;
+private:
+    Real offset_{0.5};
 };
 
 // Implementação do template
-template <typename T>
-bool CellCentered::BuildMesh(AbstractGrid1D<T>* _grid) const
+template <typename Grid>
+bool CellCentered::BuildMesh(Grid* _grid) const
 {
     bool flag = _grid->GeraFaces();
     auto ptrXFace = _grid->AddressxFace();

@@ -55,7 +55,7 @@ GRID_NAMESPACE_OPEN        // => namespace fvm { namespace grd {
  * @tparam GridType tipo da malha (ex.: UniformGrid1D)
  */
 template <typename GridType>
-class UniformityAnalyser1D : public GridAnalyser<GridType>
+class UniformityAnalyser1D
 {
 public:
     explicit UniformityAnalyser1D(const GridType& _grid)
@@ -63,7 +63,7 @@ public:
 
     /* --------------------------------------------------------------------- */
     /** @brief Executa a análise (cálculo do CV). */
-    void analyse() override
+    void analyse()
     {
         const auto& dx = this->grid.GetDFace();   // vetor Δx pronto
         const std::size_t N = dx.size();
@@ -84,7 +84,7 @@ public:
 
     /* --------------------------------------------------------------------- */
     /** @brief Saída formatada (usado por operator<<). */
-    void print(std::ostream& os) const override
+    void print(std::ostream& os) const
     {
         os << std::fixed << std::setprecision(6)
            << "Analise de uniformidade (1D Grid): "

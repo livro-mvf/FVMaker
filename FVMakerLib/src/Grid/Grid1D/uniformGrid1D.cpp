@@ -37,36 +37,37 @@ GRID_NAMESPACE_OPEN
 uniformGrid1D::uniformGrid1D    (   const int&      _nVol, 
                                     const Real&     _length, 
                                     const Real&     _xIni)
-                    : AbstractGrid1D<CellCentered>(_nVol, _length, _xIni) 
+                    : data_{_nVol, _length, _xIni} 
 {
-    this->typePattern_ = std::make_shared<CellCentered>();
-    auto flag = this->typePattern_->BuildMesh(this);
+    auto flag = typePattern_.BuildMesh(this);
+    (void)flag;
 }
 
 uniformGrid1D::uniformGrid1D(const uniformGrid1D& _copia) noexcept
-    : AbstractGrid1D<CellCentered>(_copia) 
+    : data_{_copia.data_},
+      typePattern_{_copia.typePattern_} 
 {
-    this->typePattern_ = std::make_shared<CellCentered>(*_copia.typePattern_);
+     
 }
 
 //==============================================================================
 // Metodos Publicos
 //==============================================================================
 
-std::unique_ptr<AbstractGrid1D<CellCentered>> uniformGrid1D::Clone() const 
+std::unique_ptr<uniformGrid1D> uniformGrid1D::Clone() const 
 {
     return std::make_unique<uniformGrid1D>(*this);
 }
 
 bool uniformGrid1D::GeraFaces() 
 {
-    GeraCoordenadas(&this->xFace_, 0.0);
+    GeraCoordenadas(AddressxFace(), 0.0);
     return true;
 }
 
 bool uniformGrid1D::GeraCentros() 
 {
-    GeraCoordenadas(&this->xCentro_, 0.5);
+    GeraCoordenadas(AddressxCentro(), 0.5);
     return true;
 }
 
@@ -76,11 +77,11 @@ bool uniformGrid1D::GeraCentros()
 
 void uniformGrid1D::GeraCoordenadas(VecReal* _coords, const Real& _offset) 
 {
-    const Real dx = this->Length() / this->NVol();
-    const Real x0 = this->XInit();
+    const Real dx = Length() / NVol();
+    const Real x0 = XInit();
     
     // Preenche as coordenadas base
-    _coords->resize(this->NVol() + (_offset == 0.0 ? 1 : 0));
+    _coords->resize(NVol() + (_offset == 0.0 ? 1 : 0));
     std::iota(_coords->begin(), _coords->end(), 0.0);
     
     // Aplica transformacao usando a politica do ParallelControl
@@ -94,7 +95,7 @@ void uniformGrid1D::GeraCoordenadas(VecReal* _coords, const Real& _offset)
                                     GeraCoordenadas);
     
     // Calcula distancias se for uma operacao de faces
-    if (!this->CalculaDistancias()) {
+    if (!CalculaDistancias()) {
         throw std::runtime_error("Falha ao calcular distancias");
     }
 }

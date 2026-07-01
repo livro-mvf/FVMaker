@@ -44,7 +44,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-class Neumann : public BC{
+class Neumann{
 
 //==============================================================================
 // Construtores e destrutora
@@ -54,7 +54,7 @@ public:
     
     Neumann()                noexcept = default;
     Neumann(const Neumann&)   noexcept = default;
-    virtual ~Neumann()       noexcept = default;
+    ~Neumann()       noexcept = default;
     Neumann (const Real& _gamma) : BC(0,1, _gamma) {};
     
     Neumann(Neumann&&) = delete;

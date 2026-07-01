@@ -59,13 +59,13 @@ GRID_NAMESPACE_OPEN
  *
  * @ingroup GridPattern
  */
-class FaceCentered : public AbstractGridPattern
+class FaceCentered
 {
 public:
     FaceCentered() noexcept = default;
-    explicit FaceCentered(double offset) noexcept;
+    explicit FaceCentered(double offset) noexcept : offset_{offset} {}
     FaceCentered(const FaceCentered&) noexcept = default;
-    ~FaceCentered() noexcept override = default;
+    ~FaceCentered() noexcept = default;
     FaceCentered(FaceCentered&&) = delete;
 
     FaceCentered& operator=(const FaceCentered&) = delete;
@@ -87,8 +87,10 @@ public:
     }    
     
 
-    [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const override;
-    std::string TipoPadraoMalha() const override;
+    [[nodiscard]] std::shared_ptr<FaceCentered> Clone() const;
+    std::string TipoPadraoMalha() const;
+private:
+    Real offset_{0.5};
 };
 
 GRID_NAMESPACE_CLOSE

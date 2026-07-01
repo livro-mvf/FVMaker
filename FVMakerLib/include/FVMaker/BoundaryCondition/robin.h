@@ -44,7 +44,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-class Robin : public BC{
+class Robin{
 
 //==============================================================================
 // Construtores e destrutora
@@ -54,7 +54,7 @@ public:
     
     Robin()                noexcept = default;
     Robin(const Robin&)   noexcept = default;
-    virtual ~Robin()       noexcept = default;
+    ~Robin()       noexcept = default;
     Robin   ( const Real&   _alpha
             , const Real&   _beta
             , const Real&   _gamma

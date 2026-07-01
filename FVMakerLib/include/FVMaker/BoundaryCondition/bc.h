@@ -58,7 +58,7 @@ public:
     
     BC()                noexcept = default;
     BC(const BC&)   noexcept = default;
-    virtual ~BC()       noexcept = default;
+    ~BC()       noexcept = default;
     BC   ( const Real&   _alpha
                         , const Real&   _beta
                         , const Real&   _gamma

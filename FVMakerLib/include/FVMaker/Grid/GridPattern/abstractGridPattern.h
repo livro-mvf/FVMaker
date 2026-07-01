@@ -104,9 +104,9 @@ public:
     AbstractGridPattern(const AbstractGridPattern&) noexcept = default;
 
     /**
-     * @brief Destrutor virtual padrão
+     * @brief Destrutor padrão
      */
-    virtual ~AbstractGridPattern() noexcept = default;
+    ~AbstractGridPattern() noexcept = default;
 
     /**
      * @brief Construtor de movimento deletado
@@ -185,7 +185,7 @@ public:
      *
      * @note Implementação obrigatória nas classes derivadas
      */
-    [[nodiscard]] virtual std::shared_ptr<AbstractGridPattern> Clone() const = 0;
+    [[nodiscard]] std::shared_ptr<AbstractGridPattern> Clone() const { return std::make_shared<AbstractGridPattern>(*this); }
 
     /**
      * @brief Obtém o nome do padrão de malha
@@ -193,7 +193,7 @@ public:
      *
      * @note Implementação obrigatória nas classes derivadas
      */
-    [[nodiscard]] virtual std::string TipoPadraoMalha() const = 0;
+    [[nodiscard]] std::string TipoPadraoMalha() const { return {}; }
 };
 
 GRID_NAMESPACE_CLOSE

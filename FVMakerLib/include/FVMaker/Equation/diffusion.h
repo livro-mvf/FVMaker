@@ -56,7 +56,7 @@ FVMAKER_NAMESPACE_OPEN
         
 template <typename T>
 requires Is1DGrid<T>        
-class Diffusion : public Equation <T>
+class Diffusion
 {
 
 //==============================================================================
@@ -66,7 +66,7 @@ class Diffusion : public Equation <T>
 public:
     
     Diffusion(const Diffusion&) noexcept = default;
-    virtual ~Diffusion() noexcept override = default;
+    ~Diffusion() noexcept = default;
     Diffusion(Diffusion&&) = delete;    
 
     Diffusion   (   const T& _grid

@@ -39,11 +39,11 @@
 
 namespace fvm {
 
-class FVMException final : public std::exception {
+class FVMException final {
 public:
     explicit FVMException(ErrorRecord record);
 
-    [[nodiscard]] const char* what() const noexcept override;
+    [[nodiscard]] const char* what() const noexcept;
 
     [[nodiscard]] const ErrorRecord& record() const noexcept;
 

@@ -60,7 +60,7 @@ GRID_NAMESPACE_OPEN    // abre: namespace fvm { namespace grd {
  * @tparam GridType tipo da malha (ex.: UniformGrid1D)
  */
 template <typename GridType>
-class SmoothnessAnalyser1D : public GridAnalyser<GridType> {
+class SmoothnessAnalyser1D {
 public:
     explicit SmoothnessAnalyser1D(const GridType& _grid)
         : GridAnalyser<GridType>(_grid), smoothness_(Real(0)) {}
@@ -69,7 +69,7 @@ public:
     static constexpr std::size_t ParallelThreshold = 10000;
 
     /// Executa a escolha entre análise sequencial ou paralela
-    void analyse() override {
+    void analyse() {
         const auto& dx = this->grid.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
@@ -84,7 +84,7 @@ public:
     }
 
     /// Impressão formatada – usado pelo operator<<.
-    void print(std::ostream& os) const override {
+    void print(std::ostream& os) const {
         os << std::fixed << std::setprecision(6)
            << "Analise de suavidade (1D Grid): "
            << " Maxima variacao de Δx: " << smoothness_;

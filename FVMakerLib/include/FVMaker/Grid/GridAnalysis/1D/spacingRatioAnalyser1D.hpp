@@ -55,14 +55,14 @@ GRID_NAMESPACE_OPEN    // abre: namespace fvm { namespace grd {
  * @tparam GridType tipo da malha (ex.: UniformGrid1D)
  */
 template <typename GridType>
-class SpacingRatioAnalyser1D : public GridAnalyser<GridType>
+class SpacingRatioAnalyser1D
 {
 public:
     explicit SpacingRatioAnalyser1D(const GridType& _grid)
         : GridAnalyser<GridType>(_grid), max_ratio_(0.0) {}
 
     /// Executa a análise de razão de espaçamentos.
-    void analyse() override {
+    void analyse() {
         const auto& dx = this->grid.GetDFace();
         const std::size_t N = dx.size();
         if (N < 2) {
@@ -82,7 +82,7 @@ public:
     }
 
     /// Imprime o resultado formatado.
-    void print(std::ostream& os) const override {
+    void print(std::ostream& os) const {
         os << std::fixed << std::setprecision(6)
            << "Spacing Ratio Analysis (1D Grid)\n"
            << " - Max spacing ratio: " << max_ratio_;

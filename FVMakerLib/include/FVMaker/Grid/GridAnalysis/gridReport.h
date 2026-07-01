@@ -126,14 +126,7 @@ class GridReport {
 
 template <typename GridT>
 requires Is1DGrid<GridT>
-class GridReport<GridT, 1>
-    : public detail::GridReportBase<
-          GridT,
-          std::tuple<
-              CellSizeAnalyser1D<GridT>,
-              SmoothnessAnalyser1D<GridT>,
-              UniformityAnalyser1D<GridT>>> {
-
+class GridReport<GridT, 1> {
     using Base = detail::GridReportBase<
         GridT,
         std::tuple<
@@ -142,7 +135,18 @@ class GridReport<GridT, 1>
             UniformityAnalyser1D<GridT>>>;
 
 public:
-    explicit GridReport(const GridT& grid) noexcept : Base{ grid } {}
+    explicit GridReport(const GridT& grid) noexcept : base_{grid} {}
+
+    void analyse() { base_.analyse(); }
+    void print(std::ostream& os) const { base_.print(os); }
+
+    friend std::ostream& operator<<(std::ostream& os, const GridReport& report) {
+        report.print(os);
+        return os;
+    }
+
+private:
+    Base base_;
 };
 
 //=============================================================================

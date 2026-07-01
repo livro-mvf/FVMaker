@@ -43,7 +43,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 
-class Dirichlet : public BC{
+class Dirichlet{
 
 //==============================================================================
 // Construtores e destrutora
@@ -53,7 +53,7 @@ public:
     
     Dirichlet()                noexcept = default;
     Dirichlet(const Dirichlet&)   noexcept = default;
-    virtual ~Dirichlet()       noexcept = default;
+    ~Dirichlet()       noexcept = default;
     Dirichlet (const Real& _gamma) : BC(1,0, _gamma) {};
     
     Dirichlet(Dirichlet&&) = delete;

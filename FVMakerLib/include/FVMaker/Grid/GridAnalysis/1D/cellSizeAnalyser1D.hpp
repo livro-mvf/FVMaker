@@ -56,7 +56,7 @@ GRID_NAMESPACE_OPEN
  * @tparam GridType tipo da malha (ex.: UniformGrid1D)
  */
 template <typename GridType>
-class CellSizeAnalyser1D : public GridAnalyser<GridType>
+class CellSizeAnalyser1D
 {
 public:
 
@@ -68,7 +68,7 @@ CellSizeAnalyser1D (const GridType& _grid) :
         ,   dx_avg_(0.0) {}
 
     /// Executa a análise do vetor Delta x fornecido pela malha
-void analyse() override {
+void analyse() {
         const auto& dx = this->grid.GetDFace(); 
         if (dx.empty()) return;
 
@@ -78,7 +78,7 @@ void analyse() override {
 }
 
     /// Impressão formatada — usado pelo operator<< da base
-    void print(std::ostream& _os) const override
+    void print(std::ostream& _os) const
     {
         _os << std::fixed << std::setprecision(6)
            << "Analise de tamanho do volume (1D Grid): "

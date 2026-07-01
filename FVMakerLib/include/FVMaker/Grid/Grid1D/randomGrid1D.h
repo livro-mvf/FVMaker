@@ -35,7 +35,7 @@
 GRID_NAMESPACE_OPEN
 
 template<typename TypePattern>
-class RandomGrid1D : public AbstractGrid1D<TypePattern> {
+class RandomGrid1D {
 
 public:
 
@@ -51,7 +51,7 @@ public:
     RandomGrid1D (const int&, const Real&, const Real& = 0.0);
     RandomGrid1D(const RandomGrid1D& _copia) noexcept
         : AbstractGrid1D<TypePattern>(*_copia.Clone()){};
-    virtual ~RandomGrid1D() noexcept override = default;
+    ~RandomGrid1D() noexcept = default;
 //
     RandomGrid1D(RandomGrid1D&&) = delete;
     
@@ -70,9 +70,9 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<TypePattern>> Clone() const;
-    [[nodiscard]] virtual bool GeraFaces ();
-    [[nodiscard]] virtual bool GeraCentros ();
+    [[nodiscard]] std::unique_ptr<AbstractGrid1D<TypePattern>> Clone() const;
+    [[nodiscard]] bool GeraFaces ();
+    [[nodiscard]] bool GeraCentros ();
 //    
 //==============================================================================
 // Funções 

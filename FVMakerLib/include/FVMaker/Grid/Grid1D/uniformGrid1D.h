@@ -59,7 +59,7 @@ GRID_NAMESPACE_OPEN
  *
  * @tparam CellCentered Padrao de discretizacao centrado nas celulas
  */
-class uniformGrid1D : public AbstractGrid1D<CellCentered> {
+class uniformGrid1D {
 public:
     //==========================================================================
     // Tipo Publico
@@ -91,7 +91,7 @@ public:
     /**
      * @brief Destrutor
      */
-    virtual ~uniformGrid1D() noexcept override = default;
+    ~uniformGrid1D() noexcept = default;
     
     /**
      * @brief Construtor de movimento deletado
@@ -120,7 +120,7 @@ public:
      * @brief Cria uma copia da malha
      * @return Ponteiro unico para a copia
      */
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<CellCentered>> Clone() const override;
+    [[nodiscard]] std::unique_ptr<uniformGrid1D> Clone() const;
     
     /**
      * @brief Gera as coordenadas das faces
@@ -128,7 +128,7 @@ public:
      *
      * Utiliza a politica de execucao configurada no ParallelControl
      */
-    [[nodiscard]] virtual bool GeraFaces() override;
+    [[nodiscard]] bool GeraFaces();
     
     /**
      * @brief Gera as coordenadas dos centros
@@ -136,10 +136,30 @@ public:
      *
      * Utiliza a politica de execucao configurada no ParallelControl
      */
-    [[nodiscard]] virtual bool GeraCentros() override;
+    [[nodiscard]] bool GeraCentros();
+
+    [[nodiscard]] size_t size() const { return data_.size(); }
+    [[nodiscard]] size_t NVol() const { return data_.NVol(); }
+    [[nodiscard]] Real Length() const { return data_.Length(); }
+    [[nodiscard]] Real XInit() const { return data_.XInit(); }
+    [[nodiscard]] Real XEnd() const { return data_.XEnd(); }
+    [[nodiscard]] const VecReal& GetFace() const { return data_.GetFace(); }
+    [[nodiscard]] const VecReal& GetCentre() const { return data_.GetCentre(); }
+    [[nodiscard]] const VecReal& GetDFace() const { return data_.GetDFace(); }
+    [[nodiscard]] const VecReal& GetDCentre() const { return data_.GetDCentre(); }
+    [[nodiscard]] VecReal* AddressxFace() { return data_.AddressxFace(); }
+    [[nodiscard]] const VecReal* AddressxFace() const { return data_.AddressxFace(); }
+    [[nodiscard]] VecReal* AddressxCentro() { return data_.AddressxCentro(); }
+    [[nodiscard]] const VecReal* AddressxCentro() const { return data_.AddressxCentro(); }
+    [[nodiscard]] bool CalculaCentros(const Real& offset) { return data_.CalculaCentros(offset); }
+    [[nodiscard]] bool CalculaFaces(const Real& offset) { return data_.CalculaFaces(offset); }
+    [[nodiscard]] bool CalculaDistancias() { return data_.CalculaDistancias(); }
+    [[nodiscard]] bool empty() const { return data_.empty(); }
     
 private:
-    
+    AbstractGrid1D<CellCentered> data_;
+    CellCentered typePattern_;
+
     //==========================================================================
     // Implementacao
     //==========================================================================

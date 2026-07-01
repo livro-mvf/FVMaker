@@ -80,9 +80,8 @@ public:
     AbstractGrid(const AbstractGrid&) noexcept = default;
     
     /**
-     * @brief Destrutor virtual
-     */
-    virtual ~AbstractGrid() noexcept = default;
+     * @brief Destrutor */
+    ~AbstractGrid() noexcept = default;
     
     /**
      * @brief Construtor de movimento deletado
@@ -111,7 +110,7 @@ public:
      * @brief Verifica se a grade esta vazia
      * @return true se a grade nao contem elementos
      */
-    [[nodiscard]] virtual bool empty() const = 0;
+    [[nodiscard]] bool empty() const { return true; }
 };
 
 GRID_NAMESPACE_CLOSE

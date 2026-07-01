@@ -58,7 +58,7 @@ GRID_NAMESPACE_OPEN
  * @tparam TypePattern Tipo do padrao de discretizacao
  */
 template<typename TypePattern>
-class AbstractGrid1D : public AbstractGrid<TypePattern> {
+class AbstractGrid1D {
     
 //==============================================================================
 // Construtores/Destrutora
@@ -84,9 +84,8 @@ public:
     AbstractGrid1D(const AbstractGrid1D&) noexcept = default;
     
     /**
-     * @brief Destrutor virtual
-     */
-    virtual ~AbstractGrid1D() noexcept override = default;
+     * @brief Destrutor */
+    ~AbstractGrid1D() noexcept = default;
     
     /**
      * @brief Construtor de movimento (deletado)
@@ -123,7 +122,7 @@ public:
      * @brief Cria uma copia da grade
      * @return Ponteiro unico para a nova instancia
      */
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D> Clone() const = 0;
+    [[nodiscard]] std::unique_ptr<AbstractGrid1D> Clone() const;
     
     /**
      * @brief Gera as coordenadas das faces
@@ -131,7 +130,7 @@ public:
      *
      * @note Utiliza ParallelControl para operacoes paralelas
      */
-    [[nodiscard]] virtual bool GeraFaces() {return false;};
+    [[nodiscard]] bool GeraFaces() { return false; }
     
     /**
      * @brief Gera as coordenadas dos centros
@@ -139,13 +138,13 @@ public:
      *
      * @note Utiliza ParallelControl para operacoes paralelas
      */
-    [[nodiscard]] virtual bool GeraCentros() {return false;};
+    [[nodiscard]] bool GeraCentros() { return false; }
     
     /**
      * @brief Verifica se a grade esta vazia
      * @return true se vazia
      */
-    [[nodiscard]] virtual bool empty() const override {return xFace_.empty() || xCentro_.empty();};
+    [[nodiscard]] bool empty() const { return xFace_.empty() || xCentro_.empty(); }
 
 //==============================================================================
 // Operacoes da Grade
@@ -201,6 +200,12 @@ public:
     
     [[nodiscard]] inline VecReal* AddressxFace() {return &xFace_;};
     [[nodiscard]] inline const VecReal* AddressxFace() const {return &xFace_;};
+    [[nodiscard]] inline VecReal* AddressxCentro() {return &xCentro_;};
+    [[nodiscard]] inline const VecReal* AddressxCentro() const {return &xCentro_;};
+    [[nodiscard]] inline VecReal* AddressDXFace() {return &dxFace_;};
+    [[nodiscard]] inline const VecReal* AddressDXFace() const {return &dxFace_;};
+    [[nodiscard]] inline VecReal* AddressDXCentro() {return &dxCentro_;};
+    [[nodiscard]] inline const VecReal* AddressDXCentro() const {return &dxCentro_;};
 
 //==============================================================================
 // Dados da Classe

@@ -113,7 +113,7 @@ std::string_view getErrorMessage(ErrorCode code) noexcept;
  * @class FVMakerException
  * @brief Classe base para todas as excecoes lancadas pela biblioteca FVMaker.
  */
-class FVMakerException : public std::exception {
+class FVMakerException {
 public:
     /**
      * @brief Construtor da excecao.
@@ -129,7 +129,7 @@ public:
      * 
      * @return const char* Mensagem de erro no formato C.
      */
-    const char* what() const noexcept override;
+    const char* what() const noexcept;
     
     /**
      * @brief Obtem o codigo de erro associado a excecao.

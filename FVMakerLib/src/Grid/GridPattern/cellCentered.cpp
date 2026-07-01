@@ -36,12 +36,12 @@ GRID_NAMESPACE_OPEN
  * A instância criada é gerenciada por um shared_ptr para permitir gerenciamento automático
  * de memória.
  *
- * @note Este método é uma implementação do método virtual puro da classe base AbstractGridPattern
+ * @note Este método é uma implementação do método puro da classe base AbstractGridPattern
  * @post O objeto retornado é uma cópia exata do objeto original
  *
  * @see AbstractGridPattern::Clone()
  */
-std::shared_ptr<AbstractGridPattern> CellCentered::Clone() const {
+std::shared_ptr<CellCentered> CellCentered::Clone() const {
     return std::make_shared<CellCentered>(*this);
 }
 
@@ -54,7 +54,7 @@ std::shared_ptr<AbstractGridPattern> CellCentered::Clone() const {
  * - Serialização/deserialização de objetos
  * - Propósitos de depuração e diagnóstico
  *
- * @note Este método é uma implementação do método virtual puro da classe base AbstractGridPattern
+ * @note Este método é uma implementação do método puro da classe base AbstractGridPattern
  * @see AbstractGridPattern::TipoPadraoMalha()
  */
 std::string CellCentered::TipoPadraoMalha() const {

@@ -50,7 +50,7 @@ FVMAKER_NAMESPACE_OPEN
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
 template <typename T>
-class Coefficient1D : public AbstractCoefficient<T> {
+class Coefficient1D {
 
 public :
     
@@ -65,7 +65,7 @@ public:
     
 
     Coefficient1D(const Coefficient1D&) noexcept = default;
-    virtual ~Coefficient1D() noexcept override = default;
+    ~Coefficient1D() noexcept = default;
     Coefficient1D(Coefficient1D&&) = delete;    
     
     explicit Coefficient1D (const T& _grid, const Real& = 1.0) : AbstractCoefficient<T>(_grid) {

@@ -70,7 +70,7 @@ class Function {
 public:
 
     explicit Function (const T& _grid) : grid_(_grid) {}
-    virtual ~Function() noexcept  = default;
+    ~Function() noexcept  = default;
 
 //==============================================================================
 // Definição da função a ser utilizada pelo function

@@ -34,7 +34,7 @@ GRID_NAMESPACE_OPEN
  *
  * @note Utiliza o construtor de copia padrao para criar nova instancia
  */
-std::shared_ptr<AbstractGridPattern> FaceCentered::Clone() const {
+std::shared_ptr<FaceCentered> FaceCentered::Clone() const {
     return std::make_shared<FaceCentered>(*this);
 }
 

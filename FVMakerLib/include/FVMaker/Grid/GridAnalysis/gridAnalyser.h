@@ -42,7 +42,7 @@ GRID_NAMESPACE_OPEN
  * @brief Classe base abstrata para análises de malhas.
  * 
  * Esta classe define a interface para todas as classes de análise de malhas.
- * Toda classe derivada que produz resultados deverá implementar o método
+ * Toda classe concreta que produz resultados deverá implementar o método
  * `analyse()` e o método `print()`, que permite a saída formatada com `operator<<`.
  * 
  * @tparam GridType Tipo da malha a ser analisada (por exemplo: UniformGrid1D).
@@ -58,28 +58,28 @@ public:
     explicit GridAnalyser(const GridType& _grid) : grid(_grid) {}
 
     /**
-     * @brief Método abstrato que executa a análise.
+     * @brief Método padrão que executa a análise.
      * 
-     * Cada classe derivada deve implementar sua lógica específica de análise.
+     * Cada classe concreta deve implementar sua lógica específica de análise.
      */
-    virtual void analyse() = 0;
+    void analyse() {}
 
     /**
-     * @brief Método abstrato para impressão formatada.
+     * @brief Método padrão para impressão formatada.
      * 
      * Este método é chamado pelo operador `<<` para apresentar os resultados.
      * 
      * @param os Stream de saída (como std::cout).
      */
-    virtual void print(std::ostream& os) const = 0;
+    void print(std::ostream&) const {}
 
     /**
-     * @brief Destrutor virtual padrão.
+     * @brief Destrutor padrão.
      */
-    virtual ~GridAnalyser() = default;
+    ~GridAnalyser() = default;
 
     /**
-     * @brief Sobrecarga do operador `<<` para qualquer classe derivada.
+     * @brief Sobrecarga do operador `<<` para qualquer classe concreta.
      * 
      * Permite usar `std::cout << object` diretamente para imprimir o resultado.
      * 

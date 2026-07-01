@@ -39,7 +39,7 @@ GRID_NAMESPACE_OPEN
 
 
 template <typename T>
-class RMGrid1D : public AbstractGrid1D<T> {
+class RMGrid1D {
 
 public:
 
@@ -55,7 +55,7 @@ public:
     RMGrid1D (const Real&, const int&, const Real&,  const Real& = 0.0);
     RMGrid1D (const RMGrid1D& _copia) noexcept
         : AbstractGrid1D<T>(*_copia.Clone()){};
-    virtual ~RMGrid1D() noexcept override = default;
+    ~RMGrid1D() noexcept = default;
 
     RMGrid1D(RMGrid1D&&) = delete;
     
@@ -74,9 +74,9 @@ public:
     
 public:
     
-    [[nodiscard]] virtual std::unique_ptr<AbstractGrid1D<T>> Clone() const;
-    [[nodiscard]] virtual bool GeraFaces ();
-    [[nodiscard]] virtual bool GeraCentros ();
+    [[nodiscard]] std::unique_ptr<AbstractGrid1D<T>> Clone() const;
+    [[nodiscard]] bool GeraFaces ();
+    [[nodiscard]] bool GeraCentros ();
     
 //==============================================================================
 // Funções 
