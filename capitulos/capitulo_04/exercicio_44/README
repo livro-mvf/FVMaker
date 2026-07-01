@@ -1,35 +1,44 @@
-Este programa usa a FVGridMaker sem modificar a biblioteca. A rotina local gera
-centros simetricos, espelha a metade esquerda em relacao ao centro do dominio e
-entrega esses centros ao construtor customizado `Custom1D`.
+Este programa usa a `Random1D` da FVGridMaker para gerar malhas aleatorias
+volume centradas e analisa a qualidade geometrica resultante, seguindo as
+metricas da Secao 4.4 do texto (razao r, desvio padrao relativo sigma_rel e
+transicao local S_i).
 
-Parametros:
+Parametros principais:
 
 ```text
-L       = 1
-N       = 21
-xI      = 0
-semente = 2026
+xI = 0
+L  = 1
+N  = 10 (malha base e varredura de sementes)
 ```
 
-O programa:
+O programa cobre as sete tarefas do exercicio:
 
 ```text
-gera centros aleatorios na metade esquerda
-espelha os centros na metade direita
-inclui um centro em L/2 quando N e impar
-reconstroi faces pela regra 25/75
-monta a Axis1D com Custom1D
-calcula Dx_max/Dx_min
-confirma xC[i] + xC[N-1-i] = L
+(a) verifica admissibilidade: faces crescentes, Dx > 0, soma(Dx) = L
+(b) calcula Dx_min, Dx_max, razao r, media e desvio padrao relativo
+(c) varre sementes ate encontrar um exemplo "boa", um "intermediaria" e um
+    "ruim", classificados pelas faixas de alerta do texto (r <= 2, r <= 5,
+    r > 5)
+(d) calcula a maior transicao local S_i em cada exemplo e localiza onde ela
+    ocorre
+(e) compara as distancias de contorno dx[0] e dx[N] com as distancias
+    internas
+(f) repete a analise para N em {5, 10, 20, 40, 80} com semente fixa, para
+    mostrar que aumentar N nao melhora automaticamente a qualidade
+(g) aplica um criterio automatico de rejeicao (r <= 5, sigma_rel <= 0,3 e
+    S_i <= 3) aos exemplos encontrados
 ```
 
-## Saida auxiliar
+## Saidas auxiliares
 
-A malha simetrica e exportada pela propria FVGridMaker com
-`Axis1DCSVWriter`:
+A malha base e os exemplos representativos encontrados na varredura de
+sementes sao exportados pela propria FVGridMaker com `Axis1DCSVWriter`:
 
 ```text
-exercicio_44_malha_simetrica.csv
+exercicio_44_malha_base.csv
+exercicio_44_malha_boa.csv            (quando encontrada)
+exercicio_44_malha_intermediaria.csv  (quando encontrada)
+exercicio_44_malha_ruim.csv           (quando encontrada)
 ```
 
 ## Alvo CMake

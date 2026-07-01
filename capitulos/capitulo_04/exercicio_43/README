@@ -1,36 +1,39 @@
-Este programa usa a `Roberts1D` da FVGridMaker para gerar malhas refinadas nas
-fronteiras.
+Este programa usa a FVGridMaker sem modificar a biblioteca. A rotina local gera
+centros simetricos, espelha a metade esquerda em relacao ao centro do dominio e
+entrega esses centros ao construtor de malha customizada `Custom1D`, usando o
+padrao `FaceCentered1D` ja pronto na FVGridMaker para reconstruir as faces
+internas no ponto medio entre centros vizinhos.
 
-Parametros principais:
+Parametros:
 
 ```text
-L     = 1
-N     = 50
-alpha = 1/2
-beta  em [1.1, 20]
+L       = 1
+N       = 21
+xI      = 0
+semente = 2026
 ```
 
 O programa:
 
 ```text
-varia beta e exporta Dx_max/Dx_min
-gera tres malhas representativas
-confirma xF[i] = L - xF[N-i]
-explica por que alpha = 1 torna a formula singular
+gera centros aleatorios na metade esquerda
+espelha os centros na metade direita
+inclui um centro em L/2 quando N e impar
+entrega os centros ao FaceCentered1D via Custom1D, que reconstroi as faces
+internas como o ponto medio entre centros vizinhos
+calcula Dx_max/Dx_min
+confirma xC[i] + xC[N-1-i] = L
+confirma xF[i] = (xC[i-1] + xC[i]) / 2
 ```
 
-## Saidas auxiliares
+## Saida auxiliar
+
+A malha simetrica e exportada pela propria FVGridMaker com
+`Axis1DCSVWriter`:
 
 ```text
-exercicio_43_roberts_razao.csv
-exercicio_43_roberts_proximo_de_1.csv
-exercicio_43_roberts_intermediario.csv
-exercicio_43_roberts_beta_grande.csv
+exercicio_43_malha_simetrica.csv
 ```
-
-As malhas representativas sao exportadas pela propria FVGridMaker com
-`Axis1DCSVWriter`. O arquivo de razao e uma tabela especifica do estudo do
-parametro beta.
 
 ## Alvo CMake
 

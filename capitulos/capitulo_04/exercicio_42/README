@@ -1,34 +1,36 @@
-Este programa usa a `Random1D` da FVGridMaker para gerar uma malha aleatoria
-volume centrada no dominio `[xI, xI + L]`.
+Este programa usa a `Roberts1D` da FVGridMaker para gerar malhas refinadas nas
+fronteiras, seguindo a Eq. (4.15) do texto.
+
+Parametros principais:
+
+```text
+L    = 1
+N    = 50
+beta em [1.1, 20]
+```
 
 O programa:
 
 ```text
-gera N - 1 faces internas aleatorias
-fixa xF[0] = xI e xF[N] = xI + L
-ordena as faces
-obtem Dx, xC e dx pela Axis1D
+varia beta e exporta Dx_max/Dx_min
+gera tres malhas representativas (beta proximo de 1, intermediario, beta grande)
+confirma xF[i] = L - xF[N-i]
+explica por que beta = 1 torna a Eq. (4.15) singular e o que acontece com a
+concentracao de volumes quando beta se aproxima de 1
 ```
 
-## Verificacoes
+## Saidas auxiliares
 
 ```text
-xF[0] = xI
-xF[N] = xI + L
-xF[P+1] > xF[P]
-Dx[P] > 0
-sum Dx[P] = L
-xC[P] = (xF[P] + xF[P+1]) / 2
+exercicio_42_roberts_razao.csv
+exercicio_42_roberts_proximo_de_1.csv
+exercicio_42_roberts_intermediario.csv
+exercicio_42_roberts_beta_grande.csv
 ```
 
-## Saida auxiliar
-
-A malha aleatoria e exportada pela propria FVGridMaker com
-`Axis1DCSVWriter`:
-
-```text
-exercicio_42_malha_aleatoria.csv
-```
+As malhas representativas sao exportadas pela propria FVGridMaker com
+`Axis1DCSVWriter`. O arquivo de razao e uma tabela especifica do estudo do
+parametro beta.
 
 ## Alvo CMake
 

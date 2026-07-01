@@ -24,7 +24,9 @@
 // LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
-#include <algorithm>
+//==============================================================================
+// Header c++
+//==============================================================================
 #include <iomanip>
 #include <iostream>
 #include <numeric>
@@ -33,7 +35,6 @@
 // Header FVGridMaker
 //==============================================================================
 #include <FVGridMaker/OneDimensional/Distribution1D/Uniform1D.h>
-#include <FVGridMaker/OneDimensional/GridPattern1D/VolumeCentered1D.h>
 #include <FVGridMaker/Output/CSV/Axis1DCSVWriter.h>
 
 
