@@ -62,10 +62,15 @@ GRID_NAMESPACE_OPEN
 class FaceCentered
 {
 public:
+    // Realiza a operacao face centered definida por esta interface.
     FaceCentered() noexcept = default;
+    // Realiza a operacao face centered definida por esta interface.
     explicit FaceCentered(double offset) noexcept : offset_{offset} {}
+    // Retorna a informacao face centered associada ao objeto.
     FaceCentered(const FaceCentered&) noexcept = default;
+    // Realiza a operacao ~face centered definida por esta interface.
     ~FaceCentered() noexcept = default;
+    // Realiza a operacao face centered definida por esta interface.
     FaceCentered(FaceCentered&&) = delete;
 
     FaceCentered& operator=(const FaceCentered&) = delete;
@@ -74,6 +79,7 @@ public:
 //    template <typename T>
 //    [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const;
     
+    // Monta a representacao algebrica associada aos dados fornecidos.
     template <typename T>
     [[nodiscard]] bool BuildMesh(AbstractGrid1D<T> *grid) const
     {
@@ -87,7 +93,9 @@ public:
     }    
     
 
+    // Realiza a operacao clone definida por esta interface.
     [[nodiscard]] std::shared_ptr<FaceCentered> Clone() const;
+    // Realiza a operacao tipo padrao malha definida por esta interface.
     std::string TipoPadraoMalha() const;
 private:
     Real offset_{0.5};

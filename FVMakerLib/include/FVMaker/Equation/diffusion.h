@@ -65,10 +65,14 @@ class Diffusion
     
 public:
     
+    // Retorna a informacao diffusion associada ao objeto.
     Diffusion(const Diffusion&) noexcept = default;
+    // Realiza a operacao ~diffusion definida por esta interface.
     ~Diffusion() noexcept = default;
+    // Realiza a operacao diffusion definida por esta interface.
     Diffusion(Diffusion&&) = delete;    
 
+    // Realiza a operacao diffusion definida por esta interface.
     Diffusion   (   const T& _grid
                 ,   const AbstractCoefficient<T>    _coeff
                 ,   const BoundaryConditions<T>     _bc
@@ -84,6 +88,7 @@ public  :
     [[nodiscard]] bool ComputeCoefficient();
     
 private:    
+    // Calcula a grandeza compute coefficient1 d definida por esta interface.
     [[nodiscard]] bool ComputeCoefficient1D();
     
 //==============================================================================

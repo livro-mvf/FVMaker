@@ -34,6 +34,7 @@
 
 GRID_NAMESPACE_OPEN
 
+// Representa uma malha unidimensional aleatoria.
 template<typename TypePattern>
 class RandomGrid1D {
 
@@ -47,10 +48,14 @@ public:
     
 public:
     
+    // Cria um objeto RandomGrid1D com os dados fornecidos.
     RandomGrid1D() noexcept = default;
+    // Cria um objeto RandomGrid1D com os dados fornecidos.
     RandomGrid1D (const int&, const Real&, const Real& = 0.0);
+    // Cria um objeto RandomGrid1D com os dados fornecidos.
     RandomGrid1D(const RandomGrid1D& _copia) noexcept
         : AbstractGrid1D<TypePattern>(*_copia.Clone()){};
+    // Finaliza um objeto RandomGrid1D.
     ~RandomGrid1D() noexcept = default;
 //
     RandomGrid1D(RandomGrid1D&&) = delete;
@@ -70,8 +75,11 @@ public:
     
 public:
     
+    // Realiza a operacao clone definida por esta interface.
     [[nodiscard]] std::unique_ptr<AbstractGrid1D<TypePattern>> Clone() const;
+    // Realiza a operacao gera faces definida por esta interface.
     [[nodiscard]] bool GeraFaces ();
+    // Realiza a operacao gera centros definida por esta interface.
     [[nodiscard]] bool GeraCentros ();
 //    
 //==============================================================================
@@ -81,7 +89,9 @@ public:
 private :
         
     [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
+    // Realiza a operacao gera malha paralelo definida por esta interface.
     [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
+    // Realiza a operacao gera malha simd definida por esta interface.
     [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
 
 };

@@ -31,12 +31,14 @@
 
 namespace fvm {
 
+// Define a direcao de varredura usada pelo metodo de Gauss-Seidel.
 enum class GaussSeidelSweep {
     forward,
     backward,
     hybrid,
 };
 
+// Representa o conceito de iterative solver options dentro da biblioteca FVMaker.
 struct IterativeSolverOptions final {
     Real tolerance{1.0e-10};
     Size max_iterations{10000};

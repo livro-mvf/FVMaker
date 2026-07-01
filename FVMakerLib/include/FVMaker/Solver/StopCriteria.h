@@ -37,6 +37,7 @@
 
 namespace fvm {
 
+// Classifica o criterio usado para parar uma iteracao.
 enum class StopCriterionKind {
     correction_absolute,
     correction_relative_solution,
@@ -48,14 +49,17 @@ enum class StopCriterionKind {
     max_iterations,
 };
 
+// Realiza a operacao name definida por esta interface.
 [[nodiscard]] std::string_view name(StopCriterionKind kind) noexcept;
 
+// Representa o conceito de stop criterion dentro da biblioteca FVMaker.
 struct StopCriterion final {
     StopCriterionKind kind{StopCriterionKind::residual_absolute};
     Real tolerance{1.0e-10};
     NormType norm{NormType::infinity};
 };
 
+// Representa o conceito de stop criteria state dentro da biblioteca FVMaker.
 struct StopCriteriaState final {
     Size iteration{};
     Size max_iterations{};
@@ -67,6 +71,7 @@ struct StopCriteriaState final {
     std::span<const Real> weights{};
 };
 
+// Representa o conceito de stop criteria evaluation dentro da biblioteca FVMaker.
 struct StopCriteriaEvaluation final {
     bool converged{false};
     bool reached_iteration_limit{false};
@@ -75,36 +80,51 @@ struct StopCriteriaEvaluation final {
     Real tolerance{};
 };
 
+// Agrupa criterios de parada usados por algoritmos iterativos.
 class StopCriteria final {
 public:
+    // Cria um objeto StopCriteria com os dados fornecidos.
     StopCriteria() = default;
+    // Cria um objeto StopCriteria com os dados fornecidos.
     explicit StopCriteria(std::vector<StopCriterion> criteria);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"Solver", "StopCriteria", "fvm.solver.StopCriteria"};
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Calcula a grandeza residual absolute definida por esta interface.
     [[nodiscard]] static StopCriteria residual_absolute(Real tolerance, NormType norm = NormType::infinity);
+    // Calcula a grandeza residual relative initial definida por esta interface.
     [[nodiscard]] static StopCriteria residual_relative_initial(Real tolerance, NormType norm = NormType::infinity);
+    // Realiza a operacao correction absolute definida por esta interface.
     [[nodiscard]] static StopCriteria correction_absolute(Real tolerance);
+    // Realiza a operacao chapter defaults definida por esta interface.
     [[nodiscard]] static StopCriteria chapter_defaults(Real tolerance);
 
+    // Acrescenta a informacao add ao objeto.
     void add(StopCriterion criterion);
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const noexcept;
+    // Retorna a informacao criteria associada ao objeto.
     [[nodiscard]] std::span<const StopCriterion> criteria() const noexcept;
 
+    // Calcula a grandeza evaluate definida por esta interface.
     [[nodiscard]] StopCriteriaEvaluation evaluate(
         const StopCriteriaState& state
     ) const;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 
 private:

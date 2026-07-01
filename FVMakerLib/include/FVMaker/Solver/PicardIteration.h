@@ -44,16 +44,19 @@
 
 namespace fvm {
 
+// Representa o conceito de picard options dentro da biblioteca FVMaker.
 struct PicardOptions final {
     Real absolute_tolerance{1.0e-10};
     Real relative_tolerance{1.0e-8};
     Size max_iterations{100};
     Real relaxation_factor{1.0};
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"Solver", "PicardOptions", "fvm.solver.PicardOptions"};
     }
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const {
         require(
             std::isfinite(absolute_tolerance) && absolute_tolerance > Real{},
@@ -83,6 +86,7 @@ struct PicardOptions final {
     }
 };
 
+// Representa o conceito de picard result dentro da biblioteca FVMaker.
 struct PicardResult final {
     DenseVector solution;
     bool converged{false};
@@ -93,6 +97,7 @@ struct PicardResult final {
     Real requested_tolerance{};
 };
 
+// Realiza a operacao relax picard update definida por esta interface.
 [[nodiscard]] inline DenseVector relax_picard_update(
     const DenseVector& previous,
     const DenseVector& candidate,
@@ -114,6 +119,7 @@ struct PicardResult final {
     return relaxed;
 }
 
+// Realiza a operacao picard correction norm definida por esta interface.
 [[nodiscard]] inline Real picard_correction_norm(
     const DenseVector& previous,
     const DenseVector& current
@@ -133,6 +139,7 @@ struct PicardResult final {
     return norm;
 }
 
+// Realiza a operacao picard iteration definida por esta interface.
 template <class Update>
 [[nodiscard]] PicardResult picard_iteration(
     DenseVector initial_solution,
@@ -145,13 +152,16 @@ template <class Update>
     result.solution = initial_solution;
 
     for (Size iteration = 1; iteration <= options.max_iterations; ++iteration) {
+        // Realiza a operacao invoke definida por esta interface.
         DenseVector candidate = std::invoke(update, result.solution);
+        // Realiza a operacao relax picard update definida por esta interface.
         DenseVector next_solution = relax_picard_update(
             result.solution,
             candidate,
             options.relaxation_factor
         );
 
+        // Realiza a operacao picard correction norm definida por esta interface.
         const Real correction_norm = picard_correction_norm(
             result.solution,
             next_solution
@@ -159,6 +169,7 @@ template <class Update>
 
         if (iteration == 1) {
             result.initial_correction_norm = correction_norm;
+            // Realiza a operacao max definida por esta interface.
             result.requested_tolerance = std::max(
                 options.absolute_tolerance,
                 options.relative_tolerance * result.initial_correction_norm

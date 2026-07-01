@@ -20,9 +20,11 @@ using Real = double;
 
 namespace {
 
+// Representa Malha1D, uma estrutura didatica usada para organizar a malha.
 class Malha1D
 {
 public:
+    // Constroi a malha e inicializa seus dados internos.
     Malha1D(Real xmin, Real xmax, std::size_t numero_volumes)
         : xmin_{xmin},
           xmax_{xmax},
@@ -31,9 +33,13 @@ public:
     {
     }
 
+    // Retorna a coordenada inicial da malha.
     [[nodiscard]] Real xmin() const noexcept { return xmin_; }
+    // Retorna a coordenada final da malha.
     [[nodiscard]] Real xmax() const noexcept { return xmax_; }
+    // Retorna o numero de volumes ou nos internos armazenados.
     [[nodiscard]] std::size_t numero_volumes() const noexcept { return numero_volumes_; }
+    // Retorna o espacamento uniforme da malha.
     [[nodiscard]] Real dx() const noexcept { return dx_; }
 
     // Retorna o centro do volume de indice i.
@@ -51,6 +57,7 @@ public:
         return xmin_ + (static_cast<Real>(indice) + Real{0.5}) * dx_;
     }
 
+    // Retorna a coordenada da face associada ao indice.
     [[nodiscard]] Real face(std::size_t indice) const
     {
         if (indice > numero_volumes_) {
@@ -66,12 +73,14 @@ private:
     std::size_t numero_volumes_{};
     Real dx_{};
 
+    // Calcula o espacamento uniforme depois de validar a malha.
     static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         validar_parametros(xmin, xmax, numero_volumes);
         return (xmax - xmin) / static_cast<Real>(numero_volumes);
     }
 
+    // Valida os parametros geometricos da malha.
     static void validar_parametros(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         if (!std::isfinite(xmin)) {
@@ -89,16 +98,19 @@ private:
     }
 };
 
+// Representa Placar, um conjunto de dados usado neste exercicio.
 struct Placar {
     unsigned aprovados{};
     unsigned total{};
 };
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
+// Registra no placar o resultado de uma verificacao.
 void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
     ++placar.total;
@@ -109,6 +121,7 @@ void registrar(Placar& placar, const std::string& descricao, bool passou)
     std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
+// Verifica se uma chamada invalida lanca a excecao esperada.
 template <typename Excecao, typename Acao>
 void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
 {
@@ -123,6 +136,7 @@ void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
     registrar(placar, descricao, lancou);
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_malha(const Malha1D& malha)
 {
     std::cout << std::fixed << std::setprecision(6);
@@ -147,6 +161,7 @@ void imprimir_malha(const Malha1D& malha)
     std::cout << '\n';
 }
 
+// Executa o bloco principal de testes ou experimento.
 void executar_testes(Placar& placar)
 {
     const Malha1D malha{Real{0.0}, Real{2.0}, 4};
@@ -187,6 +202,7 @@ void executar_testes(Placar& placar)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.3\n";

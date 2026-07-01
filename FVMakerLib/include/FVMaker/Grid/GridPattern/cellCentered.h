@@ -128,6 +128,7 @@ public:
      *       2. Calcula os centros com base no offset
      *       3. Calcula as distâncias entre elementos
      */
+    // Monta a representacao algebrica associada aos dados fornecidos.
     template <typename Grid>
     [[nodiscard]] bool BuildMesh(Grid* _grid) const;
 
@@ -155,6 +156,7 @@ private:
 };
 
 // Implementação do template
+// Monta a representacao algebrica associada aos dados fornecidos.
 template <typename Grid>
 bool CellCentered::BuildMesh(Grid* _grid) const
 {

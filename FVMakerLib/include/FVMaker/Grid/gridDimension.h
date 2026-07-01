@@ -77,6 +77,7 @@ FVMAKER_NAMESPACE_OPEN
  *
  * @ingroup GridTraits
  */
+// Representa o conceito de grid dim dentro da biblioteca FVMaker.
 template <typename T>
 struct GridDim {
     using DataType = Real;  ///< Tipo base para calculos numericos

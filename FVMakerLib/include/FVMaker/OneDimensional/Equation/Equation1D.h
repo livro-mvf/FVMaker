@@ -36,8 +36,10 @@
 
 namespace fvm {
 
+// Representa uma equacao 1D formada por malha, operador, fonte e contornos.
 class Equation1D final {
 public:
+    // Cria um objeto Equation1D com os dados fornecidos.
     Equation1D(
         GridView1D grid,
         Laplacian1D laplacian,
@@ -45,6 +47,7 @@ public:
         BoundarySet1D boundaries
     );
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -53,17 +56,23 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao grid associada ao objeto.
     [[nodiscard]] const GridView1D& grid() const noexcept;
+    // Retorna a informacao laplacian associada ao objeto.
     [[nodiscard]] const Laplacian1D& laplacian() const noexcept;
+    // Retorna a informacao source associada ao objeto.
     [[nodiscard]] const LinearizedSource1D& source() const noexcept;
+    // Retorna a informacao boundaries associada ao objeto.
     [[nodiscard]] const BoundarySet1D& boundaries() const noexcept;
 
 private:
@@ -72,6 +81,7 @@ private:
     LinearizedSource1D source_;
     BoundarySet1D boundaries_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

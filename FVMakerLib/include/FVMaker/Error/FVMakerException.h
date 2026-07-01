@@ -81,8 +81,10 @@ enum class ErrorCode {
 
 // Especialização de std::hash para ErrorCode
 namespace std {
+    // Representa o conceito de hash dentro da biblioteca FVMaker.
     template <>
     struct hash<ErrorCode> {
+        // Avalia o objeto como uma funcao nos argumentos informados.
         std::size_t operator()(const ErrorCode& code) const noexcept {
             return static_cast<std::size_t>(code);
         }

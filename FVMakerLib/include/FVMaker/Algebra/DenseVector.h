@@ -41,32 +41,46 @@
 
 namespace fvm {
 
+// Representa um vetor denso de valores reais usado nos sistemas discretos.
 class DenseVector final {
 public:
+    // Cria um objeto DenseVector com os dados fornecidos.
     DenseVector() = default;
+    // Cria um objeto DenseVector com os dados fornecidos.
     explicit DenseVector(Size size);
+    // Cria um objeto DenseVector com os dados fornecidos.
     DenseVector(Size size, Real value);
+    // Cria um objeto DenseVector com os dados fornecidos.
     explicit DenseVector(std::vector<Real> values);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"Algebra", "DenseVector", "fvm.algebra.DenseVector"};
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const noexcept;
 
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<Real> values() noexcept;
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<const Real> values() const noexcept;
 
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] Real& operator[](Size index) noexcept;
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] const Real& operator[](Size index) const noexcept;
 
 private:
@@ -77,10 +91,15 @@ DenseVector& operator+=(DenseVector& left, const DenseVector& right);
 DenseVector& operator-=(DenseVector& left, const DenseVector& right);
 DenseVector& operator*=(DenseVector& vector, Real scalar);
 
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator+(const DenseVector& left, const DenseVector& right);
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator-(const DenseVector& left, const DenseVector& right);
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator-(const DenseVector& vector);
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator*(Real scalar, const DenseVector& vector);
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator*(const DenseVector& vector, Real scalar);
 
 }  // namespace fvm

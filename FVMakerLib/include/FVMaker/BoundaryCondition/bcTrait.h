@@ -50,18 +50,21 @@ FVMAKER_NAMESPACE_OPEN
 template<int Dim>
 struct BCTrait;
 
+// Representa o conceito de bctrait dentro da biblioteca FVMaker.
 template<>
 struct BCTrait<1> {
     static constexpr int numFaces = 2;
     using FaceType = BC;
 };
 
+// Representa o conceito de bctrait dentro da biblioteca FVMaker.
 template<>
 struct BCTrait<2> {
     static constexpr int numFaces = 4;
     using FaceType = std::vector<BC>;
 };
 
+// Representa o conceito de bctrait dentro da biblioteca FVMaker.
 template<>
 struct BCTrait<3> {
     static constexpr int numFaces = 6;

@@ -49,10 +49,13 @@
 
 namespace fvm {
 
+// Representa valores escalares associados aos pontos de uma malha 1D.
 class Field1D final {
 public:
+    // Cria um objeto Field1D com os dados fornecidos.
     Field1D(GridView1D grid, std::string name);
 
+    // Cria um objeto Field1D com os dados fornecidos.
     Field1D(
         GridView1D grid,
         std::string name,
@@ -60,6 +63,7 @@ public:
         bool keep_history = false
     );
 
+    // Cria um objeto Field1D com os dados fornecidos.
     Field1D(
         GridView1D grid,
         std::string name,
@@ -70,6 +74,7 @@ public:
     template <class Function>
         requires std::invocable<Function, Real> &&
                  std::convertible_to<std::invoke_result_t<Function, Real>, Real>
+    // Realiza a operacao from function definida por esta interface.
     [[nodiscard]] static Field1D from_function(
         GridView1D grid,
         std::string name,
@@ -91,6 +96,7 @@ public:
         };
     }
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -99,32 +105,45 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao grid associada ao objeto.
     [[nodiscard]] const GridView1D& grid() const noexcept;
+    // Retorna a informacao name associada ao objeto.
     [[nodiscard]] std::string_view name() const noexcept;
+    // Realiza a operacao rename definida por esta interface.
     void rename(std::string name);
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const noexcept;
 
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<Real> values() noexcept;
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<const Real> values() const noexcept;
 
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] Real& operator[](Size index) noexcept;
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] const Real& operator[](Size index) const noexcept;
 
+    // Realiza a operacao fill definida por esta interface.
     void fill(Real value);
 
     template <class Function>
         requires std::invocable<Function, Real> &&
                  std::convertible_to<std::invoke_result_t<Function, Real>, Real>
+    // Realiza a operacao assign function definida por esta interface.
     void assign_function(Function&& function) {
         const auto centers = grid_.centers();
 
@@ -133,14 +152,21 @@ public:
         }
     }
 
+    // Realiza a operacao assign values definida por esta interface.
     void assign_values(std::vector<Real> values);
 
+    // Realiza a operacao view definida por esta interface.
     [[nodiscard]] FieldView1D view() noexcept;
 
+    // Retorna a informacao history enabled associada ao objeto.
     [[nodiscard]] bool history_enabled() const noexcept;
+    // Retorna a informacao history size associada ao objeto.
     [[nodiscard]] Size history_size() const noexcept;
+    // Realiza a operacao history step definida por esta interface.
     [[nodiscard]] std::span<const Real> history_step(Size index) const;
+    // Realiza a operacao save state definida por esta interface.
     void save_state();
+    // Realiza a operacao clear history definida por esta interface.
     void clear_history();
 
 private:
@@ -150,7 +176,9 @@ private:
     bool keep_history_{false};
     std::vector<Real> history_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate_size() const;
+    // Realiza a operacao record initial state definida por esta interface.
     void record_initial_state();
 };
 

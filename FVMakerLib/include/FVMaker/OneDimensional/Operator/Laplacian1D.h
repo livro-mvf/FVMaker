@@ -36,11 +36,15 @@
 
 namespace fvm {
 
+// Representa o termo laplaciano, ou difusivo, discretizado em 1D.
 class Laplacian1D final {
 public:
+    // Cria um objeto Laplacian1D com os dados fornecidos.
     explicit Laplacian1D(Real coefficient = Real{1.0});
+    // Cria um objeto Laplacian1D com os dados fornecidos.
     explicit Laplacian1D(DiffusionCoefficient1D coefficient);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -49,22 +53,28 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao coefficient associada ao objeto.
     [[nodiscard]] Real coefficient() const noexcept;
+    // Informa se a condicao has variable coefficient e verdadeira.
     [[nodiscard]] bool has_variable_coefficient() const noexcept;
+    // Realiza a operacao face coefficient definida por esta interface.
     [[nodiscard]] Real face_coefficient(const GridView1D& grid, Size face) const;
 
 private:
     Real coefficient_{1.0};
     DenseVector face_coefficients_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

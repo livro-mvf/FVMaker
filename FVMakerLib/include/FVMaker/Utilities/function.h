@@ -58,6 +58,7 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+// Representa uma funcao escalar usada em modelos numericos.
 template <typename T>
 class Function {
 
@@ -69,7 +70,9 @@ class Function {
     
 public:
 
+    // Cria um objeto Function com os dados fornecidos.
     explicit Function (const T& _grid) : grid_(_grid) {}
+    // Finaliza um objeto Function.
     ~Function() noexcept  = default;
 
 //==============================================================================
@@ -78,10 +81,12 @@ public:
 
 public:
 
+    // Define a informacao set function usada pelo objeto.
     void setFunction (std::function<PairData(const DataType&)> _function) {
         function_ = std::move(_function);
     }
 
+    // Realiza a operacao fx definida por esta interface.
     [[nodiscard]] inline PairData Fx (const DataType& _data) const {
         return function_(_data);
     };

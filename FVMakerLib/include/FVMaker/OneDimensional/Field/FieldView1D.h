@@ -41,10 +41,13 @@
 
 namespace fvm {
 
+// Oferece uma visao leve e nao proprietaria de um campo escalar 1D.
 class FieldView1D final {
 public:
+    // Cria um objeto FieldView1D com os dados fornecidos.
     FieldView1D(GridView1D grid, std::string_view name, std::span<Real> values);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -53,23 +56,33 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao grid associada ao objeto.
     [[nodiscard]] const GridView1D& grid() const noexcept;
+    // Retorna a informacao name associada ao objeto.
     [[nodiscard]] std::string_view name() const noexcept;
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const noexcept;
 
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<Real> values() noexcept;
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<const Real> values() const noexcept;
 
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] Real& operator[](Size index) noexcept;
+    // Define o comportamento do operador usado por esta abstracao.
     [[nodiscard]] const Real& operator[](Size index) const noexcept;
 
 private:
@@ -77,6 +90,7 @@ private:
     std::string_view name_;
     std::span<Real> values_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

@@ -33,25 +33,31 @@
 
 namespace fvm {
 
+// Representa o resultado de uma evolucao ate estado estacionario.
 class SteadyState final {
 public:
     Real absolute_tolerance{1.0e-10};
     Real relative_tolerance{1.0e-8};
     Size max_iterations{10000};
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"Solver", "SteadyState", "fvm.solver.SteadyState"};
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Realiza a operacao effective tolerance definida por esta interface.
     [[nodiscard]] Real effective_tolerance(Real reference_norm) const;
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

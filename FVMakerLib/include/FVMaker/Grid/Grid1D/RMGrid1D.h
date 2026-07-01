@@ -38,6 +38,7 @@
 GRID_NAMESPACE_OPEN
 
 
+// Representa uma malha unidimensional por razao de refinamento.
 template <typename T>
 class RMGrid1D {
 
@@ -51,12 +52,17 @@ public:
     
 public:
     
+    // Cria um objeto RMGrid1D com os dados fornecidos.
     RMGrid1D() noexcept = default;
+    // Cria um objeto RMGrid1D com os dados fornecidos.
     RMGrid1D (const Real&, const int&, const Real&,  const Real& = 0.0);
+    // Cria um objeto RMGrid1D com os dados fornecidos.
     RMGrid1D (const RMGrid1D& _copia) noexcept
         : AbstractGrid1D<T>(*_copia.Clone()){};
+    // Finaliza um objeto RMGrid1D.
     ~RMGrid1D() noexcept = default;
 
+    // Cria um objeto RMGrid1D com os dados fornecidos.
     RMGrid1D(RMGrid1D&&) = delete;
     
 //==============================================================================
@@ -74,8 +80,11 @@ public:
     
 public:
     
+    // Realiza a operacao clone definida por esta interface.
     [[nodiscard]] std::unique_ptr<AbstractGrid1D<T>> Clone() const;
+    // Realiza a operacao gera faces definida por esta interface.
     [[nodiscard]] bool GeraFaces ();
+    // Realiza a operacao gera centros definida por esta interface.
     [[nodiscard]] bool GeraCentros ();
     
 //==============================================================================
@@ -85,8 +94,11 @@ public:
 private :
         
     [[nodiscard]] bool GeraMalhaSequencial (VecReal*);
+    // Realiza a operacao gera malha paralelo definida por esta interface.
     [[nodiscard]] bool GeraMalhaParalelo (VecReal*);
+    // Realiza a operacao gera malha simd definida por esta interface.
     [[nodiscard]] bool GeraMalhaSIMD (VecReal*);
+    // Realiza a operacao funcao definida por esta interface.
     [[nodiscard]] Real Funcao (const Real&) const;
 
 //==============================================================================

@@ -23,9 +23,11 @@ using Real = double;
 
 namespace {
 
+// Representa Malha1D, uma estrutura didatica usada para organizar a malha.
 class Malha1D
 {
 public:
+    // Constroi a malha e inicializa seus dados internos.
     Malha1D(Real xmin, Real xmax, std::size_t numero_volumes)
         : xmin_{xmin},
           xmax_{xmax},
@@ -34,11 +36,16 @@ public:
     {
     }
 
+    // Retorna a coordenada inicial da malha.
     [[nodiscard]] Real xmin() const noexcept { return xmin_; }
+    // Retorna a coordenada final da malha.
     [[nodiscard]] Real xmax() const noexcept { return xmax_; }
+    // Retorna o numero de volumes ou nos internos armazenados.
     [[nodiscard]] std::size_t numero_volumes() const noexcept { return numero_volumes_; }
+    // Retorna o espacamento uniforme da malha.
     [[nodiscard]] Real dx() const noexcept { return dx_; }
 
+    // Retorna a coordenada do centro associado ao indice.
     [[nodiscard]] Real centro(std::size_t indice) const
     {
         if (indice >= numero_volumes_) {
@@ -53,12 +60,14 @@ private:
     std::size_t numero_volumes_{};
     Real dx_{};
 
+    // Calcula o espacamento uniforme depois de validar a malha.
     static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         validar(xmin, xmax, numero_volumes);
         return (xmax - xmin) / static_cast<Real>(numero_volumes);
     }
 
+    // Valida os dados antes de seguir com o calculo.
     static void validar(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         if (!std::isfinite(xmin) || !std::isfinite(xmax)) {
@@ -73,16 +82,19 @@ private:
     }
 };
 
+// Representa Placar, um conjunto de dados usado neste exercicio.
 struct Placar {
     unsigned aprovados{};
     unsigned total{};
 };
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
+// Registra no placar o resultado de uma verificacao.
 void registrar(
     Placar& placar,
     const std::string& nome,
@@ -99,6 +111,7 @@ void registrar(
     std::cout << "         apanharia: " << erro_que_apanha << '\n';
 }
 
+// Testa se uma acao lanca a excecao esperada.
 template <typename Excecao, typename Acao>
 [[nodiscard]] bool lanca(Acao acao)
 {
@@ -110,11 +123,13 @@ template <typename Excecao, typename Acao>
     return false;
 }
 
+// Avalia a solucao analitica usada no teste de integracao.
 [[nodiscard]] Real solucao_analitica(Real x)
 {
     return Real{1.0} + x + x * x;
 }
 
+// Avalia uma funcao conhecida nos pontos da malha.
 [[nodiscard]] std::vector<Real> avaliar_solucao(const Malha1D& malha)
 {
     std::vector<Real> valores(malha.numero_volumes());
@@ -126,6 +141,7 @@ template <typename Excecao, typename Acao>
     return valores;
 }
 
+// Compara vetores numericos dentro de uma tolerancia.
 [[nodiscard]] bool comparar_vetores(
     const std::vector<Real>& obtido,
     const std::vector<Real>& esperado,
@@ -145,6 +161,7 @@ template <typename Excecao, typename Acao>
     return true;
 }
 
+// Gera a saida textual fixa usada no teste de regressao.
 [[nodiscard]] std::string saida_integracao(const Malha1D& malha)
 {
     std::ostringstream saida;
@@ -164,6 +181,7 @@ template <typename Excecao, typename Acao>
     return saida.str();
 }
 
+// Fornece a referencia usada no teste de regressao.
 [[nodiscard]] const std::string& referencia_regressao()
 {
     static const std::string referencia =
@@ -181,6 +199,7 @@ template <typename Excecao, typename Acao>
     return referencia;
 }
 
+// Grava a saida de referencia ou o resultado do experimento.
 void gravar_referencia(const std::string& nome_arquivo)
 {
     std::ofstream arquivo{nome_arquivo};
@@ -190,6 +209,7 @@ void gravar_referencia(const std::string& nome_arquivo)
     arquivo << referencia_regressao();
 }
 
+// Le dados externos usados pelo exercicio.
 [[nodiscard]] std::string ler_arquivo(const std::string& nome_arquivo)
 {
     std::ifstream arquivo{nome_arquivo};
@@ -202,6 +222,7 @@ void gravar_referencia(const std::string& nome_arquivo)
     return conteudo.str();
 }
 
+// Executa o bloco principal de testes ou experimento.
 void executar_testes_unitarios(Placar& placar)
 {
     std::cout << "Testes unitarios\n";
@@ -225,6 +246,7 @@ void executar_testes_unitarios(Placar& placar)
     std::cout << '\n';
 }
 
+// Executa o bloco principal de testes ou experimento.
 void executar_teste_integracao(Placar& placar)
 {
     std::cout << "Teste de integracao\n";
@@ -244,6 +266,7 @@ void executar_teste_integracao(Placar& placar)
     std::cout << "                  avaliacao externa de solucao analitica.\n\n";
 }
 
+// Executa o bloco principal de testes ou experimento.
 void executar_teste_regressao(Placar& placar)
 {
     std::cout << "Teste de regressao\n";
@@ -266,6 +289,7 @@ void executar_teste_regressao(Placar& placar)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.4\n";

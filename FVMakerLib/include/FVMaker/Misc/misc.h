@@ -101,6 +101,7 @@ FVMAKER_NAMESPACE_OPEN
  * @return true se o vetor estiver ordenado
  * @ingroup Utilitarios
  */
+// Realiza a operacao ordem crescente definida por esta interface.
 template<typename T>
 [[nodiscard]] bool OrdemCrescente(const T& _vector) {
     return std::is_sorted(std::begin(_vector), std::end(_vector));

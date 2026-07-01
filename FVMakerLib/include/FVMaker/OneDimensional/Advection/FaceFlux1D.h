@@ -36,44 +36,56 @@
 
 namespace fvm {
 
+// Armazena fluxos nas faces usados por termos advectivos em 1D.
 class FaceFlux1D final {
 public:
+    // Cria um objeto FaceFlux1D com os dados fornecidos.
     explicit FaceFlux1D(DenseVector values);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"OneDimensional", "FaceFlux1D", "fvm.1d.advection.FaceFlux1D"};
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
+    // Retorna a informacao values armazenada no objeto.
     [[nodiscard]] std::span<const Real> values() const noexcept;
+    // Retorna a informacao value armazenada no objeto.
     [[nodiscard]] Real value(Size face) const noexcept;
 
 private:
     DenseVector values_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 
 using MassFlux1D = FaceFlux1D;
 
+// Realiza a operacao uniform face flux 1d definida por esta interface.
 [[nodiscard]] FaceFlux1D uniform_face_flux_1d(
     const GridView1D& grid,
     Real value
 );
 
+// Realiza a operacao vector face flux 1d definida por esta interface.
 [[nodiscard]] FaceFlux1D vector_face_flux_1d(
     const GridView1D& grid,
     DenseVector values
 );
 
+// Realiza a operacao face peclet 1d definida por esta interface.
 [[nodiscard]] Real face_peclet_1d(Real mass_flux, Real diffusion);
 
 }  // namespace fvm

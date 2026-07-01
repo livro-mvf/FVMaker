@@ -39,18 +39,22 @@ inline constexpr int kVersionPatch = 0;
 
 inline constexpr std::string_view kVersionString = "0.1.0";
 
+// Retorna a informacao version major associada ao objeto.
 [[nodiscard]] constexpr int version_major() noexcept {
     return kVersionMajor;
 }
 
+// Retorna a informacao version minor associada ao objeto.
 [[nodiscard]] constexpr int version_minor() noexcept {
     return kVersionMinor;
 }
 
+// Retorna a informacao version patch associada ao objeto.
 [[nodiscard]] constexpr int version_patch() noexcept {
     return kVersionPatch;
 }
 
+// Retorna a informacao version string associada ao objeto.
 [[nodiscard]] constexpr std::string_view version_string() noexcept {
     return kVersionString;
 }

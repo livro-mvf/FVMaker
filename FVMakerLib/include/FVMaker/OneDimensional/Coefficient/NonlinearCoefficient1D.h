@@ -37,12 +37,15 @@
 
 namespace fvm {
 
+// Representa coeficientes que podem depender de x e da propria solucao.
 class NonlinearCoefficient1D final {
 public:
     using Function = std::function<Real(Real phi, Real x)>;
 
+    // Cria um objeto NonlinearCoefficient1D com os dados fornecidos.
     explicit NonlinearCoefficient1D(Function function);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -51,24 +54,29 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Realiza a operacao cell values definida por esta interface.
     [[nodiscard]] DenseVector cell_values(
         const GridView1D& grid,
         const DenseVector& phi
     ) const;
 
+    // Realiza a operacao arithmetic face values definida por esta interface.
     [[nodiscard]] DiffusionCoefficient1D arithmetic_face_values(
         const GridView1D& grid,
         const DenseVector& phi
     ) const;
 
+    // Realiza a operacao harmonic face values definida por esta interface.
     [[nodiscard]] DiffusionCoefficient1D harmonic_face_values(
         const GridView1D& grid,
         const DenseVector& phi
@@ -78,6 +86,7 @@ private:
     Function function_;
 };
 
+// Realiza a operacao nonlinear coefficient 1d definida por esta interface.
 template <class Function>
 [[nodiscard]] NonlinearCoefficient1D nonlinear_coefficient_1d(
     Function function

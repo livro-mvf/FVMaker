@@ -34,19 +34,23 @@
 
 namespace fvm {
 
+// Representa o conceito de manufactured solution1 d dentro da biblioteca FVMaker.
 struct ManufacturedSolution1D final {
     StoredScalarFunction1D phi;
     StoredScalarFunction1D dphi_dx;
     StoredScalarFunction1D d2phi_dx2;
 
+    // Retorna a informacao value armazenada no objeto.
     [[nodiscard]] Real value(Real x) const {
         return phi(x);
     }
 
+    // Realiza a operacao first derivative definida por esta interface.
     [[nodiscard]] Real first_derivative(Real x) const {
         return dphi_dx(x);
     }
 
+    // Realiza a operacao second derivative definida por esta interface.
     [[nodiscard]] Real second_derivative(Real x) const {
         return d2phi_dx2(x);
     }

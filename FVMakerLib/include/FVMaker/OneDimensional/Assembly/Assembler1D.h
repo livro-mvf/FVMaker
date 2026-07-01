@@ -31,6 +31,7 @@
 
 namespace fvm {
 
+// Monta a representacao algebrica associada aos dados fornecidos.
 [[nodiscard]] TridiagonalSystem1D assemble_laplacian_1d(
     const GridView1D& grid,
     const Laplacian1D& laplacian,
@@ -38,6 +39,7 @@ namespace fvm {
     Real time = Real{}
 );
 
+// Monta a representacao algebrica associada aos dados fornecidos.
 [[nodiscard]] TridiagonalSystem1D assemble_steady_1d(
     const Equation1D& equation,
     Real time = Real{}

@@ -172,6 +172,7 @@ public:
      *
      * @note Utiliza ParallelControl para operações paralelas quando disponível
      */
+    // Monta a representacao algebrica associada aos dados fornecidos.
     template <typename T>
     [[nodiscard]] bool BuildMesh(AbstractGrid1D<T>*) const {return true;};
 

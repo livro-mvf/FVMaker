@@ -31,11 +31,13 @@
 
 namespace fvm {
 
+// Representa o conceito de ghost cell linearization1 d dentro da biblioteca FVMaker.
 struct GhostCellLinearization1D final {
     Real constant{};
     Real interior_coefficient{};
 };
 
+// Realiza a operacao first ghost linearization definida por esta interface.
 [[nodiscard]] GhostCellLinearization1D first_ghost_linearization(
     const BoundaryCondition1D& condition,
     BoundarySide1D side,
@@ -44,6 +46,7 @@ struct GhostCellLinearization1D final {
     Real time = Real{}
 );
 
+// Realiza a operacao first ghost linearization definida por esta interface.
 [[nodiscard]] GhostCellLinearization1D first_ghost_linearization(
     const BoundarySet1D& boundaries,
     BoundarySide1D side,
@@ -52,6 +55,7 @@ struct GhostCellLinearization1D final {
     Real time = Real{}
 );
 
+// Realiza a operacao first ghost value definida por esta interface.
 [[nodiscard]] Real first_ghost_value(
     const BoundaryCondition1D& condition,
     BoundarySide1D side,
@@ -61,6 +65,7 @@ struct GhostCellLinearization1D final {
     Real time = Real{}
 );
 
+// Realiza a operacao first ghost value definida por esta interface.
 [[nodiscard]] Real first_ghost_value(
     const BoundarySet1D& boundaries,
     BoundarySide1D side,

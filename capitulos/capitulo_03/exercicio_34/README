@@ -1,0 +1,28 @@
+# Exercicio 34 - A ordem que despenca em malha nao uniforme
+
+Este exercicio mede numericamente o comportamento da formula de derivada segunda em malha nao uniforme. Ele compara duas sequencias de refinamento ao redor de um ponto fixo.
+
+## O que o programa demonstra
+
+- quando `dx_direita = dx_esquerda * (1 + dx_esquerda)`, a razao entre passos tende a `1` e a ordem observada tende a `2`;
+- quando `dx_direita = 2 * dx_esquerda`, o salto relativo permanece fixo e a ordem observada cai para `1`;
+- a diferenca entre os passos vizinhos controla o termo de erro que derruba a ordem.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
+
+```bash
+cmake --build build --target run_cap_exercicio_34
+```
+
+Como programa autocontido:
+
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_34.cpp -o exercicio_34
+./exercicio_34
+```
+
+## Saida esperada
+
+A tabela de passos suaves deve mostrar ordem observada proxima de `2`; a tabela de salto fixo deve mostrar ordem observada proxima de `1`.

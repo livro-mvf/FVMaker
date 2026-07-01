@@ -41,12 +41,14 @@
 
 namespace fvm {
 
+// Realiza a operacao throw error definida por esta interface.
 [[noreturn]] void throw_error(
     ErrorDescriptor descriptor,
     ID source,
     std::source_location location = std::source_location::current()
 );
 
+// Realiza a operacao throw error definida por esta interface.
 [[noreturn]] void throw_error(
     std::string_view code,
     std::string message,
@@ -55,6 +57,7 @@ namespace fvm {
     std::source_location location = std::source_location::current()
 );
 
+// Realiza a operacao require definida por esta interface.
 void require(
     bool condition,
     ErrorDescriptor descriptor,
@@ -62,6 +65,7 @@ void require(
     std::source_location location = std::source_location::current()
 );
 
+// Realiza a operacao require definida por esta interface.
 void require(
     bool condition,
     std::string_view code,

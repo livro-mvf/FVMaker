@@ -58,6 +58,7 @@ template <typename GridType>
 class UniformityAnalyser1D
 {
 public:
+    // Realiza a operacao uniformity analyser1 d definida por esta interface.
     explicit UniformityAnalyser1D(const GridType& _grid)
         : GridAnalyser<GridType>(_grid) {}
 

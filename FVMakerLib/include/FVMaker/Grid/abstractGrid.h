@@ -62,6 +62,7 @@ GRID_NAMESPACE_OPEN
  *
  * @ingroup Grid
  */
+// Define informacoes comuns de uma malha generica.
 template<typename TypePattern>
 class AbstractGrid {
 public:

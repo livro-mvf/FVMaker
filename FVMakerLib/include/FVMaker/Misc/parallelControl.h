@@ -98,6 +98,7 @@ public:
      * @param last Fim do range
      * @param f Funcao a ser aplicada
      */
+    // Realiza a operacao for each definida por esta interface.
     template<typename InputIt, typename UnaryFunction>
     static void for_each(InputIt first, InputIt last, UnaryFunction f) {
         #ifdef ENABLE_PARALLEL_EXECUTION
@@ -164,11 +165,13 @@ private:
         return policy;
     }
 
+    // Realiza a operacao current threshold policy definida por esta interface.
     static ThresholdPolicy& current_threshold_policy() noexcept {
         static ThresholdPolicy policy = ThresholdPolicy::FIXED;
         return policy;
     }
 
+    // Realiza a operacao current threshold definida por esta interface.
     static size_t& current_threshold() noexcept {
         static size_t threshold = factory_threshold();
         return threshold;

@@ -50,6 +50,7 @@ FVMAKER_NAMESPACE_OPEN
  */
 
 
+// Agrupa condicoes de contorno usadas por uma variavel ou equacao.
 template<typename TypePattern>
 class BoundaryConditions {
     
@@ -62,6 +63,7 @@ public:
     std::array<Face, N> faces;
 };
 
+// Monta a representacao algebrica associada aos dados fornecidos.
 template<typename TypePattern, typename... Args>
 BoundaryConditions<TypePattern> makeBC(Args&&... args)
 {

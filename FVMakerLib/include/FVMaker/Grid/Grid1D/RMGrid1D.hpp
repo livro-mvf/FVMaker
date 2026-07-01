@@ -26,6 +26,7 @@
 
 GRID_NAMESPACE_OPEN
         
+// Realiza a operacao rmgrid1 d definida por esta interface.
 template <typename T>
 RMGrid1D<T> :: RMGrid1D (   const Real&         _beta
                         ,   const int&          _nVol
@@ -53,11 +54,13 @@ RMGrid1D<T> :: RMGrid1D (   const Real&         _beta
 auto flag =    this->typePattern_->BuildMesh(this);
 }
 
+// Realiza a operacao clone definida por esta interface.
 template<typename TypePattern>
 std::unique_ptr<AbstractGrid1D<TypePattern>> RMGrid1D<TypePattern>::Clone() const {
         return std::make_unique<RMGrid1D<TypePattern>>(*this);
 }
 
+// Realiza a operacao gera faces definida por esta interface.
 template<typename T>
 bool RMGrid1D<T>::GeraFaces() {
 
@@ -75,6 +78,7 @@ auto Uniforme = [DX] (const Real& _soma) {return _soma + DX; };
 
 }
 
+// Realiza a operacao gera centros definida por esta interface.
 template<typename T>
 bool RMGrid1D<T>:: GeraCentros() {
 const Real DX(1.0 / this->NVol());    
@@ -91,6 +95,7 @@ auto Uniforme = [DX] (const Real& _soma) {return _soma + DX; };
     return true; 
 }
 
+// Realiza a operacao gera malha sequencial definida por esta interface.
 template<typename T>
 bool RMGrid1D<T>:: GeraMalhaSequencial (VecReal* _coord) {
 
@@ -110,6 +115,7 @@ auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
 }
 
 
+// Realiza a operacao gera malha paralelo definida por esta interface.
 template<typename T>
 bool RMGrid1D<T> :: GeraMalhaParalelo (VecReal* _coord){
     
@@ -128,6 +134,7 @@ auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
     return true;
 }
 
+// Realiza a operacao gera malha simd definida por esta interface.
 template<typename T>
 bool RMGrid1D<T> :: GeraMalhaSIMD (VecReal* _coord){
     
@@ -144,6 +151,7 @@ auto MalhaFronteira = [&] (const Real& _x) {return this->Funcao(_x); };
         return true;
 }
 
+// Realiza a operacao funcao definida por esta interface.
 template<typename T>
 Real RMGrid1D<T> :: Funcao (const Real& _eta) const {
 

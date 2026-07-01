@@ -52,11 +52,16 @@ class Neumann{
 
 public:
     
+    // Cria um objeto Neumann com os dados fornecidos.
     Neumann()                noexcept = default;
+    // Cria um objeto Neumann com os dados fornecidos.
     Neumann(const Neumann&)   noexcept = default;
+    // Finaliza um objeto Neumann.
     ~Neumann()       noexcept = default;
+    // Cria um objeto Neumann com os dados fornecidos.
     Neumann (const Real& _gamma) : BC(0,1, _gamma) {};
     
+    // Cria um objeto Neumann com os dados fornecidos.
     Neumann(Neumann&&) = delete;
     
 //==============================================================================

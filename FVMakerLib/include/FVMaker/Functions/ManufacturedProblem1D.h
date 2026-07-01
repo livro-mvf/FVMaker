@@ -44,16 +44,20 @@
 
 namespace fvm {
 
+// Representa o conceito de named coefficient1 d dentro da biblioteca FVMaker.
 struct NamedCoefficient1D final {
     std::string name;
     VariableCoefficient1D coefficient;
 };
 
+// Agrupa solucao manufaturada, coeficiente e fonte para testes 1D.
 class ManufacturedProblem1D final {
 public:
+    // Cria um objeto ManufacturedProblem1D com os dados fornecidos.
     explicit ManufacturedProblem1D(ManufacturedSolution1D solution)
         : solution_(std::move(solution)) {}
 
+    // Cria um objeto ManufacturedProblem1D com os dados fornecidos.
     ManufacturedProblem1D(
         ManufacturedSolution1D solution,
         std::vector<NamedCoefficient1D> coefficients
@@ -61,18 +65,22 @@ public:
         : solution_(std::move(solution)),
           coefficients_(std::move(coefficients)) {}
 
+    // Retorna a informacao solution associada ao objeto.
     [[nodiscard]] const ManufacturedSolution1D& solution() const noexcept {
         return solution_;
     }
 
+    // Retorna a informacao coefficients associada ao objeto.
     [[nodiscard]] const std::vector<NamedCoefficient1D>& coefficients() const noexcept {
         return coefficients_;
     }
 
+    // Retorna a informacao coefficient count associada ao objeto.
     [[nodiscard]] Size coefficient_count() const noexcept {
         return coefficients_.size();
     }
 
+    // Acrescenta a informacao add coefficient ao objeto.
     void add_coefficient(std::string name, VariableCoefficient1D coefficient) {
         coefficients_.push_back(
             NamedCoefficient1D{
@@ -82,6 +90,7 @@ public:
         );
     }
 
+    // Realiza a operacao coefficient definida por esta interface.
     [[nodiscard]] const VariableCoefficient1D& coefficient(
         std::string_view name
     ) const {

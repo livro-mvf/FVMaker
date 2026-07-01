@@ -57,6 +57,7 @@ GRID_NAMESPACE_OPEN
  *
  * @tparam TypePattern Tipo do padrao de discretizacao
  */
+// Define a interface comum de uma malha unidimensional.
 template<typename TypePattern>
 class AbstractGrid1D {
     
@@ -110,6 +111,7 @@ public:
     /**
      * @brief Operador de saida para impressao
      */
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     template <typename U>
     friend std::ostream& operator<<(std::ostream&, const AbstractGrid1D<U>&);
 
@@ -187,24 +189,41 @@ public:
 //==============================================================================
 public:
         
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] inline size_t size() const {return nVol_;};
+    // Retorna a informacao nvol associada ao objeto.
     [[nodiscard]] inline size_t NVol() const {return nVol_;};
+    // Realiza a operacao length definida por esta interface.
     [[nodiscard]] inline Real Length() const {return length_;};
+    // Realiza a operacao xinit definida por esta interface.
     [[nodiscard]] inline Real XInit() const {return xIni_;};
+    // Realiza a operacao xend definida por esta interface.
     [[nodiscard]] inline Real XEnd() const {return xIni_ + length_;};
 
+    // Retorna a informacao get face associada ao objeto.
     [[nodiscard]] inline const VecReal& GetFace() const {return xFace_;};
+    // Retorna a informacao get centre associada ao objeto.
     [[nodiscard]] inline const VecReal& GetCentre() const {return xCentro_;};
+    // Retorna a informacao get dface associada ao objeto.
     [[nodiscard]] inline const VecReal& GetDFace() const {return dxFace_;};
+    // Retorna a informacao get dcentre associada ao objeto.
     [[nodiscard]] inline const VecReal& GetDCentre() const {return dxCentro_;};
     
+    // Acrescenta a informacao addressx face ao objeto.
     [[nodiscard]] inline VecReal* AddressxFace() {return &xFace_;};
+    // Acrescenta a informacao addressx face ao objeto.
     [[nodiscard]] inline const VecReal* AddressxFace() const {return &xFace_;};
+    // Acrescenta a informacao addressx centro ao objeto.
     [[nodiscard]] inline VecReal* AddressxCentro() {return &xCentro_;};
+    // Acrescenta a informacao addressx centro ao objeto.
     [[nodiscard]] inline const VecReal* AddressxCentro() const {return &xCentro_;};
+    // Acrescenta a informacao address dxface ao objeto.
     [[nodiscard]] inline VecReal* AddressDXFace() {return &dxFace_;};
+    // Acrescenta a informacao address dxface ao objeto.
     [[nodiscard]] inline const VecReal* AddressDXFace() const {return &dxFace_;};
+    // Acrescenta a informacao address dxcentro ao objeto.
     [[nodiscard]] inline VecReal* AddressDXCentro() {return &dxCentro_;};
+    // Acrescenta a informacao address dxcentro ao objeto.
     [[nodiscard]] inline const VecReal* AddressDXCentro() const {return &dxCentro_;};
 
 //==============================================================================

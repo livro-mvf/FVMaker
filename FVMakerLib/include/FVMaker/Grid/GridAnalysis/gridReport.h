@@ -68,12 +68,14 @@ namespace detail {
  * @tparam GridT  Tipo de grade concreto.
  * @tparam TupleT Tupla de tipos de analisadores.
  */
+// Base comum para relatorios de qualidade de malha.
 template <typename GridT, typename TupleT>
 class GridReportBase {
 protected:
     using Analysers = TupleT;
 
 public:
+    // Cria um objeto GridReportBase com os dados fornecidos.
     explicit GridReportBase(const GridT& grid) noexcept :
         grid_{ grid },
         analysers_{ makeAnalysers_(std::make_index_sequence<
@@ -91,6 +93,7 @@ public:
         }, analysers_);
     }
 
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     friend std::ostream& operator<<(std::ostream& os,
                                     const GridReportBase& r) {
         r.print(os);
@@ -102,6 +105,7 @@ protected:
     Analysers    analysers_;
 
 private:
+    // Monta a representacao algebrica associada aos dados fornecidos.
     template <std::size_t... I>
     Analysers makeAnalysers_(std::index_sequence<I...>) {
         return Analysers{ typename std::tuple_element<I, Analysers>::type{ grid_ }... };
@@ -114,6 +118,7 @@ private:
 // Template primario – gera erro em compilacao para grades nao suportadas
 //=============================================================================
 
+// Reune metricas e diagnosticos de qualidade de malha.
 template <typename GridT, int Dim = GridDim<GridT>::value>
 class GridReport {
     static_assert(Dim != -1,
@@ -126,6 +131,7 @@ class GridReport {
 
 template <typename GridT>
 requires Is1DGrid<GridT>
+// Reune metricas e diagnosticos de qualidade de malha.
 class GridReport<GridT, 1> {
     using Base = detail::GridReportBase<
         GridT,
@@ -135,11 +141,15 @@ class GridReport<GridT, 1> {
             UniformityAnalyser1D<GridT>>>;
 
 public:
+    // Cria um objeto GridReport com os dados fornecidos.
     explicit GridReport(const GridT& grid) noexcept : base_{grid} {}
 
+    // Realiza a operacao analyse definida por esta interface.
     void analyse() { base_.analyse(); }
+    // Realiza a operacao print definida por esta interface.
     void print(std::ostream& os) const { base_.print(os); }
 
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     friend std::ostream& operator<<(std::ostream& os, const GridReport& report) {
         report.print(os);
         return os;

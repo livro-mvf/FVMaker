@@ -44,6 +44,7 @@
 
 GRID_NAMESPACE_OPEN
 
+// Realiza a operacao abstract grid1 d definida por esta interface.
 template <typename T>
 AbstractGrid1D<T> :: AbstractGrid1D     (   const int&          _nvol
                         ,   const Real&         _length
@@ -70,6 +71,7 @@ AbstractGrid1D<T> :: AbstractGrid1D     (   const int&          _nvol
     typePattern_ = std::make_shared<T>();
 }
 
+// Realiza a operacao init vector definida por esta interface.
 template <typename T>
 void AbstractGrid1D<T> :: InitVector () {
     
@@ -95,6 +97,7 @@ void AbstractGrid1D<T> :: InitVector () {
     
 }
 
+// Escreve uma representacao textual do objeto no fluxo de saida.
 template<typename T>
 std::ostream& operator<<(std::ostream& _os, const AbstractGrid1D<T>& _grid1D) {
 
@@ -146,6 +149,7 @@ auto Print = [&](const std::size_t& i)
     return _os;
 }
 
+// Realiza a operacao calcula centros definida por esta interface.
 template <typename T>
 bool AbstractGrid1D<T> :: CalculaCentros(const Real& _offset) {
     
@@ -181,6 +185,7 @@ bool AbstractGrid1D<T> :: CalculaCentros(const Real& _offset) {
     return true;
 }
 
+// Realiza a operacao calcula faces definida por esta interface.
 template <typename T>
 bool AbstractGrid1D<T> :: CalculaFaces(const Real& _offset) {
     
@@ -218,6 +223,7 @@ bool AbstractGrid1D<T> :: CalculaFaces(const Real& _offset) {
 }
 
 
+// Realiza a operacao calcula distancias definida por esta interface.
 template <typename T>
 bool AbstractGrid1D<T> :: CalculaDistancias() {
     

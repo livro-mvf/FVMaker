@@ -52,6 +52,7 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+// Representa um termo fonte avaliado sobre uma malha.
 template <typename T>
 class SourceTerm {
 
@@ -114,6 +115,7 @@ public:
     SourceTerm& operator=(const SourceTerm&) = delete;
     SourceTerm& operator=(SourceTerm&&) = delete;
     
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     template <typename U>
     friend std::ostream& operator<< (std::ostream&, const SourceTerm<U>&);
 
@@ -124,10 +126,12 @@ public:
     
 public:
 
+  // Retorna a informacao nvol associada ao objeto.
   [[nodiscard]] inline size_t NVol() const {
     return  this->grid_.NVol();
   }
 
+  // Realiza a operacao grid definida por esta interface.
   [[nodiscard]] inline const T& Grid() const {
     return grid_;
   }

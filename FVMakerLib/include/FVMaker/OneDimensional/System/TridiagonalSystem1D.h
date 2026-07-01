@@ -42,10 +42,13 @@
 
 namespace fvm {
 
+// Representa um sistema linear tridiagonal gerado por discretizacoes 1D.
 class TridiagonalSystem1D final {
 public:
+    // Cria um objeto TridiagonalSystem1D com os dados fornecidos.
     explicit TridiagonalSystem1D(Size size);
 
+    // Cria um objeto TridiagonalSystem1D com os dados fornecidos.
     TridiagonalSystem1D(
         std::vector<Real> lower,
         std::vector<Real> diagonal,
@@ -53,6 +56,7 @@ public:
         DenseVector rhs
     );
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -61,28 +65,40 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
 
+    // Retorna a informacao lower armazenada no objeto.
     [[nodiscard]] std::span<Real> lower() noexcept;
+    // Retorna a informacao lower armazenada no objeto.
     [[nodiscard]] std::span<const Real> lower() const noexcept;
 
+    // Retorna a informacao diagonal armazenada no objeto.
     [[nodiscard]] std::span<Real> diagonal() noexcept;
+    // Retorna a informacao diagonal armazenada no objeto.
     [[nodiscard]] std::span<const Real> diagonal() const noexcept;
 
+    // Retorna a informacao upper armazenada no objeto.
     [[nodiscard]] std::span<Real> upper() noexcept;
+    // Retorna a informacao upper armazenada no objeto.
     [[nodiscard]] std::span<const Real> upper() const noexcept;
 
+    // Realiza a operacao rhs definida por esta interface.
     [[nodiscard]] DenseVector& rhs() noexcept;
+    // Retorna a informacao rhs associada ao objeto.
     [[nodiscard]] const DenseVector& rhs() const noexcept;
 
+    // Define a informacao set row usada pelo objeto.
     void set_row(
         Size row,
         Real lower,
@@ -97,31 +113,37 @@ private:
     std::vector<Real> upper_;
     DenseVector rhs_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 
+// Realiza a operacao multiply definida por esta interface.
 void multiply(
     const TridiagonalSystem1D& system,
     const DenseVector& x,
     DenseVector& y
 );
 
+// Realiza a operacao multiply transpose definida por esta interface.
 void multiply_transpose(
     const TridiagonalSystem1D& system,
     const DenseVector& x,
     DenseVector& y
 );
 
+// Realiza a operacao multiply definida por esta interface.
 [[nodiscard]] DenseVector multiply(
     const TridiagonalSystem1D& system,
     const DenseVector& x
 );
 
+// Realiza a operacao multiply transpose definida por esta interface.
 [[nodiscard]] DenseVector multiply_transpose(
     const TridiagonalSystem1D& system,
     const DenseVector& x
 );
 
+// Define o comportamento do operador usado por esta abstracao.
 [[nodiscard]] DenseVector operator*(
     const TridiagonalSystem1D& system,
     const DenseVector& x

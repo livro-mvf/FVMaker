@@ -47,6 +47,7 @@ GRID_NAMESPACE_OPEN
  * 
  * @tparam GridType Tipo da malha a ser analisada (por exemplo: UniformGrid1D).
  */
+// Executa analises geometricas sobre uma malha.
 template <typename GridType>
 class GridAnalyser {
 public:

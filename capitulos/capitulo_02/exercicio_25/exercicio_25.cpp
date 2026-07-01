@@ -28,6 +28,7 @@ constexpr std::size_t numero_volumes = 1'000'000;
 constexpr std::size_t numero_repeticoes = 60;
 constexpr Real dt = Real{0.01};
 
+// Representa Volume, um conjunto de dados usado neste exercicio.
 struct Volume
 {
     Real x{};
@@ -35,6 +36,7 @@ struct Volume
     Real fonte{};
 };
 
+// Representa CamposSeparados, um conjunto de dados usado neste exercicio.
 struct CamposSeparados
 {
     std::vector<Real> x;
@@ -42,6 +44,7 @@ struct CamposSeparados
     std::vector<Real> fonte;
 };
 
+// Representa EstatisticaTempo, um conjunto de dados usado neste exercicio.
 struct EstatisticaTempo
 {
     double minimo{};
@@ -50,6 +53,7 @@ struct EstatisticaTempo
     double desvio_padrao{};
 };
 
+// Representa ResultadoMedicao, um conjunto de dados usado neste exercicio.
 struct ResultadoMedicao
 {
     std::vector<double> tempos_ms;
@@ -58,21 +62,25 @@ struct ResultadoMedicao
     Real soma_controle{};
 };
 
+// Calcula a coordenada do volume usado no ensaio de desempenho.
 [[nodiscard]] Real coordenada(std::size_t indice)
 {
     return (static_cast<Real>(indice) + Real{0.5}) / static_cast<Real>(numero_volumes);
 }
 
+// Define o valor inicial de phi para preencher as duas organizacoes de memoria.
 [[nodiscard]] Real valor_inicial_phi(Real x)
 {
     return std::sin(x);
 }
 
+// Define o termo fonte usado no laco de atualizacao.
 [[nodiscard]] Real valor_fonte(Real x)
 {
     return Real{1.0} + x * x;
 }
 
+// Cria uma estrutura de dados inicial para o experimento.
 [[nodiscard]] std::vector<Volume> criar_volumes()
 {
     std::vector<Volume> volumes(numero_volumes);
@@ -85,6 +93,7 @@ struct ResultadoMedicao
     return volumes;
 }
 
+// Cria uma estrutura de dados inicial para o experimento.
 [[nodiscard]] CamposSeparados criar_campos_separados()
 {
     CamposSeparados campos;
@@ -102,6 +111,7 @@ struct ResultadoMedicao
     return campos;
 }
 
+// Atualiza os campos numericos no laco estudado.
 void atualizar_array_de_estruturas(std::vector<Volume>& volumes)
 {
     for (Volume& volume : volumes) {
@@ -109,6 +119,7 @@ void atualizar_array_de_estruturas(std::vector<Volume>& volumes)
     }
 }
 
+// Atualiza os campos numericos no laco estudado.
 void atualizar_vetores_separados(CamposSeparados& campos)
 {
     for (std::size_t i = 0; i < campos.phi.size(); ++i) {
@@ -116,6 +127,7 @@ void atualizar_vetores_separados(CamposSeparados& campos)
     }
 }
 
+// Calcula uma soma de controle para comparar resultados.
 [[nodiscard]] Real soma_phi(const std::vector<Volume>& volumes)
 {
     Real soma{};
@@ -125,11 +137,13 @@ void atualizar_vetores_separados(CamposSeparados& campos)
     return soma;
 }
 
+// Calcula uma soma de controle para comparar resultados.
 [[nodiscard]] Real soma_phi(const CamposSeparados& campos)
 {
     return std::accumulate(campos.phi.begin(), campos.phi.end(), Real{});
 }
 
+// Calcula uma grandeza auxiliar do metodo numerico.
 [[nodiscard]] EstatisticaTempo calcular_estatistica(const std::vector<double>& tempos_ms)
 {
     const auto [menor, maior] = std::minmax_element(tempos_ms.begin(), tempos_ms.end());
@@ -150,6 +164,7 @@ void atualizar_vetores_separados(CamposSeparados& campos)
     };
 }
 
+// Mede repeticoes do laco e acumula uma soma de controle.
 template <typename Atualizar, typename Amostra, typename SomaFinal>
 [[nodiscard]] ResultadoMedicao medir(Atualizar atualizar, Amostra amostra, SomaFinal soma_final)
 {
@@ -180,11 +195,13 @@ template <typename Atualizar, typename Amostra, typename SomaFinal>
     };
 }
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia)
 {
     return std::abs(a - b) <= tolerancia;
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_resultado(const std::string& nome, const ResultadoMedicao& resultado)
 {
     std::cout << std::setw(24) << nome
@@ -197,6 +214,7 @@ void imprimir_resultado(const std::string& nome, const ResultadoMedicao& resulta
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.5\n";

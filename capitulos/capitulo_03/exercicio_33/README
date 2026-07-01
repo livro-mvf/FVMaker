@@ -1,0 +1,29 @@
+# Exercicio 33 - Ordem observada de forma automatica
+
+Este exercicio automatiza a tabela de refinamento usada para medir a ordem de uma formula de diferencas finitas. O programa calcula a derivada segunda centrada, cuja ordem esperada e dois, e compara com uma formula progressiva de primeira derivada, cuja ordem esperada e um.
+
+## O que o programa demonstra
+
+- erro da derivada segunda centrada para passos sucessivamente reduzidos;
+- razao entre erros consecutivos e ordem observada;
+- erro da derivada primeira progressiva e sua razao esperada proxima de `2`;
+- efeito de arredondamento quando o passo fica pequeno demais.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
+
+```bash
+cmake --build build --target run_cap_exercicio_33
+```
+
+Como programa autocontido:
+
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_33.cpp -o exercicio_33
+./exercicio_33
+```
+
+## Saida esperada
+
+A tabela da derivada segunda mostra razoes se aproximando de `4`, enquanto a tabela da progressiva mostra razoes se aproximando de `2`. A tabela final, com passos muito pequenos, mostra a queda do erro ate um minimo e depois a degradacao por arredondamento.

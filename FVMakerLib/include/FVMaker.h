@@ -90,6 +90,7 @@
 
 FVMAKER_NAMESPACE_OPEN
 
+// Retorna a informacao version associada ao objeto.
 [[nodiscard]] const char* version() noexcept;
 
 /**

@@ -34,6 +34,7 @@
 
 namespace fvm {
 
+// Lista as normas disponiveis para medir erro em vetores.
 enum class NormType {
     infinity,
     l1,
@@ -41,22 +42,32 @@ enum class NormType {
     rms,
 };
 
+// Agrupa normas de erro usadas para comparar vetores numericos.
 class VectorNorms final {
 public:
+    // Calcula a grandeza evaluate definida por esta interface.
     [[nodiscard]] static Real evaluate(
         const DenseVector& vector,
         NormType type
     ) noexcept;
 
+    // Retorna a informacao infinity associada ao objeto.
     [[nodiscard]] static Real infinity(const DenseVector& vector) noexcept;
+    // Retorna a informacao l1 associada ao objeto.
     [[nodiscard]] static Real l1(const DenseVector& vector) noexcept;
+    // Retorna a informacao l2 associada ao objeto.
     [[nodiscard]] static Real l2(const DenseVector& vector) noexcept;
+    // Retorna a informacao rms associada ao objeto.
     [[nodiscard]] static Real rms(const DenseVector& vector) noexcept;
 };
 
+// Retorna a informacao norm infinity associada ao objeto.
 [[nodiscard]] Real norm_infinity(const DenseVector& vector) noexcept;
+// Retorna a informacao norm l1 associada ao objeto.
 [[nodiscard]] Real norm_l1(const DenseVector& vector) noexcept;
+// Retorna a informacao norm l2 associada ao objeto.
 [[nodiscard]] Real norm_l2(const DenseVector& vector) noexcept;
+// Retorna a informacao norm rms associada ao objeto.
 [[nodiscard]] Real norm_rms(const DenseVector& vector) noexcept;
 
 }  // namespace fvm

@@ -35,11 +35,13 @@
 
 namespace fvm {
 
+// Realiza a operacao algebraic residual definida por esta interface.
 [[nodiscard]] DenseVector algebraic_residual(
     const TridiagonalSystem1D& system,
     const DenseVector& solution
 );
 
+// Realiza a operacao algebraic residual definida por esta interface.
 [[nodiscard]] DenseVector algebraic_residual(
     const PentadiagonalSystem1D& system,
     const DenseVector& solution

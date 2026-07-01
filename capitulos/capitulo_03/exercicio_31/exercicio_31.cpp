@@ -33,6 +33,7 @@ using Real = double;
 
 namespace {
 
+// Representa Parametros, um conjunto de dados usado neste exercicio.
 struct Parametros
 {
     Real x_inicial{0.0};
@@ -41,6 +42,7 @@ struct Parametros
     std::uint64_t semente{2026};
 };
 
+// Representa MalhaAleatoria1D, uma estrutura didatica usada para organizar a malha.
 struct MalhaAleatoria1D
 {
     Real x_inicial{};
@@ -49,6 +51,7 @@ struct MalhaAleatoria1D
     std::vector<Real> nos;
 };
 
+// Representa ResultadoDerivada, um conjunto de dados usado neste exercicio.
 struct ResultadoDerivada
 {
     std::size_t indice{};
@@ -62,6 +65,7 @@ struct ResultadoDerivada
     Real indicador_erro{};
 };
 
+// Converte texto de entrada para o tipo numerico esperado.
 [[nodiscard]] Real converter_real(
     const std::string& texto,
     const std::string& nome
@@ -85,6 +89,7 @@ struct ResultadoDerivada
     return valor;
 }
 
+// Converte texto de entrada para o tipo numerico esperado.
 [[nodiscard]] std::size_t converter_tamanho(
     const std::string& texto,
     const std::string& nome
@@ -119,6 +124,7 @@ struct ResultadoDerivada
     return static_cast<std::uint64_t>(valor);
 }
 
+// Valida os parametros geometricos da malha.
 void validar_parametros(
     Real x_inicial,
     Real comprimento,
@@ -206,6 +212,7 @@ void validar_parametros(
     return MalhaAleatoria1D{x_inicial, comprimento, 0u, nos};
 }
 
+// Calcula uma grandeza auxiliar do metodo numerico.
 [[nodiscard]] std::vector<Real> calcular_espacamentos(
     const std::vector<Real>& nos
 )
@@ -220,11 +227,13 @@ void validar_parametros(
     return espacamentos;
 }
 
+// Calcula uma soma de controle para comparar resultados.
 [[nodiscard]] Real soma(const std::vector<Real>& valores)
 {
     return std::accumulate(valores.begin(), valores.end(), Real{});
 }
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(
     Real a,
     Real b,
@@ -234,6 +243,7 @@ void validar_parametros(
     return std::abs(a - b) <= tolerancia;
 }
 
+// Verifica propriedades geometricas dos nos da malha.
 [[nodiscard]] bool nos_estritamente_crescentes(
     const std::vector<Real>& nos
 )
@@ -247,6 +257,7 @@ void validar_parametros(
     return true;
 }
 
+// Verifica propriedades dos espacamentos da malha.
 [[nodiscard]] bool espacamentos_positivos(
     const std::vector<Real>& espacamentos
 )
@@ -260,6 +271,7 @@ void validar_parametros(
     );
 }
 
+// Avalia uma funcao conhecida nos pontos da malha.
 [[nodiscard]] std::vector<Real> avaliar_exponencial(
     const std::vector<Real>& nos
 )
@@ -274,6 +286,7 @@ void validar_parametros(
     return valores;
 }
 
+// Calcula uma aproximacao para a derivada segunda.
 [[nodiscard]] Real segunda_derivada_nao_uniforme(
     const std::vector<Real>& nos,
     const std::vector<Real>& valores,
@@ -294,6 +307,7 @@ void validar_parametros(
         / (dx_esquerda + dx_direita);
 }
 
+// Calcula uma grandeza auxiliar do metodo numerico.
 [[nodiscard]] std::vector<ResultadoDerivada> calcular_estudo_derivada(
     const std::vector<Real>& nos
 )
@@ -331,6 +345,7 @@ void validar_parametros(
     return resultados;
 }
 
+// Localiza o maior erro absoluto da tabela de derivadas.
 [[nodiscard]] Real maior_erro(
     const std::vector<ResultadoDerivada>& resultados
 )
@@ -344,6 +359,7 @@ void validar_parametros(
     return maior;
 }
 
+// Calcula o erro medio absoluto da tabela de derivadas.
 [[nodiscard]] Real erro_medio(
     const std::vector<ResultadoDerivada>& resultados
 )
@@ -361,6 +377,7 @@ void validar_parametros(
     return total / static_cast<Real>(resultados.size());
 }
 
+// Localiza uma posicao relevante na tabela de resultados.
 [[nodiscard]] std::size_t indice_maior_erro(
     const std::vector<ResultadoDerivada>& resultados
 )
@@ -376,6 +393,7 @@ void validar_parametros(
     );
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_malha(const MalhaAleatoria1D& malha)
 {
     const std::vector<Real> espacamentos =
@@ -403,6 +421,7 @@ void imprimir_malha(const MalhaAleatoria1D& malha)
     }
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_tabela_derivada(
     const std::string& titulo,
     const std::vector<ResultadoDerivada>& resultados
@@ -433,6 +452,7 @@ void imprimir_tabela_derivada(
     }
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_estudo_derivada(
     const MalhaAleatoria1D& malha_aleatoria,
     const MalhaAleatoria1D& malha_uniforme
@@ -516,6 +536,7 @@ void imprimir_estudo_derivada(
     std::cout << "salto local    = " << (maior_dx / menor_dx) << '\n';
 }
 
+// Registra no placar o resultado de uma verificacao.
 [[nodiscard]] bool registrar_teste(
     const std::string& descricao,
     bool passou
@@ -526,6 +547,7 @@ void imprimir_estudo_derivada(
     return passou;
 }
 
+// Verifica uma propriedade numerica exigida pelo exercicio.
 [[nodiscard]] unsigned verificar_malha(const MalhaAleatoria1D& malha)
 {
     constexpr Real tolerancia = 1.0e-12;
@@ -579,6 +601,7 @@ void imprimir_estudo_derivada(
     std::cout << "Verificacoes aprovadas: "
               << aprovados << " de " << total << '\n';
     std::cout << "Soma dos espacamentos: "
+              // Calcula uma soma de controle para comparar resultados.
               << soma(espacamentos) << '\n';
     std::cout << "Erro na soma: "
               << std::abs(soma(espacamentos) - malha.comprimento) << '\n';
@@ -586,6 +609,7 @@ void imprimir_estudo_derivada(
     return (aprovados == total) ? 0u : 1u;
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_mensagem_final()
 {
     std::cout << "\nAplicacoes e recomendacoes\n";
@@ -605,6 +629,7 @@ void imprimir_mensagem_final()
     std::cout << "a crescer.\n";
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_uso(const char* nome_programa)
 {
     std::cout << "Uso:\n";
@@ -614,6 +639,7 @@ void imprimir_uso(const char* nome_programa)
     std::cout << "  " << nome_programa << " 0.0 1.0 12 2026\n";
 }
 
+// Le dados externos usados pelo exercicio.
 [[nodiscard]] Parametros ler_parametros(int argc, char* argv[])
 {
     Parametros parametros;
@@ -638,6 +664,7 @@ void imprimir_uso(const char* nome_programa)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main(int argc, char* argv[])
 {
     try {

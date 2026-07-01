@@ -35,6 +35,7 @@
 
 namespace fvm {
 
+// Representa o conceito de solve result dentro da biblioteca FVMaker.
 struct SolveResult final {
     DenseVector solution;
     DenseVector residual;

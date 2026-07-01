@@ -22,6 +22,7 @@ using Real = double;
 
 namespace {
 
+// Representa SistemaLinear1D, uma estrutura didatica usada para organizar a malha.
 struct SistemaLinear1D
 {
     std::vector<Real> oeste;
@@ -30,11 +31,13 @@ struct SistemaLinear1D
     std::vector<Real> termo_fonte;
 };
 
+// Representa Placar, um conjunto de dados usado neste exercicio.
 struct Placar {
     unsigned aprovados{};
     unsigned total{};
 };
 
+// Registra no placar o resultado de uma verificacao.
 void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
     ++placar.total;
@@ -45,6 +48,7 @@ void registrar(Placar& placar, const std::string& descricao, bool passou)
     std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
+// Imprime a explicacao didatica de uma verificacao.
 void documentar_verificacao(
     const std::string& tipo,
     const std::string& protege,
@@ -56,6 +60,7 @@ void documentar_verificacao(
     std::cout << "  falha quando: " << falha_quando << '\n';
 }
 
+// Valida os dados antes de seguir com o calculo.
 void validar_entradas(
     const std::vector<Real>& dx,
     const std::vector<Real>& difusividade,
@@ -87,6 +92,7 @@ void validar_entradas(
     }
 }
 
+// Verifica uma propriedade numerica exigida pelo exercicio.
 void verificar_invariante_diagonal(Real diagonal, std::size_t indice)
 {
     if (!std::isfinite(diagonal)) {
@@ -142,6 +148,7 @@ void verificar_invariante_diagonal(Real diagonal, std::size_t indice)
     return sistema;
 }
 
+// Testa se uma acao lanca a excecao esperada.
 template <typename Excecao, typename Acao>
 [[nodiscard]] bool lanca(Acao acao)
 {
@@ -153,11 +160,13 @@ template <typename Excecao, typename Acao>
     return false;
 }
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_sistema(const SistemaLinear1D& sistema)
 {
     std::cout << std::fixed << std::setprecision(6);
@@ -176,6 +185,7 @@ void imprimir_sistema(const SistemaLinear1D& sistema)
     }
 }
 
+// Executa o bloco principal de testes ou experimento.
 void executar_testes(Placar& placar)
 {
     const std::vector<Real> dx{Real{0.5}, Real{0.5}, Real{0.5}};
@@ -211,6 +221,7 @@ void executar_testes(Placar& placar)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.1\n";

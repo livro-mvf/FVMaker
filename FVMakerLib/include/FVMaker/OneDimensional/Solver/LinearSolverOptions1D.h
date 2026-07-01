@@ -34,6 +34,7 @@
 
 namespace fvm {
 
+// Enumera os solvers lineares disponiveis para problemas 1D.
 enum class LinearSolverKind1D {
     tdma,
     jacobi,
@@ -43,8 +44,10 @@ enum class LinearSolverKind1D {
     bicgstab,
 };
 
+// Realiza a operacao name definida por esta interface.
 [[nodiscard]] std::string_view name(LinearSolverKind1D kind) noexcept;
 
+// Agrupa parametros de controle para solvers lineares 1D.
 class LinearSolverOptions1D final {
 public:
     LinearSolverKind1D solver{LinearSolverKind1D::tdma};
@@ -52,6 +55,7 @@ public:
     Real relative_tolerance{1.0e-8};
     Size max_iterations{10000};
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -60,15 +64,19 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Realiza a operacao steady state definida por esta interface.
     [[nodiscard]] SteadyState steady_state() const;
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

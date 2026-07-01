@@ -21,6 +21,7 @@ using Real = double;
 
 namespace {
 
+// Valida os dados antes de seguir com o calculo.
 void validar_malha(Real xmin, Real xmax, std::size_t numero_volumes)
 {
     if (!std::isfinite(xmin) || !std::isfinite(xmax)) {
@@ -34,6 +35,7 @@ void validar_malha(Real xmin, Real xmax, std::size_t numero_volumes)
     }
 }
 
+// Calcula a coordenada do centro em uma malha uniforme.
 [[nodiscard]] Real centro_uniforme(Real xmin, Real dx, std::size_t indice)
 {
     return xmin + (static_cast<Real>(indice) + Real{0.5}) * dx;
@@ -45,6 +47,7 @@ void validar_malha(Real xmin, Real xmax, std::size_t numero_volumes)
 class Malha1DSoA
 {
 public:
+    // Constroi a malha e inicializa seus dados internos.
     Malha1DSoA(Real xmin, Real xmax, std::size_t numero_volumes)
         : xmin_{xmin},
           xmax_{xmax},
@@ -58,17 +61,23 @@ public:
         }
     }
 
+    // Retorna o numero de volumes ou nos internos armazenados.
     [[nodiscard]] std::size_t numero_volumes() const noexcept { return centros_.size(); }
+    // Retorna a coordenada do centro associado ao indice.
     [[nodiscard]] Real centro(std::size_t indice) const { verificar_indice(indice); return centros_[indice]; }
+    // Retorna o valor de phi associado ao indice.
     [[nodiscard]] Real phi(std::size_t indice) const { verificar_indice(indice); return phi_[indice]; }
+    // Retorna o termo fonte associado ao indice.
     [[nodiscard]] Real fonte(std::size_t indice) const { verificar_indice(indice); return fonte_[indice]; }
 
+    // Atribui um novo valor de phi pela interface publica.
     void definir_phi(std::size_t indice, Real valor)
     {
         verificar_indice(indice);
         phi_[indice] = valor;
     }
 
+    // Atribui um novo termo fonte pela interface publica.
     void definir_fonte(std::size_t indice, Real valor)
     {
         verificar_indice(indice);
@@ -83,12 +92,14 @@ private:
     std::vector<Real> phi_;
     std::vector<Real> fonte_;
 
+    // Calcula o espacamento uniforme depois de validar a malha.
     static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         validar_malha(xmin, xmax, numero_volumes);
         return (xmax - xmin) / static_cast<Real>(numero_volumes);
     }
 
+    // Confere se o indice pertence ao intervalo valido.
     void verificar_indice(std::size_t indice) const
     {
         if (indice >= centros_.size()) {
@@ -103,6 +114,7 @@ private:
 class Malha1DAoS
 {
 public:
+    // Constroi a malha e inicializa seus dados internos.
     Malha1DAoS(Real xmin, Real xmax, std::size_t numero_volumes)
         : xmin_{xmin},
           xmax_{xmax},
@@ -114,17 +126,23 @@ public:
         }
     }
 
+    // Retorna o numero de volumes ou nos internos armazenados.
     [[nodiscard]] std::size_t numero_volumes() const noexcept { return volumes_.size(); }
+    // Retorna a coordenada do centro associado ao indice.
     [[nodiscard]] Real centro(std::size_t indice) const { verificar_indice(indice); return volumes_[indice].centro; }
+    // Retorna o valor de phi associado ao indice.
     [[nodiscard]] Real phi(std::size_t indice) const { verificar_indice(indice); return volumes_[indice].phi; }
+    // Retorna o termo fonte associado ao indice.
     [[nodiscard]] Real fonte(std::size_t indice) const { verificar_indice(indice); return volumes_[indice].fonte; }
 
+    // Atribui um novo valor de phi pela interface publica.
     void definir_phi(std::size_t indice, Real valor)
     {
         verificar_indice(indice);
         volumes_[indice].phi = valor;
     }
 
+    // Atribui um novo termo fonte pela interface publica.
     void definir_fonte(std::size_t indice, Real valor)
     {
         verificar_indice(indice);
@@ -132,6 +150,7 @@ public:
     }
 
 private:
+    // Representa Volume, um conjunto de dados usado neste exercicio.
     struct Volume
     {
         Real centro{};
@@ -144,12 +163,14 @@ private:
     Real dx_{};
     std::vector<Volume> volumes_;
 
+    // Calcula o espacamento uniforme depois de validar a malha.
     static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
     {
         validar_malha(xmin, xmax, numero_volumes);
         return (xmax - xmin) / static_cast<Real>(numero_volumes);
     }
 
+    // Confere se o indice pertence ao intervalo valido.
     void verificar_indice(std::size_t indice) const
     {
         if (indice >= volumes_.size()) {
@@ -158,6 +179,7 @@ private:
     }
 };
 
+// Inicializa phi e fonte usando apenas a interface publica da malha.
 template <typename Malha>
 void inicializar_campos(Malha& malha)
 {
@@ -168,6 +190,7 @@ void inicializar_campos(Malha& malha)
     }
 }
 
+// Atualiza os campos numericos no laco estudado.
 template <typename Malha>
 void atualizar_phi_pela_interface(Malha& malha, Real dt)
 {
@@ -176,6 +199,7 @@ void atualizar_phi_pela_interface(Malha& malha, Real dt)
     }
 }
 
+// Calcula uma soma de controle para comparar resultados.
 template <typename Malha>
 [[nodiscard]] Real soma_phi(const Malha& malha)
 {
@@ -186,6 +210,7 @@ template <typename Malha>
     return soma;
 }
 
+// Executa o bloco principal de testes ou experimento.
 template <typename Malha>
 void executar_experimento(Malha& malha, Real dt)
 {
@@ -193,6 +218,7 @@ void executar_experimento(Malha& malha, Real dt)
     atualizar_phi_pela_interface(malha, dt);
 }
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
@@ -200,6 +226,7 @@ void executar_experimento(Malha& malha, Real dt)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.6\n";

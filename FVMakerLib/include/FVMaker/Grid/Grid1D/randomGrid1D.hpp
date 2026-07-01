@@ -41,6 +41,7 @@
 
 GRID_NAMESPACE_OPEN
         
+// Realiza a operacao random grid1 d definida por esta interface.
 template<typename TypePattern>
 RandomGrid1D<TypePattern> :: RandomGrid1D   (   const int&          _nVol
                                             ,   const Real&         _length
@@ -52,11 +53,13 @@ auto flag =    this->typePattern_->BuildMesh(this);
 
 }
   
+// Realiza a operacao clone definida por esta interface.
 template<typename TypePattern>
 std::unique_ptr<AbstractGrid1D<TypePattern>> RandomGrid1D<TypePattern>::Clone() const {
         return std::make_unique<RandomGrid1D<TypePattern>>(*this);
 }
 
+// Realiza a operacao gera faces definida por esta interface.
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraFaces() {
     if (this->NVol() < 10000) return  GeraMalhaSequencial(&this->xFace_);
@@ -64,12 +67,14 @@ bool RandomGrid1D<TypePattern> :: GeraFaces() {
 
 }
 
+// Realiza a operacao gera centros definida por esta interface.
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraCentros() {
     if (this->NVol() < 10000) return  GeraMalhaSequencial(&this->xCentro_);
     return GeraMalhaParalelo(&this->xCentro_);     
 }
 
+// Realiza a operacao gera malha sequencial definida por esta interface.
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraMalhaSequencial (VecReal* _coord) {
 
@@ -93,6 +98,7 @@ auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count()
     return true;
 }
 
+// Realiza a operacao gera malha paralelo definida por esta interface.
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraMalhaParalelo (VecReal* _coord){
     
@@ -103,6 +109,7 @@ auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count()
     return true;
 }
 
+// Realiza a operacao gera malha simd definida por esta interface.
 template<typename TypePattern>
 bool RandomGrid1D<TypePattern> :: GeraMalhaSIMD (VecReal*){
     

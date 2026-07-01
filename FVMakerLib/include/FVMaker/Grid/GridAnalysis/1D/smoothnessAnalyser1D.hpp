@@ -59,9 +59,11 @@ GRID_NAMESPACE_OPEN    // abre: namespace fvm { namespace grd {
  *
  * @tparam GridType tipo da malha (ex.: UniformGrid1D)
  */
+// Analisa a suavidade do espacamento em malhas unidimensionais.
 template <typename GridType>
 class SmoothnessAnalyser1D {
 public:
+    // Cria um objeto SmoothnessAnalyser1D com os dados fornecidos.
     explicit SmoothnessAnalyser1D(const GridType& _grid)
         : GridAnalyser<GridType>(_grid), smoothness_(Real(0)) {}
 

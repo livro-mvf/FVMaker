@@ -38,14 +38,17 @@
 
 namespace fvm {
 
+// Define um real fortemente tipado para evitar mistura de grandezas.
 template <std::floating_point T, class Tag>
 class StrongReal final {
 public:
     using value_type = T;
     using tag_type = Tag;
 
+    // Cria um objeto StrongReal com os dados fornecidos.
     constexpr explicit StrongReal(T value) noexcept : value_(value) {}
 
+    // Retorna a informacao value armazenada no objeto.
     [[nodiscard]] constexpr T value() const noexcept {
         return value_;
     }
@@ -54,14 +57,17 @@ private:
     T value_;
 };
 
+// Define um inteiro fortemente tipado para evitar mistura de indices.
 template <std::integral T, class Tag>
 class StrongInteger final {
 public:
     using value_type = T;
     using tag_type = Tag;
 
+    // Cria um objeto StrongInteger com os dados fornecidos.
     constexpr explicit StrongInteger(T value) noexcept : value_(value) {}
 
+    // Retorna a informacao value armazenada no objeto.
     [[nodiscard]] constexpr T value() const noexcept {
         return value_;
     }
@@ -70,12 +76,19 @@ private:
     T value_;
 };
 
+// Representa o conceito de tolerance tag dentro da biblioteca FVMaker.
 struct ToleranceTag final {};
+// Representa o conceito de max iterations tag dentro da biblioteca FVMaker.
 struct MaxIterationsTag final {};
+// Representa o conceito de time tag dentro da biblioteca FVMaker.
 struct TimeTag final {};
+// Representa o conceito de time step tag dentro da biblioteca FVMaker.
 struct TimeStepTag final {};
+// Representa o conceito de initial time tag dentro da biblioteca FVMaker.
 struct InitialTimeTag final {};
+// Representa o conceito de final time tag dentro da biblioteca FVMaker.
 struct FinalTimeTag final {};
+// Representa o conceito de relaxation factor tag dentro da biblioteca FVMaker.
 struct RelaxationFactorTag final {};
 
 using Tolerance = StrongReal<Real, ToleranceTag>;

@@ -25,7 +25,9 @@
 
 namespace fvm {
 
+// Monta o operador de difusao para uma malha e um coeficiente 1D.
 struct DiffusionOperator1D final {
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -40,6 +42,7 @@ concept NonlinearCoefficientFunction1D =
     std::invocable<Function, Real, Real> &&
     std::convertible_to<std::invoke_result_t<Function, Real, Real>, Real>;
 
+// Realiza a operacao interpolate phi to faces 1d definida por esta interface.
 [[nodiscard]] DenseVector interpolate_phi_to_faces_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -47,6 +50,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao diffusion operator 1d definida por esta interface.
 [[nodiscard]] DenseVector diffusion_operator_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -55,6 +59,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao diffusion operator 1d definida por esta interface.
 [[nodiscard]] DenseVector diffusion_operator_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -63,6 +68,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao diffusion operator 1d definida por esta interface.
 [[nodiscard]] DenseVector diffusion_operator_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -71,6 +77,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao second derivative 1d definida por esta interface.
 [[nodiscard]] DenseVector second_derivative_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -78,6 +85,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao laplacian 1d definida por esta interface.
 [[nodiscard]] DenseVector laplacian_1d(
     const GridView1D& grid,
     const DenseVector& phi,
@@ -85,6 +93,7 @@ concept NonlinearCoefficientFunction1D =
     Real time = Real{}
 );
 
+// Realiza a operacao diffusion operator 1d definida por esta interface.
 template <ScalarFunction1D Function>
 [[nodiscard]] DenseVector diffusion_operator_1d(
     const GridView1D& grid,
@@ -102,6 +111,7 @@ template <ScalarFunction1D Function>
     );
 }
 
+// Realiza a operacao nonlinear function coefficient 1d definida por esta interface.
 template <NonlinearCoefficientFunction1D Function>
 [[nodiscard]] DiffusionCoefficient1D nonlinear_function_coefficient_1d(
     const GridView1D& grid,
@@ -110,6 +120,7 @@ template <NonlinearCoefficientFunction1D Function>
     Function&& coefficient,
     Real time = Real{}
 ) {
+    // Realiza a operacao interpolate phi to faces 1d definida por esta interface.
     const DenseVector face_phi = interpolate_phi_to_faces_1d(
         grid,
         phi,
@@ -126,7 +137,9 @@ template <NonlinearCoefficientFunction1D Function>
             face_phi[face]
         ));
 
+        // Realiza a operacao require definida por esta interface.
         require(
+            // Informa se a condicao isfinite e verdadeira.
             std::isfinite(face_values[face]),
             error_catalog::kInvalidCoefficient,
             DiffusionOperator1D::id()
@@ -136,6 +149,7 @@ template <NonlinearCoefficientFunction1D Function>
     return face_coefficient_1d(grid, std::move(face_values));
 }
 
+// Realiza a operacao diffusion operator 1d definida por esta interface.
 template <NonlinearCoefficientFunction1D Function>
 [[nodiscard]] DenseVector diffusion_operator_1d(
     const GridView1D& grid,

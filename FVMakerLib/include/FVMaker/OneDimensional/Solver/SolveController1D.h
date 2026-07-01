@@ -50,12 +50,14 @@
 
 namespace fvm {
 
+// Realiza a operacao rhs norm infinity definida por esta interface.
 [[nodiscard]] inline Real rhs_norm_infinity(
     const TridiagonalSystem1D& system
 ) {
     return norm_infinity(system.rhs());
 }
 
+// Realiza a operacao relative residual norm definida por esta interface.
 [[nodiscard]] inline Real relative_residual_norm(
     Real residual_norm,
     Real reference_norm
@@ -63,6 +65,7 @@ namespace fvm {
     return residual_norm / std::max(reference_norm, Real{1.0});
 }
 
+// Realiza a operacao complete solve result definida por esta interface.
 inline void complete_solve_result(
     SolveResult& result,
     const TridiagonalSystem1D& system,
@@ -97,6 +100,7 @@ concept IterativeTridiagonalSolver1D = requires(
     { LinearSolver::solve(system, options) } -> std::same_as<SolveResult>;
 };
 
+// Executa o algoritmo numerico associado aos dados fornecidos.
 template <class LinearSolver = TDMA>
 [[nodiscard]] SolveResult solve_steady_system_1d(
     const TridiagonalSystem1D& system,
@@ -136,6 +140,7 @@ template <class LinearSolver = TDMA>
     return result;
 }
 
+// Executa o algoritmo numerico associado aos dados fornecidos.
 [[nodiscard]] inline SolveResult solve_steady_system_1d(
     const TridiagonalSystem1D& system,
     const LinearSolverOptions1D& options
@@ -170,6 +175,7 @@ template <class LinearSolver = TDMA>
     return {};
 }
 
+// Executa o algoritmo numerico associado aos dados fornecidos.
 template <class LinearSolver = TDMA>
 [[nodiscard]] SolveResult solve_steady_1d(
     const Equation1D& equation,
@@ -182,6 +188,7 @@ template <class LinearSolver = TDMA>
     );
 }
 
+// Executa o algoritmo numerico associado aos dados fornecidos.
 [[nodiscard]] inline SolveResult solve_steady_1d(
     const Equation1D& equation,
     const LinearSolverOptions1D& options,

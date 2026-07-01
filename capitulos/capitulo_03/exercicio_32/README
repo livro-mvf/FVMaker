@@ -1,0 +1,30 @@
+# Exercicio 32 - Montando o sistema de Poisson em codigo
+
+Este exercicio leva para o computador a montagem do sistema linear da equacao de Poisson em malha uniforme. O programa monta a matriz dos coeficientes e o vetor independente usando linhas internas centradas e linhas de fronteira escritas pela forma generica de condicao de contorno.
+
+## O que o programa demonstra
+
+- construcao de uma malha uniforme nodal;
+- montagem das linhas internas para `phi'' = g(x)`;
+- tratamento generico de Dirichlet, Neumann e Robin por coeficientes `alpha`, `beta` e `gamma`;
+- uso de diferenca progressiva na fronteira esquerda e regressiva na direita;
+- verificacao automatica do caso de Dirichlet nos dois lados com `N = 6` e `dx = 0.2`.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
+
+```bash
+cmake --build build --target run_cap_exercicio_32
+```
+
+Como programa autocontido:
+
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_32.cpp -o exercicio_32
+./exercicio_32
+```
+
+## Saida esperada
+
+A saida imprime os nos da malha, a matriz tridiagonal aumentada pelas linhas de contorno e o vetor independente. Ao final, confirma que o caso com Dirichlet nos dois lados coincide com a montagem esperada no exercicio de papel.

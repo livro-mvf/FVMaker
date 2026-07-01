@@ -61,6 +61,7 @@ class CellSizeAnalyser1D
 public:
 
 explicit 
+// Realiza a operacao cell size analyser1 d definida por esta interface.
 CellSizeAnalyser1D (const GridType& _grid) :  
         GridAnalyser<GridType>  (_grid)
         ,   dx_min_(0.0)

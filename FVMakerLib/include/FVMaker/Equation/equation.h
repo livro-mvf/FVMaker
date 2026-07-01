@@ -52,14 +52,19 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+// Representa uma equacao formada por termos discretos do nucleo legado.
 template <typename T>
 class Equation {
 
 public:
         
+    // Cria um objeto Equation com os dados fornecidos.
     Equation(const Equation&) noexcept = default;
+    // Finaliza um objeto Equation.
     ~Equation() noexcept = default;
+    // Cria um objeto Equation com os dados fornecidos.
     Equation(Equation&&) = delete; 
+    // Cria um objeto Equation com os dados fornecidos.
     Equation    (   const T&                        _grid
                 ,   const AbstractCoefficient<T>    _coeff
                 ,   const BoundaryConditions<T>     _bc
@@ -84,6 +89,7 @@ public:
     
 
     
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     template <typename U>
     friend std::ostream& operator<< (std::ostream&, const Equation<U>&);
 

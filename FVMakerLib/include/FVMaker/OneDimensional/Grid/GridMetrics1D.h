@@ -39,6 +39,7 @@
 
 namespace fvm {
 
+// Agrupa metricas geometricas de uma malha unidimensional.
 struct GridMetrics1D final {
     Size num_volumes{};
     Size num_faces{};

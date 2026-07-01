@@ -34,14 +34,17 @@
 
 namespace fvm {
 
+// Representa o conceito de variable coefficient1 d dentro da biblioteca FVMaker.
 struct VariableCoefficient1D final {
     StoredScalarFunction1D gamma;
     StoredScalarFunction1D dgamma_dx;
 
+    // Retorna a informacao value armazenada no objeto.
     [[nodiscard]] Real value(Real x) const {
         return gamma(x);
     }
 
+    // Realiza a operacao derivative definida por esta interface.
     [[nodiscard]] Real derivative(Real x) const {
         return dgamma_dx(x);
     }

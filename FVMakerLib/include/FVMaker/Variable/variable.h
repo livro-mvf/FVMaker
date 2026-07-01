@@ -50,6 +50,7 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+// Representa uma variavel numerica do nucleo legado.
 template <typename T>
 class variable {
 

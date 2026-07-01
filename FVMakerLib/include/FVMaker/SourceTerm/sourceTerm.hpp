@@ -43,6 +43,7 @@
 FVMAKER_NAMESPACE_OPEN
 
 
+// Escreve uma representacao textual do objeto no fluxo de saida.
 template<typename T>
 std::ostream& operator<<    (  std::ostream& _os
                             ,   const SourceTerm<T>& _source
@@ -90,6 +91,7 @@ auto Print = [&](const std::size_t& i)
     return _os;
 }
 
+// Calcula a grandeza evaluate source function definida por esta interface.
 template<typename T>
 bool SourceTerm<T> :: EvaluateSourceFunction () {
 

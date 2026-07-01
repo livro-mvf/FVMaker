@@ -33,6 +33,7 @@
 
 namespace fvm::roadmap {
 
+// Representa o conceito de fake block result dentro da biblioteca FVMaker.
 struct FakeBlockResult final {
     int block{};
     std::string_view name{};
@@ -40,66 +41,82 @@ struct FakeBlockResult final {
     bool provisional{true};
 };
 
+// Retorna a informacao transient 1d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult transient_1d() noexcept {
     return {15, "Transient1D/Ddt1D", true, true};
 }
 
+// Retorna a informacao time schemes 1d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult time_schemes_1d() noexcept {
     return {16, "TimeSchemes1D", true, true};
 }
 
+// Retorna a informacao wave 1d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult wave_1d() noexcept {
     return {17, "Wave1D/D2dt2_1D", true, true};
 }
 
+// Retorna a informacao grid view 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult grid_view_2d() noexcept {
     return {18, "GridView2D/GridMetrics2D", true, true};
 }
 
+// Retorna a informacao field boundary 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult field_boundary_2d() noexcept {
     return {19, "Field2D/Boundary2D", true, true};
 }
 
+// Retorna a informacao linear system 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult linear_system_2d() noexcept {
     return {20, "SparseStructuredMatrix2D", true, true};
 }
 
+// Retorna a informacao laplacian 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult laplacian_2d() noexcept {
     return {21, "Laplacian2D/Poisson2D", true, true};
 }
 
+// Retorna a informacao linear solvers 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult linear_solvers_2d() noexcept {
     return {22, "Jacobi2D/GaussSeidel2D/CG2D", true, true};
 }
 
+// Retorna a informacao nonlinear 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult nonlinear_2d() noexcept {
     return {23, "NonlinearSolve2D", true, true};
 }
 
+// Retorna a informacao transient 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult transient_2d() noexcept {
     return {24, "Transient2D/Ddt2D", true, true};
 }
 
+// Retorna a informacao wave 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult wave_2d() noexcept {
     return {25, "Wave2D/D2dt2_2D", true, true};
 }
 
+// Retorna a informacao advection 2d associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult advection_2d() noexcept {
     return {26, "Advection2D/Interpolation2D", true, true};
 }
 
+// Retorna a informacao output fields associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult output_fields() noexcept {
     return {27, "OutputFields", true, true};
 }
 
+// Retorna a informacao yaml examples associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult yaml_examples() noexcept {
     return {28, "ExternalYamlExamples", true, true};
 }
 
+// Retorna a informacao performance profiling associada ao objeto.
 [[nodiscard]] constexpr FakeBlockResult performance_profiling() noexcept {
     return {29, "PerformanceProfiling", true, true};
 }
 
+// Realiza a operacao remaining blocks definida por esta interface.
 [[nodiscard]] constexpr std::array<FakeBlockResult, 15> remaining_blocks()
     noexcept {
     return {
@@ -121,6 +138,7 @@ struct FakeBlockResult final {
     };
 }
 
+// Retorna a informacao all remaining blocks callable associada ao objeto.
 [[nodiscard]] constexpr bool all_remaining_blocks_callable() noexcept {
     for (const FakeBlockResult block : remaining_blocks()) {
         if (!block.callable || !block.provisional) {

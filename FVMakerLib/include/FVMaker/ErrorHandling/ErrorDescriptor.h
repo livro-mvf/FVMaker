@@ -33,6 +33,7 @@
 
 namespace fvm {
 
+// Descreve um erro catalogado com codigo, mensagem e origem.
 struct ErrorDescriptor final {
     std::string_view code;
     std::string_view message;

@@ -51,11 +51,16 @@ class Dirichlet{
 
 public:
     
+    // Cria um objeto Dirichlet com os dados fornecidos.
     Dirichlet()                noexcept = default;
+    // Cria um objeto Dirichlet com os dados fornecidos.
     Dirichlet(const Dirichlet&)   noexcept = default;
+    // Finaliza um objeto Dirichlet.
     ~Dirichlet()       noexcept = default;
+    // Cria um objeto Dirichlet com os dados fornecidos.
     Dirichlet (const Real& _gamma) : BC(1,0, _gamma) {};
     
+    // Cria um objeto Dirichlet com os dados fornecidos.
     Dirichlet(Dirichlet&&) = delete;
     
 //==============================================================================

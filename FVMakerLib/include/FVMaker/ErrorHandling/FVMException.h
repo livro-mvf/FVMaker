@@ -39,12 +39,16 @@
 
 namespace fvm {
 
+// Representa uma excecao estruturada emitida pela biblioteca FVMaker.
 class FVMException final {
 public:
+    // Cria um objeto FVMException com os dados fornecidos.
     explicit FVMException(ErrorRecord record);
 
+    // Retorna a informacao what associada ao objeto.
     [[nodiscard]] const char* what() const noexcept;
 
+    // Retorna a informacao record associada ao objeto.
     [[nodiscard]] const ErrorRecord& record() const noexcept;
 
 private:

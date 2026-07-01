@@ -47,8 +47,10 @@
 
 namespace fvm {
 
+// Agrupa os objetos necessarios a uma iteracao de Picard em 1D.
 class PicardProblem1D final {
 public:
+    // Cria um objeto PicardProblem1D com os dados fornecidos.
     PicardProblem1D(
         GridView1D grid,
         NonlinearCoefficient1D coefficient,
@@ -56,6 +58,7 @@ public:
         BoundarySet1D boundaries
     );
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -64,17 +67,23 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao grid associada ao objeto.
     [[nodiscard]] const GridView1D& grid() const noexcept;
+    // Retorna a informacao coefficient associada ao objeto.
     [[nodiscard]] const NonlinearCoefficient1D& coefficient() const noexcept;
+    // Retorna a informacao source associada ao objeto.
     [[nodiscard]] const LinearizedSource1D& source() const noexcept;
+    // Retorna a informacao boundaries associada ao objeto.
     [[nodiscard]] const BoundarySet1D& boundaries() const noexcept;
 
 private:
@@ -83,9 +92,11 @@ private:
     LinearizedSource1D source_;
     BoundarySet1D boundaries_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 
+// Realiza a operacao picard solve 1d definida por esta interface.
 template <class LinearSolver = TDMA>
 [[nodiscard]] PicardResult picard_solve_1d(
     const PicardProblem1D& problem,
@@ -94,6 +105,7 @@ template <class LinearSolver = TDMA>
     const SteadyState& linear_control = {},
     Real time = Real{}
 ) {
+    // Realiza a operacao require definida por esta interface.
     require(
         initial_solution.size() == problem.grid().num_volumes(),
         error_catalog::kInvalidFieldSize,
@@ -101,6 +113,7 @@ template <class LinearSolver = TDMA>
     );
 
     return picard_iteration(
+        // Realiza a operacao move definida por esta interface.
         std::move(initial_solution),
         [&](const DenseVector& phi) {
             const DiffusionCoefficient1D face_coefficient =
@@ -123,6 +136,7 @@ template <class LinearSolver = TDMA>
     );
 }
 
+// Realiza a operacao newton solve 1d fake definida por esta interface.
 template <class LinearSolver = TDMA>
 [[nodiscard]] PicardResult newton_solve_1d_fake(
     const PicardProblem1D&,
@@ -131,6 +145,7 @@ template <class LinearSolver = TDMA>
     const SteadyState& = {},
     Real = Real{}
 ) {
+    // Realiza a operacao require definida por esta interface.
     require(
         false,
         error_catalog::kNotImplemented,

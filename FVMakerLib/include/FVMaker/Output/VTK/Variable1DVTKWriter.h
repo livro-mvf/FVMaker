@@ -35,8 +35,10 @@
 
 namespace fvm {
 
+// Escreve variaveis 1D em formato VTK para pos-processamento.
 class Variable1DVTKWriter final {
 public:
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "Output",
@@ -45,15 +47,19 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Realiza a operacao write definida por esta interface.
     static void write(const Variable1D& variable, std::ostream& output);
+    // Realiza a operacao write definida por esta interface.
     static void write(
         const Variable1D& variable,
         const std::filesystem::path& filepath

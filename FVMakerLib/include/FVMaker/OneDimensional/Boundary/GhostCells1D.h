@@ -33,11 +33,15 @@
 
 namespace fvm {
 
+// Representa celulas fantasmas usadas para impor contornos em malhas 1D.
 class GhostCells1D final {
 public:
+    // Cria um objeto GhostCells1D com os dados fornecidos.
     GhostCells1D() = default;
+    // Cria um objeto GhostCells1D com os dados fornecidos.
     GhostCells1D(Size left, Size right);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -46,31 +50,42 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao max per side associada ao objeto.
     [[nodiscard]] static constexpr Size max_per_side() noexcept {
         return 2;
     }
 
+    // Retorna a informacao left armazenada no objeto.
     [[nodiscard]] Size left() const noexcept;
+    // Retorna a informacao right armazenada no objeto.
     [[nodiscard]] Size right() const noexcept;
+    // Retorna a informacao total associada ao objeto.
     [[nodiscard]] Size total() const noexcept;
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const noexcept;
 
+    // Retorna a informacao first physical index associada ao objeto.
     [[nodiscard]] Size first_physical_index() const noexcept;
+    // Retorna a informacao storage size associada ao objeto.
     [[nodiscard]] Size storage_size(Size physical_size) const noexcept;
+    // Retorna a informacao storage index associada ao objeto.
     [[nodiscard]] Size storage_index(Size physical_index) const noexcept;
 
 private:
     Size left_{0};
     Size right_{0};
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 

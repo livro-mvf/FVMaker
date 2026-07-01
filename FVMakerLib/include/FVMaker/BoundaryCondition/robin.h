@@ -52,16 +52,22 @@ class Robin{
 
 public:
     
+    // Cria um objeto Robin com os dados fornecidos.
     Robin()                noexcept = default;
+    // Cria um objeto Robin com os dados fornecidos.
     Robin(const Robin&)   noexcept = default;
+    // Finaliza um objeto Robin.
     ~Robin()       noexcept = default;
+    // Cria um objeto Robin com os dados fornecidos.
     Robin   ( const Real&   _alpha
             , const Real&   _beta
             , const Real&   _gamma
+            // Realiza a operacao bc definida por esta interface.
             ) : BC( _alpha, _beta, _gamma)
     {};
     
     
+    // Cria um objeto Robin com os dados fornecidos.
     Robin(Robin&&) = delete;
     
 //==============================================================================

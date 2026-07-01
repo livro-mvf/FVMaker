@@ -58,10 +58,12 @@ public:
     
     BC()                noexcept = default;
     BC(const BC&)   noexcept = default;
+    // Finaliza um objeto BC.
     ~BC()       noexcept = default;
     BC   ( const Real&   _alpha
                         , const Real&   _beta
                         , const Real&   _gamma
+                        // Realiza a operacao alpha definida por esta interface.
                         ) : alpha_(_alpha), beta_(_beta), gamma_(_gamma)
     {};
     
@@ -82,8 +84,11 @@ public:
     
 public:
 
+    // Realiza a operacao alpha definida por esta interface.
     [[nodiscard]] inline Real Alpha() const {return alpha_;};
+    // Realiza a operacao beta definida por esta interface.
     [[nodiscard]] inline Real Beta() const {return beta_;};
+    // Realiza a operacao gamma definida por esta interface.
     [[nodiscard]] inline Real Gamma() const {return gamma_;};
     
 //==============================================================================

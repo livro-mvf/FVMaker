@@ -39,11 +39,15 @@
 
 namespace fvm {
 
+// Representa uma fonte linearizada escrita como parte constante e parte em phi.
 class LinearizedSource1D final {
 public:
+    // Cria um objeto LinearizedSource1D com os dados fornecidos.
     explicit LinearizedSource1D(Size size);
+    // Cria um objeto LinearizedSource1D com os dados fornecidos.
     LinearizedSource1D(DenseVector source_constant, DenseVector source_linear);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -52,44 +56,57 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] Size size() const noexcept;
 
+    // Retorna a informacao source constant associada ao objeto.
     [[nodiscard]] DenseVector& source_constant() noexcept;
+    // Retorna a informacao source constant associada ao objeto.
     [[nodiscard]] const DenseVector& source_constant() const noexcept;
 
+    // Realiza a operacao source linear definida por esta interface.
     [[nodiscard]] DenseVector& source_linear() noexcept;
+    // Retorna a informacao source linear associada ao objeto.
     [[nodiscard]] const DenseVector& source_linear() const noexcept;
 
+    // Calcula a grandeza evaluate definida por esta interface.
     [[nodiscard]] DenseVector evaluate(const DenseVector& phi) const;
 
 private:
     DenseVector source_constant_;
     DenseVector source_linear_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 
+// Realiza a operacao zero source 1d definida por esta interface.
 [[nodiscard]] LinearizedSource1D zero_source_1d(Size size);
 
+// Realiza a operacao uniform source 1d definida por esta interface.
 [[nodiscard]] LinearizedSource1D uniform_source_1d(
     Size size,
     Real source_constant,
     Real source_linear = Real{}
 );
 
+// Realiza a operacao vector source 1d definida por esta interface.
 [[nodiscard]] LinearizedSource1D vector_source_1d(
     DenseVector source_constant,
     DenseVector source_linear
 );
 
+// Realiza a operacao explicit vector source 1d definida por esta interface.
 [[nodiscard]] LinearizedSource1D explicit_vector_source_1d(
     DenseVector source_constant
 );
@@ -98,6 +115,7 @@ template <class Function>
 concept SourceFunction1D =
     ScalarFunction1D<Function> || ScalarFunction1DTime<Function>;
 
+// Calcula a grandeza evaluate source function 1d definida por esta interface.
 template <SourceFunction1D Function>
 [[nodiscard]] Real evaluate_source_function_1d(
     Function&& function,
@@ -111,6 +129,7 @@ template <SourceFunction1D Function>
     }
 }
 
+// Realiza a operacao function source 1d definida por esta interface.
 template <SourceFunction1D SourceConstantFunction>
 [[nodiscard]] LinearizedSource1D function_source_1d(
     const GridView1D& grid,
@@ -123,6 +142,7 @@ template <SourceFunction1D SourceConstantFunction>
     const std::span<const Real> centers = grid.centers();
 
     for (Size i = 0; i < grid.num_volumes(); ++i) {
+        // Calcula a grandeza evaluate source function 1d definida por esta interface.
         source_constant_values[i] = evaluate_source_function_1d(
             source_constant,
             centers[i],
@@ -131,6 +151,7 @@ template <SourceFunction1D SourceConstantFunction>
     }
 
     return LinearizedSource1D{
+        // Realiza a operacao move definida por esta interface.
         std::move(source_constant_values),
         std::move(source_linear_values)
     };
@@ -140,6 +161,7 @@ template <
     SourceFunction1D SourceConstantFunction,
     SourceFunction1D SourceLinearFunction
 >
+// Realiza a operacao function source 1d definida por esta interface.
 [[nodiscard]] LinearizedSource1D function_source_1d(
     const GridView1D& grid,
     SourceConstantFunction source_constant,
@@ -152,11 +174,13 @@ template <
     const std::span<const Real> centers = grid.centers();
 
     for (Size i = 0; i < grid.num_volumes(); ++i) {
+        // Calcula a grandeza evaluate source function 1d definida por esta interface.
         source_constant_values[i] = evaluate_source_function_1d(
             source_constant,
             centers[i],
             time
         );
+        // Calcula a grandeza evaluate source function 1d definida por esta interface.
         source_linear_values[i] = evaluate_source_function_1d(
             source_linear,
             centers[i],
@@ -165,11 +189,13 @@ template <
     }
 
     return LinearizedSource1D{
+        // Realiza a operacao move definida por esta interface.
         std::move(source_constant_values),
         std::move(source_linear_values)
     };
 }
 
+// Realiza a operacao apply source to system definida por esta interface.
 void apply_source_to_system(
     TridiagonalSystem1D& system,
     const LinearizedSource1D& source

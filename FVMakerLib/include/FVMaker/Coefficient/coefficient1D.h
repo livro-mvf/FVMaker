@@ -49,6 +49,7 @@ FVMAKER_NAMESPACE_OPEN
  * Cada centro é convertido para um std::vector<Real> contendo as coordenadas,
  * possibilitando usar a mesma interface para grid 1D, 2D, 3D, etc.
  */
+// Representa um coeficiente unidimensional constante ou calculado por funcao.
 template <typename T>
 class Coefficient1D {
 
@@ -64,14 +65,19 @@ public :
 public:
     
 
+    // Cria um objeto Coefficient1D com os dados fornecidos.
     Coefficient1D(const Coefficient1D&) noexcept = default;
+    // Finaliza um objeto Coefficient1D.
     ~Coefficient1D() noexcept = default;
+    // Cria um objeto Coefficient1D com os dados fornecidos.
     Coefficient1D(Coefficient1D&&) = delete;    
     
+    // Cria um objeto Coefficient1D com os dados fornecidos.
     explicit Coefficient1D (const T& _grid, const Real& = 1.0) : AbstractCoefficient<T>(_grid) {
         this->coeff_.assign(this->grid_.size(), 1.0);
     };
     
+    // Cria um objeto Coefficient1D com os dados fornecidos.
     explicit Coefficient1D(const AbstractCoefficient<T>& _other)
             : AbstractCoefficient<T>( _other.Grid())  // chama construtor base com "other.grid_"
     {
@@ -87,6 +93,7 @@ public:
     Coefficient1D& operator=(const Coefficient1D&) = delete;
     Coefficient1D& operator=(Coefficient1D&&) = delete;
     
+    // Escreve uma representacao textual do objeto no fluxo de saida.
     template <typename U>
     friend std::ostream& operator<< (std::ostream&, const Coefficient1D<U>&);    
 };

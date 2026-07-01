@@ -138,22 +138,39 @@ public:
      */
     [[nodiscard]] bool GeraCentros();
 
+    // Retorna a informacao size associada ao objeto.
     [[nodiscard]] size_t size() const { return data_.size(); }
+    // Retorna a informacao nvol associada ao objeto.
     [[nodiscard]] size_t NVol() const { return data_.NVol(); }
+    // Realiza a operacao length definida por esta interface.
     [[nodiscard]] Real Length() const { return data_.Length(); }
+    // Realiza a operacao xinit definida por esta interface.
     [[nodiscard]] Real XInit() const { return data_.XInit(); }
+    // Realiza a operacao xend definida por esta interface.
     [[nodiscard]] Real XEnd() const { return data_.XEnd(); }
+    // Retorna a informacao get face associada ao objeto.
     [[nodiscard]] const VecReal& GetFace() const { return data_.GetFace(); }
+    // Retorna a informacao get centre associada ao objeto.
     [[nodiscard]] const VecReal& GetCentre() const { return data_.GetCentre(); }
+    // Retorna a informacao get dface associada ao objeto.
     [[nodiscard]] const VecReal& GetDFace() const { return data_.GetDFace(); }
+    // Retorna a informacao get dcentre associada ao objeto.
     [[nodiscard]] const VecReal& GetDCentre() const { return data_.GetDCentre(); }
+    // Acrescenta a informacao addressx face ao objeto.
     [[nodiscard]] VecReal* AddressxFace() { return data_.AddressxFace(); }
+    // Acrescenta a informacao addressx face ao objeto.
     [[nodiscard]] const VecReal* AddressxFace() const { return data_.AddressxFace(); }
+    // Acrescenta a informacao addressx centro ao objeto.
     [[nodiscard]] VecReal* AddressxCentro() { return data_.AddressxCentro(); }
+    // Acrescenta a informacao addressx centro ao objeto.
     [[nodiscard]] const VecReal* AddressxCentro() const { return data_.AddressxCentro(); }
+    // Realiza a operacao calcula centros definida por esta interface.
     [[nodiscard]] bool CalculaCentros(const Real& offset) { return data_.CalculaCentros(offset); }
+    // Realiza a operacao calcula faces definida por esta interface.
     [[nodiscard]] bool CalculaFaces(const Real& offset) { return data_.CalculaFaces(offset); }
+    // Realiza a operacao calcula distancias definida por esta interface.
     [[nodiscard]] bool CalculaDistancias() { return data_.CalculaDistancias(); }
+    // Retorna a informacao empty associada ao objeto.
     [[nodiscard]] bool empty() const { return data_.empty(); }
     
 private:

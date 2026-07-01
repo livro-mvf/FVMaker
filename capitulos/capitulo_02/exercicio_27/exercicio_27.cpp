@@ -27,6 +27,7 @@ using Real = double;
 
 namespace {
 
+// Representa Parametros, um conjunto de dados usado neste exercicio.
 struct Parametros
 {
     std::size_t numero_amostras{};
@@ -34,12 +35,14 @@ struct Parametros
     Real tolerancia{};
 };
 
+// Representa ResultadoSomas, um conjunto de dados usado neste exercicio.
 struct ResultadoSomas
 {
     Real soma_direta{};
     Real soma_inversa{};
 };
 
+// Remove espacos das extremidades de uma linha de configuracao.
 [[nodiscard]] std::string trim(std::string texto)
 {
     const auto nao_espaco = [](unsigned char c) { return !std::isspace(c); };
@@ -50,6 +53,7 @@ struct ResultadoSomas
     return texto;
 }
 
+// Cria uma estrutura de dados inicial para o experimento.
 void criar_configuracao_padrao(const std::string& nome_arquivo)
 {
     std::ofstream arquivo{nome_arquivo};
@@ -63,12 +67,14 @@ void criar_configuracao_padrao(const std::string& nome_arquivo)
     arquivo << "tolerancia = 1e-8\n";
 }
 
+// Verifica se o arquivo de configuracao ja existe.
 [[nodiscard]] bool arquivo_existe(const std::string& nome_arquivo)
 {
     std::ifstream arquivo{nome_arquivo};
     return static_cast<bool>(arquivo);
 }
 
+// Le dados externos usados pelo exercicio.
 [[nodiscard]] Parametros ler_configuracao(const std::string& nome_arquivo)
 {
     if (!arquivo_existe(nome_arquivo)) {
@@ -123,11 +129,11 @@ void criar_configuracao_padrao(const std::string& nome_arquivo)
     return parametros;
 }
 
+// Gera os dados numericos usados no experimento.
 [[nodiscard]] std::vector<Real> gerar_amostras(const Parametros& parametros)
 {
     std::mt19937_64 gerador{parametros.semente};
     std::uniform_real_distribution<Real> distribuicao{Real{0.0}, Real{1.0}};
-
     std::vector<Real> valores(parametros.numero_amostras);
     for (Real& valor : valores) {
         valor = distribuicao(gerador);
@@ -136,6 +142,7 @@ void criar_configuracao_padrao(const std::string& nome_arquivo)
     return valores;
 }
 
+// Calcula uma grandeza auxiliar do metodo numerico.
 [[nodiscard]] ResultadoSomas calcular_somas(const std::vector<Real>& valores)
 {
     Real soma_direta{};
@@ -151,6 +158,7 @@ void criar_configuracao_padrao(const std::string& nome_arquivo)
     return ResultadoSomas{soma_direta, soma_inversa};
 }
 
+// Identifica o compilador para registrar a reprodutibilidade.
 [[nodiscard]] std::string compilador()
 {
 #if defined(__clang__)
@@ -164,6 +172,7 @@ void criar_configuracao_padrao(const std::string& nome_arquivo)
 #endif
 }
 
+// Grava a saida de referencia ou o resultado do experimento.
 void gravar_saida(
     const std::string& nome_arquivo,
     const Parametros& parametros,
@@ -194,6 +203,7 @@ void gravar_saida(
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     const std::string arquivo_configuracao = "exercicio_27_config.txt";

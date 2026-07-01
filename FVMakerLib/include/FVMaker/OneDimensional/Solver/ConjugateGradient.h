@@ -35,8 +35,10 @@
 
 namespace fvm {
 
+// Resolve sistemas simetricos positivos por gradientes conjugados.
 class ConjugateGradient final {
 public:
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -45,14 +47,17 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Executa o algoritmo numerico associado aos dados fornecidos.
     [[nodiscard]] static SolveResult solve(
         const TridiagonalSystem1D& system,
         IterativeSolverOptions options = {}

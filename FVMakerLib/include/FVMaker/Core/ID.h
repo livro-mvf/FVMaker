@@ -33,10 +33,13 @@
 
 namespace fvm {
 
+// Representa identificadores estaveis de classes e modulos da biblioteca.
 class ID final {
 public:
+    // Cria um objeto ID com os dados fornecidos.
     constexpr ID() noexcept = default;
 
+    // Cria um objeto ID com os dados fornecidos.
     constexpr ID(
         std::string_view module,
         std::string_view class_name,
@@ -46,14 +49,17 @@ public:
           class_name_(class_name),
           class_id_(class_id) {}
 
+    // Retorna a informacao module associada ao objeto.
     [[nodiscard]] constexpr std::string_view module() const noexcept {
         return module_;
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] constexpr std::string_view class_name() const noexcept {
         return class_name_;
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] constexpr std::string_view class_id() const noexcept {
         return class_id_;
     }

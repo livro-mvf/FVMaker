@@ -40,11 +40,13 @@
 
 namespace fvm {
 
+// Armazena informacoes estruturadas sobre um erro numerico ou de uso.
 struct ErrorRecord final {
     std::string_view code;
     std::string message;
     std::string_view category;
     ID source;
+    // Realiza a operacao current definida por esta interface.
     std::source_location location = std::source_location::current();
 };
 

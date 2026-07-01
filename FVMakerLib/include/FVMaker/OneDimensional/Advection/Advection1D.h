@@ -34,28 +34,35 @@
 
 namespace fvm {
 
+// Representa a contribuicao advectiva em uma equacao unidimensional.
 class Advection1D final {
 public:
+    // Cria um objeto Advection1D com os dados fornecidos.
     explicit Advection1D(FaceFlux1D face_flux);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{"OneDimensional", "Advection1D", "fvm.1d.advection.Advection1D"};
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao face flux associada ao objeto.
     [[nodiscard]] const FaceFlux1D& face_flux() const noexcept;
 
 private:
     FaceFlux1D face_flux_;
 };
 
+// Realiza a operacao advective face values 1d definida por esta interface.
 template <class Scheme>
 [[nodiscard]] DenseVector advective_face_values_1d(
     const GridView1D& grid,

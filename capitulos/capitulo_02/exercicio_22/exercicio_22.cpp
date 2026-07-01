@@ -25,6 +25,7 @@ namespace {
 // dependencia global e nenhuma protecao para casos limite.
 int largura_global_legada = 3;
 
+// Reproduz a rotina original ruim para comparar com a versao refatorada.
 [[nodiscard]] std::vector<Real> mm(std::vector<Real> d)
 {
     std::vector<Real> o;
@@ -96,11 +97,13 @@ int largura_global_legada = 3;
     return medias;
 }
 
+// Representa Placar, um conjunto de dados usado neste exercicio.
 struct Placar {
     unsigned aprovados{};
     unsigned total{};
 };
 
+// Registra no placar o resultado de uma verificacao.
 void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
     ++placar.total;
@@ -111,11 +114,13 @@ void registrar(Placar& placar, const std::string& descricao, bool passou)
     std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
+// Compara valores reais dentro de uma tolerancia.
 [[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
+// Compara dois vetores elemento a elemento dentro de uma tolerancia.
 [[nodiscard]] bool vetores_proximos(
     const std::vector<Real>& obtido,
     const std::vector<Real>& esperado,
@@ -135,6 +140,7 @@ void registrar(Placar& placar, const std::string& descricao, bool passou)
     return true;
 }
 
+// Testa se um vetor calculado coincide com o vetor de referencia.
 void testar_vetor(
     Placar& placar,
     const std::string& descricao,
@@ -159,6 +165,7 @@ void testar_vetor(
     }
 }
 
+// Verifica se uma chamada invalida lanca a excecao esperada.
 template <typename Acao>
 void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
 {
@@ -173,6 +180,7 @@ void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
     registrar(placar, descricao, lancou);
 }
 
+// Imprime os dados do exercicio em formato legivel.
 void imprimir_vetor(const std::string& nome, const std::vector<Real>& valores)
 {
     std::cout << nome << ':';
@@ -185,6 +193,7 @@ void imprimir_vetor(const std::string& nome, const std::vector<Real>& valores)
 
 } // namespace
 
+// Executa o roteiro completo do exercicio.
 int main()
 {
     std::cout << "Exercicio Computacional 2.2\n";

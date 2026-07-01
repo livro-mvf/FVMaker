@@ -44,6 +44,7 @@ FVMAKER_NAMESPACE_OPEN
         
 template <typename T>
 requires Is1DGrid<T>
+// Realiza a operacao diffusion definida por esta interface.
 Diffusion<T> ::Diffusion    (   const T& _grid
                             ,   const AbstractCoefficient<T> _coeff
                             ,   const BoundaryConditions<T> _bc
@@ -55,6 +56,7 @@ Diffusion<T> ::Diffusion    (   const T& _grid
         
 template <typename T>
 requires Is1DGrid<T>
+// Calcula a grandeza compute coefficient definida por esta interface.
 bool Diffusion<T> :: ComputeCoefficient() {
     
     try {
@@ -85,6 +87,7 @@ bool Diffusion<T> :: ComputeCoefficient() {
 
 template <typename T>
 requires Is1DGrid<T>
+// Calcula a grandeza compute coefficient1 d definida por esta interface.
 bool Diffusion<T>::ComputeCoefficient1D() 
 {
     

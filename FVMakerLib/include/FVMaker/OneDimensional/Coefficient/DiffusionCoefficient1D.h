@@ -40,6 +40,7 @@
 #include <FVMaker/OneDimensional/Grid/GridView1D.h>
 
 namespace fvm {
+// Representa o conceito de face interpolation data1 d dentro da biblioteca FVMaker.
 struct FaceInterpolationData1D final {
     Real west_value{};
     Real east_value{};
@@ -47,7 +48,9 @@ struct FaceInterpolationData1D final {
     Real east_distance{};
 };
 
+// Representa o conceito de arithmetic face interpolation1 d dentro da biblioteca FVMaker.
 struct ArithmeticFaceInterpolation1D final {
+    // Avalia o objeto como uma funcao nos argumentos informados.
     [[nodiscard]] Real operator()(FaceInterpolationData1D data) const noexcept {
         const Real distance = data.west_distance + data.east_distance;
         return (data.east_distance * data.west_value
@@ -55,7 +58,9 @@ struct ArithmeticFaceInterpolation1D final {
     }
 };
 
+// Representa o conceito de harmonic face interpolation1 d dentro da biblioteca FVMaker.
 struct HarmonicFaceInterpolation1D final {
+    // Avalia o objeto como uma funcao nos argumentos informados.
     [[nodiscard]] Real operator()(FaceInterpolationData1D data) const noexcept {
         const Real distance = data.west_distance + data.east_distance;
         return distance / (data.west_distance / data.west_value
@@ -68,13 +73,17 @@ concept FaceInterpolator1D = requires(
     const Interpolator& interpolation,
     FaceInterpolationData1D data
 ) {
+    // Realiza a operacao interpolation definida por esta interface.
     { interpolation(data) } -> std::convertible_to<Real>;
 };
 
+// Representa coeficientes de difusao constantes ou variaveis em 1D.
 class DiffusionCoefficient1D final {
 public:
+    // Cria um objeto DiffusionCoefficient1D com os dados fornecidos.
     explicit DiffusionCoefficient1D(DenseVector face_values);
 
+    // Retorna o identificador estavel desta classe na biblioteca.
     [[nodiscard]] static constexpr ID id() noexcept {
         return ID{
             "OneDimensional",
@@ -83,29 +92,37 @@ public:
         };
     }
 
+    // Retorna o nome curto da classe para diagnostico e documentacao.
     [[nodiscard]] static constexpr std::string_view class_name() noexcept {
         return id().class_name();
     }
 
+    // Retorna o identificador completo da classe na hierarquia da biblioteca.
     [[nodiscard]] static constexpr std::string_view class_id() noexcept {
         return id().class_id();
     }
 
+    // Retorna a informacao num faces associada ao objeto.
     [[nodiscard]] Size num_faces() const noexcept;
+    // Retorna a informacao face values associada ao objeto.
     [[nodiscard]] std::span<const Real> face_values() const noexcept;
+    // Retorna a informacao face value associada ao objeto.
     [[nodiscard]] Real face_value(Size face) const noexcept;
 
 private:
     DenseVector face_values_;
 
+    // Verifica se as hipoteses numericas e estruturais foram atendidas.
     void validate() const;
 };
 
+// Realiza a operacao uniform coefficient 1d definida por esta interface.
 [[nodiscard]] DiffusionCoefficient1D uniform_coefficient_1d(
     const GridView1D& grid,
     Real coefficient
 );
 
+// Realiza a operacao function coefficient 1d definida por esta interface.
 template <ScalarFunction1D Function>
 [[nodiscard]] DiffusionCoefficient1D function_coefficient_1d(
     const GridView1D& grid,
@@ -120,11 +137,13 @@ template <ScalarFunction1D Function>
     return DiffusionCoefficient1D{std::move(face_values)};
 }
 
+// Realiza a operacao face coefficient 1d definida por esta interface.
 [[nodiscard]] DiffusionCoefficient1D face_coefficient_1d(
     const GridView1D& grid,
     DenseVector face_values
 );
 
+// Realiza a operacao interpolated field coefficient 1d definida por esta interface.
 template <FaceInterpolator1D Interpolator>
 [[nodiscard]] DiffusionCoefficient1D interpolated_field_coefficient_1d(
     const GridView1D& grid,
@@ -156,16 +175,19 @@ template <FaceInterpolator1D Interpolator>
     return DiffusionCoefficient1D{std::move(face_values)};
 }
 
+// Realiza a operacao arithmetic field coefficient 1d definida por esta interface.
 [[nodiscard]] DiffusionCoefficient1D arithmetic_field_coefficient_1d(
     const GridView1D& grid,
     const DenseVector& cell_values
 );
 
+// Realiza a operacao harmonic field coefficient 1d definida por esta interface.
 [[nodiscard]] DiffusionCoefficient1D harmonic_field_coefficient_1d(
     const GridView1D& grid,
     const DenseVector& cell_values
 );
 
+// Realiza a operacao field coefficient 1d definida por esta interface.
 [[nodiscard]] DiffusionCoefficient1D field_coefficient_1d(
     const GridView1D& grid,
     const DenseVector& cell_values

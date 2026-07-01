@@ -35,6 +35,7 @@
 
 namespace fvm {
 
+// Calcula a grandeza evaluate at centers definida por esta interface.
 template <ScalarFunction1D Function>
 [[nodiscard]] DenseVector evaluate_at_centers(
     const GridView1D& grid,
@@ -50,6 +51,7 @@ template <ScalarFunction1D Function>
     return values;
 }
 
+// Calcula a grandeza evaluate at faces definida por esta interface.
 template <ScalarFunction1D Function>
 [[nodiscard]] DenseVector evaluate_at_faces(
     const GridView1D& grid,
