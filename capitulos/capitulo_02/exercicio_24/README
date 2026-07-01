@@ -1,24 +1,42 @@
-Transforma os requisitos de `Malha1D` em testes executáveis.
+# Exercicio 24 - Da peca ao todo: unitario, integracao e regressao
 
-## O que o programa faz
+Este diretorio corresponde ao exercicio **"Da peca ao todo: unitario, integracao e regressao"** do Capitulo 02. Ele retoma a `Malha1D` do exercicio anterior e transforma seu contrato em tres camadas de verificacao.
 
-- construção válida, número de volumes e espaçamento;
-- coordenadas de centros e faces;
-- consistência dos extremos;
-- rejeição de domínio inválido e de `N = 0`;
-- acesso fora dos limites;
-- comparação de ponto flutuante com tolerância;
+## O que o programa cobre
 
-## Pré-requisitos
+- **Teste unitario:** verifica `dx`, centros, rejeicao de `N = 0`, rejeicao de `xmax <= xmin` e indice fora do intervalo.
+- **Teste de integracao:** usa a malha para avaliar uma solucao analitica simples, `u(x) = 1 + x + x^2`, nos centros dos volumes e compara com valores esperados.
+- **Teste de regressao:** grava uma saida de referencia com formato e precisao fixos, recalcula a mesma tabela e acusa divergencia textual.
 
-Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+## Por que os tres testes existem
 
-## Execução
+O teste unitario protege a peca isolada: ele apanha formulas erradas para `dx`, centros e validacao. O teste de integracao protege o uso combinado da malha com uma rotina numerica externa: ele apanha, por exemplo, uma convencao errada de centro que ainda poderia passar em um teste incompleto. O teste de regressao protege a saida de referencia: ele detecta mudancas acidentais em valores ou formato que alterariam comparacoes futuras.
+
+## Arquivo gerado
+
+Ao executar, o programa cria no diretorio de trabalho:
+
+```text
+exercicio_24_referencia.txt
+```
+
+Esse arquivo representa a saida de referencia do caso de integracao. No CMake, o diretorio de trabalho e o diretorio de build.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
 
 ```bash
 cmake --build build --target run_cap_exercicio_24
 ```
 
-## Saída esperada
+Como programa autocontido:
 
-Cada caso é marcado como aprovado ou reprovado. O processo retorna zero somente quando todo o plano é satisfeito.
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_24.cpp -o exercicio_24
+./exercicio_24
+```
+
+## Saida esperada
+
+Cada verificacao imprime o erro que apanharia se a implementacao estivesse incorreta. O processo retorna zero apenas quando os testes unitarios, de integracao e de regressao passam.

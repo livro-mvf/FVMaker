@@ -1,480 +1,266 @@
 // ============================================================================
 // Arquivo: exercicio_22.cpp
 // Projeto: FVMaker
-// Versão: consulte <FVMaker/Core/Version.h>
-// Descrição: Implementa exercicio 22 no contexto de capitulos / capitulo_02 / exercicio_22.
-// Autor: João Flávio Vieira de Vasconcellos
+// Versao: consulte <FVMaker/Core/Version.h>
+// Descricao: Refatora uma rotina de media movel escrita de forma opaca.
+// Autor: Joao Flavio Vieira de Vasconcellos
 //
-// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-FileCopyrightText: 2026 Joao Flavio Vieira de Vasconcellos
 // SPDX-License-Identifier: BSD-3-Clause
-//
-// Este arquivo faz parte do FVMaker.
-//
-// Licença: BSD 3-Clause.
-// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
-// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
-// de copyright, esta identificação de licença e as condições descritas no arquivo
-// LICENSE.md.
-//
-// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
-// pode ser usado para endossar ou promover produtos derivados sem autorização
-// prévia por escrito.
-//
-// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
-// LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 using Real = double;
 
 namespace {
 
-class Malha1D
+// Versao propositalmente ruim, mantida apenas como referencia didatica.
+// Ela reproduz o estilo do enunciado: nome opaco, argumento copiado,
+// dependencia global e nenhuma protecao para casos limite.
+int largura_global_legada = 3;
+
+[[nodiscard]] std::vector<Real> mm(std::vector<Real> d)
 {
-public:
-    inline Malha1D(
-        Real xmin,
-        Real xmax,
-        std::size_t numero_volumes
-    );
+    std::vector<Real> o;
 
-    [[nodiscard]] inline Real xmin() const noexcept;
-    [[nodiscard]] inline Real xmax() const noexcept;
-    [[nodiscard]] inline std::size_t numero_volumes() const noexcept;
-    [[nodiscard]] inline Real tamanho_volume() const noexcept;
-    [[nodiscard]] inline Real centro(std::size_t indice) const;
-    [[nodiscard]] inline Real face(std::size_t indice) const;
+    for (int i = 0; i <= static_cast<int>(d.size()) - largura_global_legada; ++i) {
+        Real s = Real{};
+        for (int j = 0; j < largura_global_legada; ++j) {
+            s += d[static_cast<std::size_t>(i + j)];
+        }
+        o.push_back(s / static_cast<Real>(largura_global_legada));
+    }
 
-private:
-    Real m_xmin;
-    Real m_xmax;
-    std::size_t m_numero_volumes;
-    Real m_tamanho_volume;
+    return o;
+}
 
-    static inline void validar(
-        Real xmin,
-        Real xmax,
-        std::size_t numero_volumes
-    );
+// Calcula a media movel aritmetica de uma sequencia.
+//
+// Pre-condicoes verificadas em tempo de execucao:
+//   1. o vetor de dados deve conter ao menos uma amostra;
+//   2. a largura da janela deve ser maior que zero;
+//   3. a largura da janela nao pode exceder o numero de amostras;
+//   4. todas as amostras devem ser finitas.
+//
+// A rotina lanca std::invalid_argument para entradas invalidas porque esses
+// erros pertencem a quem chama a funcao. Diferentemente de assert, essa
+// validacao continua ativa em compilacoes otimizadas, preservando a
+// reprodutibilidade e evitando resultados silenciosamente sem sentido.
+[[nodiscard]] std::vector<Real> media_movel(
+    const std::vector<Real>& dados,
+    std::size_t largura_janela
+)
+{
+    if (dados.empty()) {
+        throw std::invalid_argument("A media movel exige ao menos uma amostra.");
+    }
+
+    if (largura_janela == 0) {
+        throw std::invalid_argument("A largura da janela deve ser maior que zero.");
+    }
+
+    if (largura_janela > dados.size()) {
+        throw std::invalid_argument(
+            "A largura da janela nao pode ser maior que o numero de amostras."
+        );
+    }
+
+    for (Real valor : dados) {
+        if (!std::isfinite(valor)) {
+            throw std::invalid_argument("Todas as amostras devem ser finitas.");
+        }
+    }
+
+    std::vector<Real> medias;
+    medias.reserve(dados.size() - largura_janela + 1);
+
+    Real soma_janela = Real{};
+    for (std::size_t i = 0; i < largura_janela; ++i) {
+        soma_janela += dados[i];
+    }
+
+    medias.push_back(soma_janela / static_cast<Real>(largura_janela));
+
+    for (std::size_t inicio = 1; inicio + largura_janela <= dados.size(); ++inicio) {
+        soma_janela -= dados[inicio - 1];
+        soma_janela += dados[inicio + largura_janela - 1];
+        medias.push_back(soma_janela / static_cast<Real>(largura_janela));
+    }
+
+    return medias;
+}
+
+struct Placar {
+    unsigned aprovados{};
+    unsigned total{};
 };
 
-//==============================================================================
-// Implementacao dos metodos da classe
-//==============================================================================
-
-inline Malha1D::Malha1D(
-    Real xmin,
-    Real xmax,
-    std::size_t numero_volumes
-)
+void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
-    validar(xmin, xmax, numero_volumes);
-
-    m_xmin = xmin;
-    m_xmax = xmax;
-    m_numero_volumes = numero_volumes;
-    m_tamanho_volume = (xmax - xmin) / static_cast<Real>(numero_volumes);
-}
-
-[[nodiscard]] inline Real Malha1D::xmin() const noexcept
-{
-    return m_xmin;
-}
-
-[[nodiscard]] inline Real Malha1D::xmax() const noexcept
-{
-    return m_xmax;
-}
-
-[[nodiscard]] inline std::size_t Malha1D::numero_volumes() const noexcept
-{
-    return m_numero_volumes;
-}
-
-[[nodiscard]] inline Real Malha1D::tamanho_volume() const noexcept
-{
-    return m_tamanho_volume;
-}
-
-[[nodiscard]] inline Real Malha1D::centro(std::size_t indice) const
-{
-    if (indice >= m_numero_volumes) {
-        throw std::out_of_range("Indice do volume fora do intervalo [0, N).");
+    ++placar.total;
+    if (passou) {
+        ++placar.aprovados;
     }
 
-    return m_xmin
-        + (static_cast<Real>(indice) + Real{0.5}) * m_tamanho_volume;
+    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
-[[nodiscard]] inline Real Malha1D::face(std::size_t indice) const
-{
-    if (indice > m_numero_volumes) {
-        throw std::out_of_range("Indice da face fora do intervalo [0, N].");
-    }
-
-    return m_xmin + static_cast<Real>(indice) * m_tamanho_volume;
-}
-
-inline void Malha1D::validar(
-    Real xmin,
-    Real xmax,
-    std::size_t numero_volumes
-)
-{
-    if (!std::isfinite(xmin)) {
-        throw std::invalid_argument("xmin deve ser finito.");
-    }
-
-    if (!std::isfinite(xmax)) {
-        throw std::invalid_argument("xmax deve ser finito.");
-    }
-
-    if (numero_volumes == 0) {
-        throw std::invalid_argument(
-            "O numero de volumes deve ser maior que zero."
-        );
-    }
-
-    if (!(xmax > xmin)) {
-        throw std::invalid_argument(
-            "xmax deve ser estritamente maior que xmin."
-        );
-    }
-}
-
-//==============================================================================
-// Funcoes auxiliares de teste
-//==============================================================================
-
-inline void imprimir_malha(const Malha1D& malha)
-{
-    std::cout << std::fixed << std::setprecision(6);
-
-    std::cout << "Malha 1D uniforme\n";
-    std::cout << "=================\n";
-    std::cout << "xmin            = " << malha.xmin() << '\n';
-    std::cout << "xmax            = " << malha.xmax() << '\n';
-    std::cout << "N               = " << malha.numero_volumes() << '\n';
-    std::cout << "dx              = " << malha.tamanho_volume() << '\n';
-    std::cout << '\n';
-
-    std::cout << std::setw(6) << "i"
-              << std::setw(16) << "face_esq"
-              << std::setw(16) << "centro"
-              << std::setw(16) << "face_dir"
-              << '\n';
-
-    for (std::size_t i = 0; i < malha.numero_volumes(); ++i) {
-        std::cout << std::setw(6) << i
-                  << std::setw(16) << malha.face(i)
-                  << std::setw(16) << malha.centro(i)
-                  << std::setw(16) << malha.face(i + 1)
-                  << '\n';
-    }
-
-    std::cout << '\n';
-}
-
-[[nodiscard]] inline bool aproximadamente_igual(
-    Real a,
-    Real b,
-    Real tolerancia = Real{1e-12}
-)
+[[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
-inline bool testar_valor(
-    const std::string& descricao,
-    Real obtido,
-    Real esperado
+[[nodiscard]] bool vetores_proximos(
+    const std::vector<Real>& obtido,
+    const std::vector<Real>& esperado,
+    Real tolerancia = Real{1.0e-12}
 )
 {
-    const bool passou = aproximadamente_igual(obtido, esperado);
+    if (obtido.size() != esperado.size()) {
+        return false;
+    }
 
-    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
+    for (std::size_t i = 0; i < obtido.size(); ++i) {
+        if (!aproximadamente_igual(obtido[i], esperado[i], tolerancia)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void testar_vetor(
+    Placar& placar,
+    const std::string& descricao,
+    const std::vector<Real>& obtido,
+    const std::vector<Real>& esperado
+)
+{
+    const bool passou = vetores_proximos(obtido, esperado);
+    registrar(placar, descricao, passou);
 
     if (!passou) {
-        std::cout << std::fixed << std::setprecision(12)
-                  << "  obtido   = " << obtido << '\n'
-                  << "  esperado = " << esperado << '\n';
+        std::cout << std::setprecision(16);
+        std::cout << "  obtido  :";
+        for (Real valor : obtido) {
+            std::cout << ' ' << valor;
+        }
+        std::cout << "\n  esperado:";
+        for (Real valor : esperado) {
+            std::cout << ' ' << valor;
+        }
+        std::cout << '\n';
     }
-
-    return passou;
 }
 
-inline bool testar_excecao_construcao(
-    const std::string& descricao,
-    Real xmin,
-    Real xmax,
-    std::size_t numero_volumes
-)
+template <typename Acao>
+void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
 {
-    bool excecao_lancada = false;
+    bool lancou = false;
 
     try {
-        Malha1D malha(xmin, xmax, numero_volumes);
-        (void)malha;
+        acao();
     } catch (const std::invalid_argument&) {
-        excecao_lancada = true;
-    } catch (...) {
-        excecao_lancada = false;
+        lancou = true;
     }
 
-    std::cout << (excecao_lancada ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
-
-    if (!excecao_lancada) {
-        std::cout
-            << "  A construcao deveria ter lancado std::invalid_argument.\n";
-    }
-
-    return excecao_lancada;
+    registrar(placar, descricao, lancou);
 }
 
-inline bool testar_excecao_indice(
-    const std::string& descricao,
-    const Malha1D& malha,
-    std::size_t indice_fora
-)
+void imprimir_vetor(const std::string& nome, const std::vector<Real>& valores)
 {
-    bool excecao_lancada = false;
-
-    try {
-        (void)malha.centro(indice_fora);
-    } catch (const std::out_of_range&) {
-        excecao_lancada = true;
-    } catch (...) {
-        excecao_lancada = false;
+    std::cout << nome << ':';
+    std::cout << std::fixed << std::setprecision(6);
+    for (Real valor : valores) {
+        std::cout << ' ' << valor;
     }
-
-    std::cout << (excecao_lancada ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
-
-    if (!excecao_lancada) {
-        std::cout << "  A consulta deveria ter lancado std::out_of_range.\n";
-    }
-
-    return excecao_lancada;
-}
-
-//==============================================================================
-// Mensagem final didatica
-//==============================================================================
-
-inline void imprimir_mensagem_final()
-{
-    const int size = 80;
-
-    //==========================================================================
-    // Aplicacoes e recomendacoes
-    //==========================================================================
-
-    std::cout << "\nAplicacoes e recomendacoes\n";
-    std::cout << std::string(size, '-') << '\n';
-    std::cout << "1. A classe Malha1D organiza os dados fundamentais ";
-    std::cout << "da malha uniforme.\n";
-    std::cout << "2. O encapsulamento evita acesso direto aos detalhes ";
-    std::cout << "internos da malha.\n";
-    std::cout << "3. A validacao no construtor impede a criacao de ";
-    std::cout << "malhas inconsistentes.\n";
-    std::cout << "4. As funcoes centro(i) e face(i) fornecem uma ";
-    std::cout << "interface simples e segura.\n";
-    std::cout << "5. Este modelo e adequado como base para ";
-    std::cout << "discretizacoes em volumes finitos.\n";
-    std::cout << std::string(size, '-') << '\n';
-
-    //==========================================================================
-    // Conceitos demonstrados
-    //==========================================================================
-
-    std::cout << "\nConceitos demonstrados\n";
-    std::cout << std::string(size, '-') << '\n';
-    std::cout << "1. Definicao de uma classe para representar uma ";
-    std::cout << "malha unidimensional.\n";
-    std::cout << "2. Uso de atributos privados e metodos publicos ";
-    std::cout << "de consulta.\n";
-    std::cout << "3. Calculo do tamanho uniforme de cada volume ";
-    std::cout << "de controle.\n";
-    std::cout << "4. Calculo das coordenadas das faces e dos centros ";
-    std::cout << "dos volumes.\n";
-    std::cout << "5. Lancamento de excecoes para parametros e ";
-    std::cout << "indices invalidos.\n";
-    std::cout << "6. Uso de testes simples para verificar valores ";
-    std::cout << "esperados.\n";
-    std::cout << std::string(size, '-') << '\n';
+    std::cout << '\n';
 }
 
 } // namespace
 
 int main()
 {
-    try {
-        std::cout << "Exercicio Computacional 2.2\n";
-        std::cout << "Implementacao da Malha1D uniforme\n";
-        std::cout << "==================================\n\n";
+    std::cout << "Exercicio Computacional 2.2\n";
+    std::cout << "Refatoracao de uma funcao ilegivel\n";
+    std::cout << "==================================\n\n";
 
-        unsigned testes_passaram = 0;
-        unsigned testes_total = 0;
+    const std::vector<Real> dados{Real{1.0}, Real{2.0}, Real{4.0}, Real{7.0}, Real{11.0}};
+    const std::vector<Real> esperado{
+        Real{7.0} / Real{3.0},
+        Real{13.0} / Real{3.0},
+        Real{22.0} / Real{3.0}
+    };
 
-        std::cout << "Teste 1: Malha com 4 volumes em [0, 1]\n";
-        std::cout << "---------------------------------------\n";
-        {
-            Malha1D malha(Real{0.0}, Real{1.0}, 4);
-            imprimir_malha(malha);
+    largura_global_legada = 3;
+    const std::vector<Real> legado = mm(dados);
+    const std::vector<Real> refatorado = media_movel(dados, 3);
 
-            testes_total += 7;
+    imprimir_vetor("dados", dados);
+    imprimir_vetor("media movel, janela 3", refatorado);
+    std::cout << '\n';
 
-            if (testar_valor("xmin", malha.xmin(), 0.0)) {
-                ++testes_passaram;
-            }
+    Placar placar;
 
-            if (testar_valor("xmax", malha.xmax(), 1.0)) {
-                ++testes_passaram;
-            }
+    testar_vetor(
+        placar,
+        "a rotina refatorada reproduz a media movel esperada",
+        refatorado,
+        esperado
+    );
 
-            if (
-                testar_valor(
-                    "N",
-                    static_cast<Real>(malha.numero_volumes()),
-                    4.0
-                )
-            ) {
-                ++testes_passaram;
-            }
+    testar_vetor(
+        placar,
+        "a rotina refatorada coincide com a versao original nos casos validos",
+        refatorado,
+        legado
+    );
 
-            if (testar_valor("dx", malha.tamanho_volume(), 0.25)) {
-                ++testes_passaram;
-            }
+    testar_vetor(
+        placar,
+        "janela de largura 1 devolve os proprios dados",
+        media_movel(dados, 1),
+        dados
+    );
 
-            if (testar_valor("centro(0)", malha.centro(0), 0.125)) {
-                ++testes_passaram;
-            }
+    testar_excecao(
+        placar,
+        "vetor vazio e rejeitado",
+        [] { (void)media_movel({}, 2); }
+    );
 
-            if (testar_valor("centro(3)", malha.centro(3), 0.875)) {
-                ++testes_passaram;
-            }
+    testar_excecao(
+        placar,
+        "janela nula e rejeitada",
+        [&dados] { (void)media_movel(dados, 0); }
+    );
 
-            if (testar_valor("face(4)", malha.face(4), 1.0)) {
-                ++testes_passaram;
-            }
-        }
+    testar_excecao(
+        placar,
+        "janela maior que o vetor e rejeitada",
+        [&dados] { (void)media_movel(dados, dados.size() + 1); }
+    );
 
-        std::cout << '\n';
+    testar_excecao(
+        placar,
+        "amostra NaN e rejeitada antes do calculo",
+        [] { (void)media_movel({Real{1.0}, std::nan("")}, 2); }
+    );
 
-        std::cout << "Teste 2: Malha com 5 volumes em [-2, 3]\n";
-        std::cout << "----------------------------------------\n";
-        {
-            Malha1D malha(Real{-2.0}, Real{3.0}, 5);
-            imprimir_malha(malha);
+    std::cout << "\nResumo: " << placar.aprovados << " de " << placar.total
+              << " verificacoes aprovadas.\n";
 
-            testes_total += 4;
+    std::cout << "\nObservacao academica\n";
+    std::cout << "--------------------\n";
+    std::cout << "A mudanca principal nao e cosmetica: nomes, argumentos explicitos,\n";
+    std::cout << "validacao e documentacao tornam a rotina reconhecivel e segura para\n";
+    std::cout << "ser reutilizada em outro experimento numerico.\n";
 
-            if (testar_valor("dx", malha.tamanho_volume(), 1.0)) {
-                ++testes_passaram;
-            }
-
-            if (testar_valor("centro(0)", malha.centro(0), -1.5)) {
-                ++testes_passaram;
-            }
-
-            if (testar_valor("centro(2)", malha.centro(2), 0.5)) {
-                ++testes_passaram;
-            }
-
-            if (testar_valor("centro(4)", malha.centro(4), 2.5)) {
-                ++testes_passaram;
-            }
-        }
-
-        std::cout << '\n';
-
-        std::cout << "Testes de validacao (pre-condicoes da construcao)\n";
-        std::cout << "-------------------------------------------------\n";
-
-        testes_total += 3;
-
-        if (
-            testar_excecao_construcao(
-                "N = 0 deve ser rejeitado",
-                0.0,
-                1.0,
-                0
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        if (
-            testar_excecao_construcao(
-                "xmax < xmin deve ser rejeitado",
-                1.0,
-                0.0,
-                5
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        if (
-            testar_excecao_construcao(
-                "xmax == xmin deve ser rejeitado",
-                1.0,
-                1.0,
-                5
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        std::cout << '\n';
-
-        std::cout << "Testes de validacao (indices fora do intervalo)\n";
-        std::cout << "-----------------------------------------------\n";
-        {
-            Malha1D malha(Real{0.0}, Real{1.0}, 4);
-
-            testes_total += 2;
-
-            if (
-                testar_excecao_indice(
-                    "centro(4) em malha de N=4 deve falhar",
-                    malha,
-                    4
-                )
-            ) {
-                ++testes_passaram;
-            }
-
-            if (
-                testar_excecao_indice(
-                    "centro(100) deve falhar",
-                    malha,
-                    100
-                )
-            ) {
-                ++testes_passaram;
-            }
-        }
-
-        std::cout << '\n';
-
-        std::cout << "Resumo\n";
-        std::cout << "======\n";
-        std::cout << "Testes aprovados: " << testes_passaram
-                  << " de " << testes_total << '\n';
-
-        imprimir_mensagem_final();
-
-        return (testes_passaram == testes_total) ? 0 : 1;
-
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro inesperado: " << erro.what() << '\n';
-        return 1;
-    }
+    return (placar.aprovados == placar.total) ? 0 : 1;
 }

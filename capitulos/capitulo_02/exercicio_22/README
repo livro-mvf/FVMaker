@@ -1,23 +1,37 @@
-Implementa `Malha1D`, uma malha uniforme autocontida, com validação e testes de geometria.
+# Exercicio 22 - Refatoracao de uma funcao ilegivel
 
-## O que o programa faz
+Este diretorio corresponde ao exercicio **"Refatoracao de uma funcao ilegivel"** do Capitulo 02. O texto do capitulo apresenta uma rotina chamada `mm`, dependente de uma variavel global `W`, que calcula a media movel de um vetor sem nomes expressivos, sem documentacao e sem protecao para casos limite.
 
-- valida `xmin < xmax`, valores finitos e `N > 0`;
-- calcula `dx = (xmax - xmin) / N`;
-- fornece centros em `[0, N)` e faces em `[0, N]`;
-- rejeita índices inválidos com `std::out_of_range`;
-- testa construção, geometria e erros;
+O objetivo academico do exercicio e transformar essa rotina em uma pequena peca de codigo cientifico legivel, verificavel e reutilizavel. A referencia aqui nao tenta esconder a versao ruim: ela a mantem apenas como base de comparacao nos casos admissiveis, deixando claro quais escolhas tornam a nova versao mais segura.
 
-## Pré-requisitos
+## O que o programa demonstra
 
-Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+- substituicao de nomes opacos por nomes que carregam significado;
+- eliminacao da dependencia de uma variavel global para a largura da janela;
+- documentacao da intencao numerica e das pre-condicoes da rotina;
+- tratamento explicito de vetor vazio, janela nula e janela maior que o vetor;
+- comparacao entre a implementacao refatorada e a rotina original nos casos validos;
+- uso de soma deslizante para manter o custo linear em relacao ao numero de dados.
 
-## Execução
+## Decisao de projeto
+
+A funcao refatorada recebe os dados por referencia constante e a largura da janela como argumento. Entradas invalidas lancam `std::invalid_argument`, pois sao erros vindos de quem chama a rotina e nao devem desaparecer em uma compilacao otimizada. A documentacao no cabecalho da funcao registra essa decisao: uma pre-condicao cientifica precisa ser verificavel no programa, nao apenas conhecida por quem escreveu o codigo.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
 
 ```bash
 cmake --build build --target run_cap_exercicio_22
 ```
 
-## Saída esperada
+Como programa autocontido:
 
-Imprime a geometria e os testes internos. Retorna zero quando todos passam.
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_22.cpp -o exercicio_22
+./exercicio_22
+```
+
+## Saida esperada
+
+A saida imprime os valores da media movel para um vetor conhecido, compara a versao refatorada com a versao original nos casos admissiveis e confirma que os casos limite sao recusados explicitamente.

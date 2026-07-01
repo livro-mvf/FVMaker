@@ -1,37 +1,41 @@
-Este programa refatora a função `calc` apresentada na abertura do capítulo. A função original calcula uma integral aproximada pela regra dos trapézios, mas possui nomes pouco expressivos, depende de uma função global `f` e não protege explicitamente o caso `n = 0`.
+# Exercicio 21 - Assercoes como sentinelas
 
-O objetivo do exercício é mostrar uma primeira aplicação de boas práticas de programação científica: melhorar nomes, documentar a intenção do algoritmo, separar a regra de integração da função integranda e validar as precondições antes do cálculo.
+Este diretorio corresponde ao exercicio **"Assercoes como sentinelas"** do Capitulo 02. O programa monta os coeficientes de um pequeno sistema linear unidimensional e torna explicitas as suposicoes que, no codigo ruim descrito pelo enunciado, ficariam silenciosas.
 
-## Funcionalidades
+## O que o programa verifica
 
-- **Regra dos trapézios refatorada**: A função `integrar_trapezios` implementa o mesmo algoritmo numérico da função original.
-- **Nomes expressivos**: Os parâmetros foram renomeados para `limite_inferior`, `limite_superior` e `numero_subintervalos`.
-- **Função integranda como argumento**: A integranda deixa de ser uma dependência global obrigatória e passa a ser recebida pela função de integração.
-- **Validação de precondições**: O programa rejeita limites não finitos, intervalo inválido e `numero_subintervalos = 0` lançando `std::invalid_argument`.
-- **Comparação com a versão original**: O programa calcula a integral de `f(x) = x^2` em `[0, 1]` e confirma que a versão refatorada reproduz o resultado da função da abertura.
-- **Suíte de testes embutida**: O programa principal executa testes de valor esperado e testes de lançamento de exceções.
+- compatibilidade de tamanho entre os vetores de entrada;
+- rejeicao de `NaN` ou infinito nos dados;
+- rejeicao de volumes com `dx <= 0`;
+- verificacao de que a diagonal montada e finita;
+- verificacao de que a diagonal principal nao e nula;
+- separacao entre validacao de entrada e invariante interno.
 
-## Pré-requisitos
+## Validacao versus invariante
 
-O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário um compilador compatível com C++17 ou superior.
+Validacao de entrada recusa dados incompatíveis com as hipoteses da rotina antes que o calculo comece. Exemplos: vetores com tamanhos diferentes, `dx <= 0` ou um `NaN` vindo dos dados.
 
-- Compilador: `g++`, `clang++` ou MSVC.
-- Padrão: C++17 ou superior.
+Verificacao de invariante interno confirma propriedades que devem continuar verdadeiras depois da montagem. Exemplos: uma diagonal que deve permanecer finita e nao nula para que o sistema linear faca sentido.
 
-## Compilação e Execução
+## Por que `assert` nao basta
 
-Para compilar o programa a partir do arquivo-fonte:
+O programa usa `assert` apenas como sentinela adicional depois das verificacoes robustas. As entradas vindas de quem usa o programa sao tratadas com excecoes, porque `assert` pode ser removido quando o codigo e compilado com `NDEBUG`. Assim, uma compilacao otimizada continua recusando dados invalidos em vez de produzir uma matriz contaminada.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
 
 ```bash
-g++ -std=c++17 -O2 -Wall -Wextra exercicio_21.cpp -o exercicio_21
+cmake --build build --target run_cap_exercicio_21
 ```
 
-Para executar:
+Como programa autocontido:
 
 ```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_21.cpp -o exercicio_21
 ./exercicio_21
 ```
 
-## Saída esperada
+## Saida esperada
 
-A saída mostra a integral aproximada de `f(x) = x^2` em `[0, 1]`, compara o resultado refatorado com o resultado original e executa os testes internos. Ao final, o programa deve informar que todos os testes foram aprovados.
+A saida lista as verificacoes adicionadas, informa o que cada uma protege e confirma que casos invalidos sao diagnosticados antes de contaminarem a montagem do sistema.

@@ -1,347 +1,206 @@
 // ============================================================================
 // Arquivo: exercicio_23.cpp
 // Projeto: FVMaker
-// Versão: consulte <FVMaker/Core/Version.h>
-// Descrição: Implementa exercicio 23 no contexto de capitulos / capitulo_02 / exercicio_23.
-// Autor: João Flávio Vieira de Vasconcellos
+// Versao: consulte <FVMaker/Core/Version.h>
+// Descricao: Implementa uma malha uniforme 1D com contrato documentado.
+// Autor: Joao Flavio Vieira de Vasconcellos
 //
-// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-FileCopyrightText: 2.36 Joao Flavio Vieira de Vasconcellos
 // SPDX-License-Identifier: BSD-3-Clause
-//
-// Este arquivo faz parte do FVMaker.
-//
-// Licença: BSD 3-Clause.
-// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
-// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
-// de copyright, esta identificação de licença e as condições descritas no arquivo
-// LICENSE.md.
-//
-// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
-// pode ser usado para endossar ou promover produtos derivados sem autorização
-// prévia por escrito.
-//
-// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
-// LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
-#include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
-#include <numeric>
+#include <stdexcept>
+#include <string>
 
 using Real = double;
-using Relogio = std::chrono::steady_clock;
 
 namespace {
 
-constexpr std::size_t numero_volumes = 1'000'000;
-constexpr std::size_t numero_repeticoes = 50;
-constexpr Real dt = Real{0.01};
-
-//==============================================================================
-// Organizacao inicial: array de estruturas
-//==============================================================================
-
-struct Volume
+class Malha1D
 {
-    Real x;
-    Real phi;
-    Real fonte;
+public:
+    Malha1D(Real xmin, Real xmax, std::size_t numero_volumes)
+        : xmin_{xmin},
+          xmax_{xmax},
+          numero_volumes_{numero_volumes},
+          dx_{calcular_dx(xmin, xmax, numero_volumes)}
+    {
+    }
+
+    [[nodiscard]] Real xmin() const noexcept { return xmin_; }
+    [[nodiscard]] Real xmax() const noexcept { return xmax_; }
+    [[nodiscard]] std::size_t numero_volumes() const noexcept { return numero_volumes_; }
+    [[nodiscard]] Real dx() const noexcept { return dx_; }
+
+    // Retorna o centro do volume de indice i.
+    //
+    // Escolhemos std::out_of_range, e nao apenas assert, porque a malha sera
+    // usada como componente reutilizavel: um indice invalido precisa ser
+    // diagnosticado tambem em execucoes otimizadas. Um assert poderia ser uma
+    // sentinela adicional de desenvolvimento, mas nao e uma validacao da API.
+    [[nodiscard]] Real centro(std::size_t indice) const
+    {
+        if (indice >= numero_volumes_) {
+            throw std::out_of_range("Indice do volume fora do intervalo [0, N).");
+        }
+
+        return xmin_ + (static_cast<Real>(indice) + Real{0.5}) * dx_;
+    }
+
+    [[nodiscard]] Real face(std::size_t indice) const
+    {
+        if (indice > numero_volumes_) {
+            throw std::out_of_range("Indice da face fora do intervalo [0, N].");
+        }
+
+        return xmin_ + static_cast<Real>(indice) * dx_;
+    }
+
+private:
+    Real xmin_{};
+    Real xmax_{};
+    std::size_t numero_volumes_{};
+    Real dx_{};
+
+    static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
+    {
+        validar_parametros(xmin, xmax, numero_volumes);
+        return (xmax - xmin) / static_cast<Real>(numero_volumes);
+    }
+
+    static void validar_parametros(Real xmin, Real xmax, std::size_t numero_volumes)
+    {
+        if (!std::isfinite(xmin)) {
+            throw std::invalid_argument("xmin deve ser finito.");
+        }
+        if (!std::isfinite(xmax)) {
+            throw std::invalid_argument("xmax deve ser finito.");
+        }
+        if (numero_volumes == 0) {
+            throw std::invalid_argument("N deve ser maior que zero.");
+        }
+        if (!(xmax > xmin)) {
+            throw std::invalid_argument("xmax deve ser estritamente maior que xmin.");
+        }
+    }
 };
 
-//==============================================================================
-// Organizacao orientada a dados: estrutura de arrays
-//==============================================================================
-
-struct CamposSeparados
-{
-    std::vector<Real> x;
-    std::vector<Real> phi;
-    std::vector<Real> fonte;
+struct Placar {
+    unsigned aprovados{};
+    unsigned total{};
 };
 
-//==============================================================================
-// Funcoes de inicializacao
-//==============================================================================
-
-[[nodiscard]] inline Real coordenada(std::size_t indice)
-{
-    return (static_cast<Real>(indice) + Real{0.5})
-        / static_cast<Real>(numero_volumes);
-}
-
-[[nodiscard]] inline Real valor_inicial_phi(Real x)
-{
-    return std::sin(x);
-}
-
-[[nodiscard]] inline Real valor_fonte(Real x)
-{
-    return Real{1.0} + x * x;
-}
-
-[[nodiscard]] inline std::vector<Volume> criar_volumes()
-{
-    std::vector<Volume> volumes(numero_volumes);
-
-    for (std::size_t i = 0; i < numero_volumes; ++i) {
-        const Real x = coordenada(i);
-
-        volumes[i] = Volume{
-            x,
-            valor_inicial_phi(x),
-            valor_fonte(x)
-        };
-    }
-
-    return volumes;
-}
-
-[[nodiscard]] inline CamposSeparados criar_campos_separados()
-{
-    CamposSeparados campos;
-
-    campos.x.resize(numero_volumes);
-    campos.phi.resize(numero_volumes);
-    campos.fonte.resize(numero_volumes);
-
-    for (std::size_t i = 0; i < numero_volumes; ++i) {
-        const Real x = coordenada(i);
-
-        campos.x[i] = x;
-        campos.phi[i] = valor_inicial_phi(x);
-        campos.fonte[i] = valor_fonte(x);
-    }
-
-    return campos;
-}
-
-//==============================================================================
-// Lacos principais
-//==============================================================================
-
-inline void atualizar_array_de_estruturas(std::vector<Volume>& volumes)
-{
-    for (Volume& volume : volumes) {
-        volume.phi += dt * volume.fonte;
-    }
-}
-
-inline void atualizar_vetores_separados(CamposSeparados& campos)
-{
-    for (std::size_t i = 0; i < campos.phi.size(); ++i) {
-        campos.phi[i] += dt * campos.fonte[i];
-    }
-}
-
-//==============================================================================
-// Medicao de tempo
-//==============================================================================
-
-template <typename Funcao>
-[[nodiscard]] inline double medir_tempo(Funcao funcao)
-{
-    const auto inicio = Relogio::now();
-
-    for (std::size_t repeticao = 0; repeticao < numero_repeticoes; ++repeticao) {
-        funcao();
-    }
-
-    const auto fim = Relogio::now();
-    const std::chrono::duration<double> tempo = fim - inicio;
-
-    return tempo.count();
-}
-
-//==============================================================================
-// Funcoes auxiliares de teste e impressao
-//==============================================================================
-
-[[nodiscard]] inline Real soma_phi(const std::vector<Volume>& volumes)
-{
-    Real soma = Real{};
-
-    for (const Volume& volume : volumes) {
-        soma += volume.phi;
-    }
-
-    return soma;
-}
-
-[[nodiscard]] inline Real soma_phi(const CamposSeparados& campos)
-{
-    return std::accumulate(campos.phi.begin(), campos.phi.end(), Real{});
-}
-
-[[nodiscard]] inline bool aproximadamente_igual(
-    Real a,
-    Real b,
-    Real tolerancia
-)
+[[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
-inline bool testar_valor(
-    const std::string& descricao,
-    Real obtido,
-    Real esperado,
-    Real tolerancia
-)
+void registrar(Placar& placar, const std::string& descricao, bool passou)
 {
-    const bool passou = aproximadamente_igual(obtido, esperado, tolerancia);
-
-    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
-
-    if (!passou) {
-        std::cout << std::fixed << std::setprecision(16)
-                  << "  obtido     = " << obtido << '\n'
-                  << "  esperado   = " << esperado << '\n'
-                  << "  tolerancia = " << tolerancia << '\n';
+    ++placar.total;
+    if (passou) {
+        ++placar.aprovados;
     }
 
-    return passou;
+    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << descricao << '\n';
 }
 
-inline void imprimir_mensagem_final(double tempo_aos, double tempo_soa)
+template <typename Excecao, typename Acao>
+void testar_excecao(Placar& placar, const std::string& descricao, Acao acao)
 {
-    constexpr int size = 80;
+    bool lancou = false;
 
-    std::cout << "\nAplicacoes e recomendacoes\n";
-    std::cout << std::string(size, '-') << '\n';
-    std::cout << "1. A organizacao com struct Volume e simples de ler, ";
-    std::cout << "mas mistura grandezas com usos diferentes.\n";
-    std::cout << "2. A organizacao com vetores separados deixa explicito ";
-    std::cout << "quais dados sao usados por cada laco.\n";
-    std::cout << "3. Quando o laco usa apenas phi e fonte, o vetor x nao ";
-    std::cout << "precisa ser trazido para perto da CPU.\n";
-    std::cout << "4. Em programas de volumes finitos, essa separacao ";
-    std::cout << "ajuda a escrever kernels numericos mais previsiveis.\n";
-    std::cout << std::string(size, '-') << '\n';
-
-    std::cout << "\nConceitos demonstrados\n";
-    std::cout << std::string(size, '-') << '\n';
-    std::cout << "1. Array de estruturas: std::vector<Volume>.\n";
-    std::cout << "2. Estrutura de arrays: vetores separados para x, phi ";
-    std::cout << "e fonte.\n";
-    std::cout << "3. Medicao do tempo do laco principal com ";
-    std::cout << "std::chrono::steady_clock.\n";
-    std::cout << "4. Comparacao entre dois codigos que realizam o mesmo ";
-    std::cout << "calculo numerico.\n";
-    std::cout << "5. Interpretacao do desempenho usando localidade de ";
-    std::cout << "memoria.\n";
-    std::cout << std::string(size, '-') << '\n';
-
-    std::cout << "\nInterpretacao\n";
-    std::cout << std::string(size, '-') << '\n';
-
-    if (tempo_soa < tempo_aos) {
-        std::cout << "Neste teste, os vetores separados foram mais rapidos. ";
-        std::cout << "Isso confirma a expectativa discutida na secao sobre ";
-        std::cout << "design orientado a dados.\n";
-    } else {
-        std::cout << "Neste teste, os vetores separados nao foram mais ";
-        std::cout << "rapidos. Isso pode ocorrer por ruido de medicao, ";
-        std::cout << "otimizacoes do compilador, cache do processador ou ";
-        std::cout << "caracteristicas da maquina usada.\n";
+    try {
+        acao();
+    } catch (const Excecao&) {
+        lancou = true;
     }
 
-    std::cout << "A razao conceitual continua a mesma: no array de ";
-    std::cout << "estruturas, cada linha de cache pode carregar tambem x, ";
-    std::cout << "embora x nao participe do laco. Nos vetores separados, ";
-    std::cout << "o laco percorre principalmente os dados necessarios: ";
-    std::cout << "phi e fonte.\n";
-    std::cout << std::string(size, '-') << '\n';
+    registrar(placar, descricao, lancou);
+}
+
+void imprimir_malha(const Malha1D& malha)
+{
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "Malha 1D uniforme\n";
+    std::cout << "xmin = " << malha.xmin() << '\n';
+    std::cout << "xmax = " << malha.xmax() << '\n';
+    std::cout << "N    = " << malha.numero_volumes() << '\n';
+    std::cout << "dx   = " << malha.dx() << "\n\n";
+
+    std::cout << std::setw(6) << "i"
+              << std::setw(14) << "face_i"
+              << std::setw(14) << "centro_i"
+              << std::setw(14) << "face_i+1" << '\n';
+
+    for (std::size_t i = 0; i < malha.numero_volumes(); ++i) {
+        std::cout << std::setw(6) << i
+                  << std::setw(14) << malha.face(i)
+                  << std::setw(14) << malha.centro(i)
+                  << std::setw(14) << malha.face(i + 1) << '\n';
+    }
+
+    std::cout << '\n';
+}
+
+void executar_testes(Placar& placar)
+{
+    const Malha1D malha{Real{0.0}, Real{2.0}, 4};
+
+    registrar(placar, "dx = (xmax - xmin) / N",
+              aproximadamente_igual(malha.dx(), Real{0.5}));
+    registrar(placar, "centro do primeiro volume",
+              aproximadamente_igual(malha.centro(0), Real{0.25}));
+    registrar(placar, "centro do ultimo volume",
+              aproximadamente_igual(malha.centro(3), Real{1.75}));
+    registrar(placar, "face direita do dominio",
+              aproximadamente_igual(malha.face(4), Real{2.0}));
+
+    testar_excecao<std::invalid_argument>(
+        placar,
+        "N = 0 e rejeitado no construtor",
+        [] { Malha1D{Real{0.0}, Real{1.0}, 0}; }
+    );
+
+    testar_excecao<std::invalid_argument>(
+        placar,
+        "xmax <= xmin e rejeitado no construtor",
+        [] { Malha1D{Real{1.0}, Real{1.0}, 4}; }
+    );
+
+    testar_excecao<std::out_of_range>(
+        placar,
+        "centro(N) e rejeitado",
+        [&malha] { (void)malha.centro(4); }
+    );
+
+    testar_excecao<std::out_of_range>(
+        placar,
+        "face(N+1) e rejeitada",
+        [&malha] { (void)malha.face(5); }
+    );
 }
 
 } // namespace
 
 int main()
 {
-    try {
-        std::cout << "Exercicio Computacional 2.3\n";
-        std::cout << "Design orientado a dados em um laco simples\n";
-        std::cout << "===========================================\n\n";
+    std::cout << "Exercicio Computacional 2.3\n";
+    std::cout << "Implementacao da malha 1D\n";
+    std::cout << "=========================\n\n";
 
-        std::cout << "Dados do experimento\n";
-        std::cout << "--------------------\n";
-        std::cout << "N                  = " << numero_volumes << '\n';
-        std::cout << "repeticoes         = " << numero_repeticoes << '\n';
-        std::cout << "dt                 = " << dt << "\n\n";
+    const Malha1D malha{Real{0.0}, Real{2.0}, 4};
+    imprimir_malha(malha);
 
-        std::vector<Volume> volumes = criar_volumes();
-        CamposSeparados campos = criar_campos_separados();
+    Placar placar;
+    executar_testes(placar);
 
-        std::cout << "Medindo o laco principal...\n\n";
+    std::cout << "\nResumo: " << placar.aprovados << " de " << placar.total
+              << " verificacoes aprovadas.\n";
 
-        const double tempo_aos = medir_tempo(
-            [&volumes]() {
-                atualizar_array_de_estruturas(volumes);
-            }
-        );
-
-        const double tempo_soa = medir_tempo(
-            [&campos]() {
-                atualizar_vetores_separados(campos);
-            }
-        );
-
-        const Real soma_aos = soma_phi(volumes);
-        const Real soma_soa = soma_phi(campos);
-        const double razao = tempo_soa > 0.0 ? tempo_aos / tempo_soa : 0.0;
-
-        std::cout << std::fixed << std::setprecision(8);
-        std::cout << "Resultados\n";
-        std::cout << "----------\n";
-        std::cout << std::setw(30) << "organizacao"
-                  << std::setw(18) << "tempo total (s)"
-                  << std::setw(22) << "tempo por laco (ms)"
-                  << '\n';
-        std::cout << std::setw(30) << "array de estruturas"
-                  << std::setw(18) << tempo_aos
-                  << std::setw(22)
-                  << (1000.0 * tempo_aos / static_cast<double>(numero_repeticoes))
-                  << '\n';
-        std::cout << std::setw(30) << "vetores separados"
-                  << std::setw(18) << tempo_soa
-                  << std::setw(22)
-                  << (1000.0 * tempo_soa / static_cast<double>(numero_repeticoes))
-                  << '\n';
-        std::cout << "razao tempo(AoS)/tempo(SoA) = " << razao << "\n\n";
-
-        unsigned testes_passaram = 0;
-        unsigned testes_total = 0;
-
-        std::cout << "Testes de consistencia\n";
-        std::cout << "----------------------\n";
-
-        ++testes_total;
-        if (
-            testar_valor(
-                "as duas organizacoes produzem a mesma soma de phi",
-                soma_aos,
-                soma_soa,
-                Real{1e-7}
-            )
-        ) {
-            ++testes_passaram;
-        }
-
-        std::cout << '\n';
-
-        std::cout << "Resumo\n";
-        std::cout << "======\n";
-        std::cout << "Testes aprovados: " << testes_passaram
-                  << " de " << testes_total << '\n';
-
-        imprimir_mensagem_final(tempo_aos, tempo_soa);
-
-        return (testes_passaram == testes_total) ? 0 : 1;
-
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro inesperado: " << erro.what() << '\n';
-        return 1;
-    }
+    return (placar.aprovados == placar.total) ? 0 : 1;
 }

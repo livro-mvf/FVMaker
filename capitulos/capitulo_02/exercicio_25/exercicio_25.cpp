@@ -1,255 +1,264 @@
 // ============================================================================
 // Arquivo: exercicio_25.cpp
 // Projeto: FVMaker
-// Versão: consulte <FVMaker/Core/Version.h>
-// Descrição: Implementa exercicio 25 no contexto de capitulos / capitulo_02 / exercicio_25.
-// Autor: João Flávio Vieira de Vasconcellos
+// Versao: consulte <FVMaker/Core/Version.h>
+// Descricao: Compara AoS e SoA em um laco simples de atualizacao de phi.
+// Autor: Joao Flavio Vieira de Vasconcellos
 //
-// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-FileCopyrightText: 2026 Joao Flavio Vieira de Vasconcellos
 // SPDX-License-Identifier: BSD-3-Clause
-//
-// Este arquivo faz parte do FVMaker.
-//
-// Licença: BSD 3-Clause.
-// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
-// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
-// de copyright, esta identificação de licença e as condições descritas no arquivo
-// LICENSE.md.
-//
-// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
-// pode ser usado para endossar ou promover produtos derivados sem autorização
-// prévia por escrito.
-//
-// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
-// LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
-#include <fstream>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
-#include <random>
+#include <numeric>
+#include <string>
+#include <vector>
 
 using Real = double;
+using Relogio = std::chrono::steady_clock;
 
 namespace {
 
-struct Parametros
+constexpr std::size_t numero_volumes = 1'000'000;
+constexpr std::size_t numero_repeticoes = 60;
+constexpr Real dt = Real{0.01};
+
+struct Volume
 {
-    std::size_t numero_amostras{100000};
-    std::uint64_t semente_a{2026};
-    std::uint64_t semente_b{2027};
-    Real tolerancia{1.0e-12};
+    Real x{};
+    Real phi{};
+    Real fonte{};
 };
 
-struct ResultadoExperimento
+struct CamposSeparados
 {
-    std::size_t numero_amostras{};
-    std::uint64_t semente{};
-    Real media{};
+    std::vector<Real> x;
+    std::vector<Real> phi;
+    std::vector<Real> fonte;
 };
 
-[[nodiscard]] Real calcular_media_uniforme(
-    std::size_t numero_amostras,
-    std::uint64_t semente
-)
+struct EstatisticaTempo
 {
-    if (numero_amostras == 0) {
-        throw std::invalid_argument("N deve ser maior que zero.");
-    }
+    double minimo{};
+    double media{};
+    double maximo{};
+    double desvio_padrao{};
+};
 
-    std::mt19937_64 gerador{semente};
-    std::uniform_real_distribution<Real> distribuicao{Real{0.0}, Real{1.0}};
+struct ResultadoMedicao
+{
+    std::vector<double> tempos_ms;
+    EstatisticaTempo estatistica;
+    Real soma_final{};
+    Real soma_controle{};
+};
 
-    Real soma = Real{};
-
-    for (std::size_t i = 0; i < numero_amostras; ++i) {
-        soma += distribuicao(gerador);
-    }
-
-    return soma / static_cast<Real>(numero_amostras);
+[[nodiscard]] Real coordenada(std::size_t indice)
+{
+    return (static_cast<Real>(indice) + Real{0.5}) / static_cast<Real>(numero_volumes);
 }
 
-[[nodiscard]] ResultadoExperimento executar_experimento(
-    std::size_t numero_amostras,
-    std::uint64_t semente
-)
+[[nodiscard]] Real valor_inicial_phi(Real x)
 {
-    return ResultadoExperimento{
-        numero_amostras,
-        semente,
-        calcular_media_uniforme(numero_amostras, semente)
+    return std::sin(x);
+}
+
+[[nodiscard]] Real valor_fonte(Real x)
+{
+    return Real{1.0} + x * x;
+}
+
+[[nodiscard]] std::vector<Volume> criar_volumes()
+{
+    std::vector<Volume> volumes(numero_volumes);
+
+    for (std::size_t i = 0; i < numero_volumes; ++i) {
+        const Real x = coordenada(i);
+        volumes[i] = Volume{x, valor_inicial_phi(x), valor_fonte(x)};
+    }
+
+    return volumes;
+}
+
+[[nodiscard]] CamposSeparados criar_campos_separados()
+{
+    CamposSeparados campos;
+    campos.x.resize(numero_volumes);
+    campos.phi.resize(numero_volumes);
+    campos.fonte.resize(numero_volumes);
+
+    for (std::size_t i = 0; i < numero_volumes; ++i) {
+        const Real x = coordenada(i);
+        campos.x[i] = x;
+        campos.phi[i] = valor_inicial_phi(x);
+        campos.fonte[i] = valor_fonte(x);
+    }
+
+    return campos;
+}
+
+void atualizar_array_de_estruturas(std::vector<Volume>& volumes)
+{
+    for (Volume& volume : volumes) {
+        volume.phi += dt * volume.fonte;
+    }
+}
+
+void atualizar_vetores_separados(CamposSeparados& campos)
+{
+    for (std::size_t i = 0; i < campos.phi.size(); ++i) {
+        campos.phi[i] += dt * campos.fonte[i];
+    }
+}
+
+[[nodiscard]] Real soma_phi(const std::vector<Volume>& volumes)
+{
+    Real soma{};
+    for (const Volume& volume : volumes) {
+        soma += volume.phi;
+    }
+    return soma;
+}
+
+[[nodiscard]] Real soma_phi(const CamposSeparados& campos)
+{
+    return std::accumulate(campos.phi.begin(), campos.phi.end(), Real{});
+}
+
+[[nodiscard]] EstatisticaTempo calcular_estatistica(const std::vector<double>& tempos_ms)
+{
+    const auto [menor, maior] = std::minmax_element(tempos_ms.begin(), tempos_ms.end());
+    const double media = std::accumulate(tempos_ms.begin(), tempos_ms.end(), 0.0)
+        / static_cast<double>(tempos_ms.size());
+
+    double soma_quadrados = 0.0;
+    for (double tempo : tempos_ms) {
+        const double desvio = tempo - media;
+        soma_quadrados += desvio * desvio;
+    }
+
+    return EstatisticaTempo{
+        *menor,
+        media,
+        *maior,
+        std::sqrt(soma_quadrados / static_cast<double>(tempos_ms.size()))
     };
 }
 
-[[nodiscard]] std::string formatar_resultado(
-    const ResultadoExperimento& resultado
-)
+template <typename Atualizar, typename Amostra, typename SomaFinal>
+[[nodiscard]] ResultadoMedicao medir(Atualizar atualizar, Amostra amostra, SomaFinal soma_final)
 {
-    std::ostringstream saida;
+    std::vector<double> tempos_ms;
+    tempos_ms.reserve(numero_repeticoes);
 
-    saida << std::setprecision(17);
-    saida << "N       = " << resultado.numero_amostras << '\n';
-    saida << "semente = " << resultado.semente << '\n';
-    saida << "media   = " << resultado.media << '\n';
+    Real soma_controle{};
 
-    return saida.str();
-}
+    for (std::size_t repeticao = 0; repeticao < numero_repeticoes; ++repeticao) {
+        const auto inicio = Relogio::now();
+        atualizar();
+        const auto fim = Relogio::now();
 
-void gravar_resultado(
-    const std::string& nome_arquivo,
-    const ResultadoExperimento& resultado
-)
-{
-    std::ofstream arquivo{nome_arquivo};
+        const std::chrono::duration<double, std::milli> duracao = fim - inicio;
+        tempos_ms.push_back(duracao.count());
 
-    if (!arquivo) {
-        throw std::runtime_error("Nao foi possivel abrir " + nome_arquivo);
+        // A amostra de controle cria uma dependencia observavel do resultado do
+        // laco medido. Sem algum uso posterior, otimizacoes agressivas poderiam
+        // eliminar trabalho e transformar a medicao em ficcao.
+        soma_controle += amostra(repeticao);
     }
 
-    arquivo << formatar_resultado(resultado);
+    return ResultadoMedicao{
+        tempos_ms,
+        calcular_estatistica(tempos_ms),
+        soma_final(),
+        soma_controle
+    };
 }
 
-[[nodiscard]] bool aproximadamente_igual(
-    Real a,
-    Real b,
-    Real tolerancia
-)
+[[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia)
 {
     return std::abs(a - b) <= tolerancia;
 }
 
-void registrar_teste(
-    const std::string& descricao,
-    bool passou,
-    unsigned& aprovados,
-    unsigned& total
-)
+void imprimir_resultado(const std::string& nome, const ResultadoMedicao& resultado)
 {
-    ++total;
-
-    if (passou) {
-        ++aprovados;
-    }
-
-    std::cout << (passou ? "[PASSOU] " : "[FALHOU] ")
-              << descricao << '\n';
-}
-
-void imprimir_resultado(
-    const std::string& nome,
-    const ResultadoExperimento& resultado
-)
-{
-    std::cout << nome << '\n';
-    std::cout << "  N       = " << resultado.numero_amostras << '\n';
-    std::cout << "  semente = " << resultado.semente << '\n';
-    std::cout << std::setprecision(17);
-    std::cout << "  media   = " << resultado.media << '\n';
+    std::cout << std::setw(24) << nome
+              << std::setw(14) << resultado.estatistica.minimo
+              << std::setw(14) << resultado.estatistica.media
+              << std::setw(14) << resultado.estatistica.maximo
+              << std::setw(14) << resultado.estatistica.desvio_padrao
+              << std::setw(18) << resultado.soma_controle << '\n';
 }
 
 } // namespace
 
 int main()
 {
-    try {
-        const Parametros parametros;
+    std::cout << "Exercicio Computacional 2.5\n";
+    std::cout << "Design orientado a dados em um laco simples\n";
+    std::cout << "===========================================\n\n";
 
-        std::cout << "Exercicio Computacional 2.5\n";
-        std::cout << "Reprodutibilidade de um experimento numerico\n";
-        std::cout << "============================================\n\n";
+    std::cout << "N          = " << numero_volumes << '\n';
+    std::cout << "repeticoes = " << numero_repeticoes << '\n';
+    std::cout << "dt         = " << dt << "\n\n";
 
-        const ResultadoExperimento primeira_execucao =
-            executar_experimento(
-                parametros.numero_amostras,
-                parametros.semente_a
-            );
+    std::vector<Volume> volumes = criar_volumes();
+    CamposSeparados campos = criar_campos_separados();
 
-        const ResultadoExperimento segunda_execucao =
-            executar_experimento(
-                parametros.numero_amostras,
-                parametros.semente_a
-            );
+    const ResultadoMedicao aos = medir(
+        [&volumes] { atualizar_array_de_estruturas(volumes); },
+        [&volumes](std::size_t repeticao) -> Real {
+            return volumes[repeticao % volumes.size()].phi;
+        },
+        [&volumes] { return soma_phi(volumes); }
+    );
 
-        const ResultadoExperimento terceira_execucao =
-            executar_experimento(
-                parametros.numero_amostras,
-                parametros.semente_b
-            );
+    const ResultadoMedicao soa = medir(
+        [&campos] { atualizar_vetores_separados(campos); },
+        [&campos](std::size_t repeticao) -> Real {
+            return campos.phi[repeticao % campos.phi.size()];
+        },
+        [&campos] { return soma_phi(campos); }
+    );
 
-        gravar_resultado("exercicio_25_mesma_semente_a.txt", primeira_execucao);
-        gravar_resultado("exercicio_25_mesma_semente_b.txt", segunda_execucao);
-        gravar_resultado("exercicio_25_semente_diferente.txt", terceira_execucao);
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << std::setw(24) << "organizacao"
+              << std::setw(14) << "min(ms)"
+              << std::setw(14) << "media(ms)"
+              << std::setw(14) << "max(ms)"
+              << std::setw(14) << "dp(ms)"
+              << std::setw(18) << "controle" << '\n';
+    imprimir_resultado("AoS", aos);
+    imprimir_resultado("SoA", soa);
 
-        imprimir_resultado("Primeira execucao", primeira_execucao);
-        imprimir_resultado("Segunda execucao, mesma semente", segunda_execucao);
-        imprimir_resultado("Terceira execucao, semente diferente", terceira_execucao);
+    const double razao = soa.estatistica.media > 0.0
+        ? aos.estatistica.media / soa.estatistica.media
+        : 0.0;
 
-        const std::string texto_primeira = formatar_resultado(primeira_execucao);
-        const std::string texto_segunda = formatar_resultado(segunda_execucao);
+    std::cout << "\nrazao media(AoS)/media(SoA) = " << razao << '\n';
+    std::cout << "soma final AoS = " << aos.soma_final << '\n';
+    std::cout << "soma final SoA = " << soa.soma_final << '\n';
 
-        unsigned testes_aprovados = 0;
-        unsigned testes_total = 0;
+    const bool consistente = aproximadamente_igual(aos.soma_final, soa.soma_final, Real{1.0e-7});
+    std::cout << (consistente ? "[PASSOU] " : "[FALHOU] ")
+              << "AoS e SoA produzem a mesma soma final dentro da tolerancia\n";
 
-        std::cout << "\nVerificacoes automaticas\n";
-        std::cout << "========================\n";
-
-        registrar_teste(
-            "arquivos de duas execucoes com mesma semente sao identicos",
-            texto_primeira == texto_segunda,
-            testes_aprovados,
-            testes_total
-        );
-
-        registrar_teste(
-            "media com mesma semente passa no operador ==",
-            primeira_execucao.media == segunda_execucao.media,
-            testes_aprovados,
-            testes_total
-        );
-
-        registrar_teste(
-            "media com mesma semente passa com tolerancia",
-            aproximadamente_igual(
-                primeira_execucao.media,
-                segunda_execucao.media,
-                parametros.tolerancia
-            ),
-            testes_aprovados,
-            testes_total
-        );
-
-        registrar_teste(
-            "media com sementes diferentes muda neste experimento",
-            !aproximadamente_igual(
-                primeira_execucao.media,
-                terceira_execucao.media,
-                parametros.tolerancia
-            ),
-            testes_aprovados,
-            testes_total
-        );
-
-        std::cout << "\nResumo\n";
-        std::cout << "======\n";
-        std::cout << "Testes aprovados: "
-                  << testes_aprovados << " de " << testes_total << '\n';
-
-        std::cout << "\nArquivos gravados\n";
-        std::cout << "-----------------\n";
-        std::cout << "1. exercicio_25_mesma_semente_a.txt\n";
-        std::cout << "2. exercicio_25_mesma_semente_b.txt\n";
-        std::cout << "3. exercicio_25_semente_diferente.txt\n";
-
-        std::cout << "\nAplicacoes e recomendacoes\n";
-        std::cout << "--------------------------\n";
-        std::cout << "1. Registrar a semente permite repetir a mesma sequencia.\n";
-        std::cout << "2. Registrar N define o tamanho exato do experimento.\n";
-        std::cout << "3. Comparar com tolerancia e mais robusto para resultados ";
-        std::cout << "de ponto flutuante produzidos por caminhos numericos distintos.\n";
-
-        return (testes_aprovados == testes_total) ? 0 : 1;
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro inesperado: " << erro.what() << '\n';
-        return 1;
+    std::cout << "\nInterpretacao\n";
+    std::cout << "-------------\n";
+    if (soa.estatistica.media < aos.estatistica.media) {
+        std::cout << "Neste experimento, SoA foi mais rapido em media. Isso e coerente\n";
+        std::cout << "com o laco medido, que usa apenas phi e fonte e nao precisa carregar x.\n";
+    } else {
+        std::cout << "Neste experimento, SoA nao foi mais rapido em media. Isso pode ocorrer\n";
+        std::cout << "por ruido de medicao, vetorizacao, cache ou detalhes do compilador.\n";
     }
+    std::cout << "O ponto metodologico permanece: a conclusao deve nascer da medicao,\n";
+    std::cout << "nao da intuicao sobre desempenho.\n";
+
+    return consistente ? 0 : 1;
 }

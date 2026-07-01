@@ -1,0 +1,54 @@
+# Exercicio 27 - Parametros, semente e reprodutibilidade
+
+Este diretorio corresponde ao exercicio **"Parametros, semente e reprodutibilidade"** do Capitulo 02. O programa le um pequeno arquivo de configuracao, gera uma sequencia pseudoaleatoria com semente fixa e compara duas somas dos mesmos valores: uma na ordem original e outra na ordem inversa.
+
+## Arquivo de configuracao
+
+Na primeira execucao, se o arquivo nao existir, o programa cria:
+
+```text
+exercicio_27_config.txt
+```
+
+com o conteudo padrao:
+
+```text
+N = 100000
+semente = 2026
+tolerancia = 1e-8
+```
+
+O arquivo e lido em seguida. Assim, o exemplo permanece autocontido e, ao mesmo tempo, mostra como parametros numericos devem ficar centralizados e versionaveis.
+
+## Arquivo de saida
+
+A execucao grava:
+
+```text
+exercicio_27_saida.txt
+```
+
+Esse arquivo registra `N`, semente, tolerancia, compilador, soma direta, soma inversa, diferenca absoluta e os resultados das comparacoes por `==` e por tolerancia.
+
+## Conceito demonstrado
+
+A semente fixa garante a mesma sequencia de valores gerados. Ela nao garante que toda operacao de ponto flutuante seja bit a bit identica quando a ordem das operacoes muda. A comparacao com tolerancia e o registro dos parametros fazem parte do contrato de reprodutibilidade numerica.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
+
+```bash
+cmake --build build --target run_cap_exercicio_27
+```
+
+Como programa autocontido:
+
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_27.cpp -o exercicio_27
+./exercicio_27
+```
+
+## Saida esperada
+
+O programa mostra que a comparacao exata pode falhar quando a ordem da soma muda, enquanto a comparacao com tolerancia deve passar para a configuracao padrao.

@@ -1,54 +1,37 @@
-Este programa compara duas formas de organizar os dados de uma malha com
-`N = 10^6` volumes. Na primeira versão, cada volume é representado por uma
-estrutura contendo posição, solução e termo fonte. Na segunda versão, as mesmas
-grandezas são armazenadas em vetores separados, seguindo a ideia de design
-orientado a dados.
+# Exercicio 23 - Implementacao da malha 1D
 
-O objetivo do exercício é observar o efeito da organização dos dados no tempo
-do laço principal que atualiza `phi` a partir de `fonte`.
+Este diretorio corresponde ao exercicio **"Implementacao da malha 1D"** do Capitulo 02. O programa implementa uma classe `Malha1D` para uma malha uniforme unidimensional, com construtor validado, dados internos privados e uma interface publica pequena e estavel.
 
-## Funcionalidades
+O objetivo academico e mostrar que mesmo uma classe simples precisa declarar o seu contrato: quais parametros sao aceitos, quais grandezas podem ser consultadas e como erros de indice sao tratados.
 
-- **Versão com estruturas**: Usa `std::vector<Volume>`, em que cada elemento
-  contém `x`, `phi` e `fonte`.
-- **Versão orientada a dados**: Usa três vetores independentes: `x`, `phi` e
-  `fonte`.
-- **Mesmo cálculo nas duas versões**: O laço principal executa
-  `phi = phi + dt * fonte`.
-- **Medição de tempo**: O tempo do laço principal é medido com
-  `std::chrono::steady_clock`.
-- **Comparação numérica**: O programa verifica se as duas versões produzem a
-  mesma soma final de `phi`.
-- **Discussão didática**: A saída explica a diferença observada em termos de
-  localidade de memória.
+## O que o programa implementa
 
-## Pré-requisitos
+- construtor `Malha1D(xmin, xmax, N)`;
+- validacao imediata de `N > 0`, `xmin` finito, `xmax` finito e `xmax > xmin`;
+- metodos `const` para consultar `xmin`, `xmax`, `N` e `dx`;
+- calculo do centro do volume `i` e da face `i`;
+- protecao contra indices fora dos intervalos `[0, N)` para centros e `[0, N]` para faces;
+- testes executaveis de geometria, validacao de entrada e acesso fora dos limites.
 
-O código é autocontido e utiliza apenas a biblioteca padrão do C++. É necessário
-um compilador compatível com C++17 ou superior.
+## Decisao sobre `assert` e excecao
 
-- Compilador: `g++`, `clang++` ou MSVC.
-- Padrão: C++17 ou superior.
+A consulta de centro e face lanca `std::out_of_range` quando o indice esta fora do dominio. A escolha e intencional: neste exercicio a classe serve como peca reutilizavel para capitulos seguintes, portanto uma chamada invalida deve ser diagnosticada tambem em compilacoes otimizadas. Um `assert` seria adequado como sentinela de depuracao, mas poderia desaparecer com `NDEBUG`; por isso ele nao substitui a excecao na interface publica.
 
-## Compilação e Execução
+## Compilacao e execucao
 
-Para compilar o programa a partir do arquivo-fonte:
+Pelo CMake do projeto:
 
 ```bash
-g++ -std=c++17 -O2 -Wall -Wextra exercicio_23.cpp -o exercicio_23
+cmake --build build --target run_cap_exercicio_23
 ```
 
-Para executar:
+Como programa autocontido:
 
 ```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_23.cpp -o exercicio_23
 ./exercicio_23
 ```
 
-## Saída esperada
+## Saida esperada
 
-A saída mostra os tempos medidos para as duas organizações de dados, a razão
-entre eles e uma verificação de consistência numérica. Os tempos absolutos
-dependem do computador, do compilador e das opções de otimização, mas a versão
-com vetores separados tende a ser mais favorável quando o laço usa apenas
-`phi` e `fonte`, pois evita carregar a coordenada `x` junto com os dados
-necessários ao cálculo.
+O programa imprime a geometria de uma malha conhecida e uma pequena bateria de verificacoes. O processo retorna zero apenas quando todos os testes passam.

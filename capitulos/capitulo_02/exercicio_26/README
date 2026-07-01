@@ -1,0 +1,38 @@
+# Exercicio 26 - Onde o DOD se esconde por dentro da classe
+
+Este diretorio corresponde ao exercicio **"Onde o DOD se esconde por dentro da classe"** do Capitulo 02. O exercicio mostra que design orientado a dados nao precisa vazar para quem usa a classe.
+
+## Ideia central
+
+O programa implementa duas malhas com a mesma interface publica:
+
+- `Malha1DSoA`, que guarda centros, `phi` e `fonte` em vetores separados;
+- `Malha1DAoS`, que guarda um vetor de estruturas `Volume`.
+
+O laco externo que atualiza `phi` a partir de `fonte` e exatamente o mesmo para as duas. Ele chama apenas metodos publicos: `numero_volumes`, `centro`, `phi`, `fonte`, `definir_phi` e `definir_fonte`.
+
+## O que o exercicio demonstra
+
+- quem chama a classe nao deve depender do arranjo interno de memoria;
+- a classe decide se usa SoA ou AoS;
+- a interface publica preserva o restante do programa quando a implementacao interna muda;
+- SOLID e DOD nao sao inimigos: o encapsulamento protege a liberdade de otimizar por dentro.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
+
+```bash
+cmake --build build --target run_cap_exercicio_26
+```
+
+Como programa autocontido:
+
+```bash
+g++ -std=c++20 -O2 -Wall -Wextra exercicio_26.cpp -o exercicio_26
+./exercicio_26
+```
+
+## Saida esperada
+
+A saida confirma que o mesmo experimento externo produz os mesmos valores para as duas organizacoes internas. Se fosse necessario alterar o laco externo ao trocar SoA por AoS, o encapsulamento teria vazado.

@@ -1,31 +1,23 @@
 // ============================================================================
 // Arquivo: exercicio_24.cpp
 // Projeto: FVMaker
-// Versão: consulte <FVMaker/Core/Version.h>
-// Descrição: Implementa exercicio 24 no contexto de capitulos / capitulo_02 / exercicio_24.
-// Autor: João Flávio Vieira de Vasconcellos
+// Versao: consulte <FVMaker/Core/Version.h>
+// Descricao: Testes unitarios, de integracao e de regressao para Malha1D.
+// Autor: Joao Flavio Vieira de Vasconcellos
 //
-// SPDX-FileCopyrightText: 2026 João Flávio Vieira de Vasconcellos
+// SPDX-FileCopyrightText: 2026 Joao Flavio Vieira de Vasconcellos
 // SPDX-License-Identifier: BSD-3-Clause
-//
-// Este arquivo faz parte do FVMaker.
-//
-// Licença: BSD 3-Clause.
-// É permitido usar, copiar, modificar e redistribuir este arquivo, em código-fonte
-// ou forma binária, com ou sem modificações, desde que sejam preservados os avisos
-// de copyright, esta identificação de licença e as condições descritas no arquivo
-// LICENSE.md.
-//
-// O nome do autor, de colaboradores ou de instituições associadas ao projeto não
-// pode ser usado para endossar ou promover produtos derivados sem autorização
-// prévia por escrito.
-//
-// Este software é fornecido sem garantias de qualquer natureza. Consulte o arquivo
-// LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
 #include <cmath>
+#include <cstddef>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 using Real = double;
 
@@ -35,216 +27,258 @@ class Malha1D
 {
 public:
     Malha1D(Real xmin, Real xmax, std::size_t numero_volumes)
-        : m_xmin{xmin},
-          m_xmax{xmax},
-          m_numero_volumes{numero_volumes}
+        : xmin_{xmin},
+          xmax_{xmax},
+          numero_volumes_{numero_volumes},
+          dx_{calcular_dx(xmin, xmax, numero_volumes)}
     {
-        validar(xmin, xmax, numero_volumes);
-        m_dx = (m_xmax - m_xmin) / static_cast<Real>(m_numero_volumes);
     }
 
-    [[nodiscard]] Real xmin() const noexcept
-    {
-        return m_xmin;
-    }
-
-    [[nodiscard]] Real xmax() const noexcept
-    {
-        return m_xmax;
-    }
-
-    [[nodiscard]] std::size_t numero_volumes() const noexcept
-    {
-        return m_numero_volumes;
-    }
-
-    [[nodiscard]] Real dx() const noexcept
-    {
-        return m_dx;
-    }
+    [[nodiscard]] Real xmin() const noexcept { return xmin_; }
+    [[nodiscard]] Real xmax() const noexcept { return xmax_; }
+    [[nodiscard]] std::size_t numero_volumes() const noexcept { return numero_volumes_; }
+    [[nodiscard]] Real dx() const noexcept { return dx_; }
 
     [[nodiscard]] Real centro(std::size_t indice) const
     {
-        if (indice >= m_numero_volumes) {
+        if (indice >= numero_volumes_) {
             throw std::out_of_range("Indice do volume fora do intervalo [0, N).");
         }
-
-        return m_xmin + (static_cast<Real>(indice) + Real{0.5}) * m_dx;
+        return xmin_ + (static_cast<Real>(indice) + Real{0.5}) * dx_;
     }
 
 private:
-    Real m_xmin{};
-    Real m_xmax{};
-    std::size_t m_numero_volumes{};
-    Real m_dx{};
+    Real xmin_{};
+    Real xmax_{};
+    std::size_t numero_volumes_{};
+    Real dx_{};
+
+    static Real calcular_dx(Real xmin, Real xmax, std::size_t numero_volumes)
+    {
+        validar(xmin, xmax, numero_volumes);
+        return (xmax - xmin) / static_cast<Real>(numero_volumes);
+    }
 
     static void validar(Real xmin, Real xmax, std::size_t numero_volumes)
     {
-        if (!std::isfinite(xmin)) {
-            throw std::invalid_argument("xmin deve ser finito.");
+        if (!std::isfinite(xmin) || !std::isfinite(xmax)) {
+            throw std::invalid_argument("Os extremos da malha devem ser finitos.");
         }
-
-        if (!std::isfinite(xmax)) {
-            throw std::invalid_argument("xmax deve ser finito.");
-        }
-
         if (numero_volumes == 0) {
             throw std::invalid_argument("N deve ser maior que zero.");
         }
-
         if (!(xmax > xmin)) {
             throw std::invalid_argument("xmax deve ser maior que xmin.");
         }
     }
 };
 
-[[nodiscard]] bool aproximadamente_igual(
-    Real a,
-    Real b,
-    Real tolerancia = Real{1.0e-12}
-)
+struct Placar {
+    unsigned aprovados{};
+    unsigned total{};
+};
+
+[[nodiscard]] bool aproximadamente_igual(Real a, Real b, Real tolerancia = Real{1.0e-12})
 {
     return std::abs(a - b) <= tolerancia;
 }
 
-void imprimir_resultado(
+void registrar(
+    Placar& placar,
     const std::string& nome,
     bool passou,
-    const std::string& erro_que_apana
+    const std::string& erro_que_apanha
 )
 {
+    ++placar.total;
+    if (passou) {
+        ++placar.aprovados;
+    }
+
     std::cout << (passou ? "[PASSOU] " : "[FALHOU] ") << nome << '\n';
-    std::cout << "         apanharia: " << erro_que_apana << '\n';
+    std::cout << "         apanharia: " << erro_que_apanha << '\n';
 }
 
-[[nodiscard]] bool testar_malha_valida()
+template <typename Excecao, typename Acao>
+[[nodiscard]] bool lanca(Acao acao)
 {
+    try {
+        acao();
+    } catch (const Excecao&) {
+        return true;
+    }
+    return false;
+}
+
+[[nodiscard]] Real solucao_analitica(Real x)
+{
+    return Real{1.0} + x + x * x;
+}
+
+[[nodiscard]] std::vector<Real> avaliar_solucao(const Malha1D& malha)
+{
+    std::vector<Real> valores(malha.numero_volumes());
+
+    for (std::size_t i = 0; i < malha.numero_volumes(); ++i) {
+        valores[i] = solucao_analitica(malha.centro(i));
+    }
+
+    return valores;
+}
+
+[[nodiscard]] bool comparar_vetores(
+    const std::vector<Real>& obtido,
+    const std::vector<Real>& esperado,
+    Real tolerancia
+)
+{
+    if (obtido.size() != esperado.size()) {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < obtido.size(); ++i) {
+        if (!aproximadamente_igual(obtido[i], esperado[i], tolerancia)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+[[nodiscard]] std::string saida_integracao(const Malha1D& malha)
+{
+    std::ostringstream saida;
+    saida << std::fixed << std::setprecision(12);
+    saida << "# referencia exercicio_24\n";
+    saida << "N " << malha.numero_volumes() << '\n';
+    saida << "xmin " << malha.xmin() << '\n';
+    saida << "xmax " << malha.xmax() << '\n';
+    saida << "dx " << malha.dx() << '\n';
+    saida << "i centro u\n";
+
+    for (std::size_t i = 0; i < malha.numero_volumes(); ++i) {
+        const Real centro = malha.centro(i);
+        saida << i << ' ' << centro << ' ' << solucao_analitica(centro) << '\n';
+    }
+
+    return saida.str();
+}
+
+[[nodiscard]] const std::string& referencia_regressao()
+{
+    static const std::string referencia =
+        "# referencia exercicio_24\n"
+        "N 4\n"
+        "xmin 0.000000000000\n"
+        "xmax 1.000000000000\n"
+        "dx 0.250000000000\n"
+        "i centro u\n"
+        "0 0.125000000000 1.140625000000\n"
+        "1 0.375000000000 1.515625000000\n"
+        "2 0.625000000000 2.015625000000\n"
+        "3 0.875000000000 2.640625000000\n";
+
+    return referencia;
+}
+
+void gravar_referencia(const std::string& nome_arquivo)
+{
+    std::ofstream arquivo{nome_arquivo};
+    if (!arquivo) {
+        throw std::runtime_error("Nao foi possivel criar " + nome_arquivo);
+    }
+    arquivo << referencia_regressao();
+}
+
+[[nodiscard]] std::string ler_arquivo(const std::string& nome_arquivo)
+{
+    std::ifstream arquivo{nome_arquivo};
+    if (!arquivo) {
+        throw std::runtime_error("Nao foi possivel ler " + nome_arquivo);
+    }
+
+    std::ostringstream conteudo;
+    conteudo << arquivo.rdbuf();
+    return conteudo.str();
+}
+
+void executar_testes_unitarios(Placar& placar)
+{
+    std::cout << "Testes unitarios\n";
+    std::cout << "----------------\n";
+
     const Malha1D malha{Real{0.0}, Real{1.0}, 4};
 
-    const bool passou =
-        aproximadamente_igual(malha.dx(), Real{0.25})
-        && aproximadamente_igual(malha.centro(0), Real{0.125})
-        && aproximadamente_igual(malha.centro(1), Real{0.375})
-        && aproximadamente_igual(malha.centro(2), Real{0.625})
-        && aproximadamente_igual(malha.centro(3), Real{0.875});
+    registrar(placar, "dx esperado", aproximadamente_igual(malha.dx(), Real{0.25}),
+              "formula errada para o espacamento");
+    registrar(placar, "centro do primeiro volume", aproximadamente_igual(malha.centro(0), Real{0.125}),
+              "deslocamento incorreto de meio volume");
+    registrar(placar, "centro do ultimo volume", aproximadamente_igual(malha.centro(3), Real{0.875}),
+              "erro de indice no fim da malha");
+    registrar(placar, "N = 0 rejeitado", lanca<std::invalid_argument>([] { Malha1D{Real{0.0}, Real{1.0}, 0}; }),
+              "divisao por zero no calculo de dx");
+    registrar(placar, "xmax <= xmin rejeitado", lanca<std::invalid_argument>([] { Malha1D{Real{1.0}, Real{1.0}, 4}; }),
+              "malha com comprimento nulo ou negativo");
+    registrar(placar, "indice fora do intervalo rejeitado", lanca<std::out_of_range>([&malha] { (void)malha.centro(4); }),
+              "acesso fora do intervalo valido [0, N)");
 
-    imprimir_resultado(
-        "malha valida em [0, 1] com N = 4",
-        passou,
-        "formula errada para dx ou para o centro do volume"
-    );
-
-    return passou;
+    std::cout << '\n';
 }
 
-[[nodiscard]] bool testar_rejeicao_n_zero()
+void executar_teste_integracao(Placar& placar)
 {
-    bool lancou = false;
+    std::cout << "Teste de integracao\n";
+    std::cout << "-------------------\n";
 
-    try {
-        const Malha1D malha{Real{0.0}, Real{1.0}, 0};
-        (void)malha;
-    } catch (const std::invalid_argument&) {
-        lancou = true;
-    }
+    const Malha1D malha{Real{0.0}, Real{1.0}, 4};
+    const std::vector<Real> obtido = avaliar_solucao(malha);
+    const std::vector<Real> esperado{
+        Real{1.140625}, Real{1.515625}, Real{2.015625}, Real{2.640625}
+    };
 
-    imprimir_resultado(
-        "N = 0 deve ser rejeitado",
-        lancou,
-        "divisao por zero ou criacao de uma malha sem volumes"
-    );
+    registrar(placar, "u(x) = 1 + x + x^2 avaliada nos centros",
+              comparar_vetores(obtido, esperado, Real{1.0e-12}),
+              "incompatibilidade entre a malha e uma rotina numerica que usa seus centros");
 
-    return lancou;
+    std::cout << "         garante: a interface da malha compoe corretamente com uma\n";
+    std::cout << "                  avaliacao externa de solucao analitica.\n\n";
 }
 
-[[nodiscard]] bool testar_rejeicao_intervalo_invalido()
+void executar_teste_regressao(Placar& placar)
 {
-    bool rejeitou_intervalo_nulo = false;
-    bool rejeitou_intervalo_invertido = false;
+    std::cout << "Teste de regressao\n";
+    std::cout << "------------------\n";
 
-    try {
-        const Malha1D malha{Real{1.0}, Real{1.0}, 4};
-        (void)malha;
-    } catch (const std::invalid_argument&) {
-        rejeitou_intervalo_nulo = true;
-    }
+    const std::string nome_arquivo = "exercicio_24_referencia.txt";
+    gravar_referencia(nome_arquivo);
 
-    try {
-        const Malha1D malha{Real{2.0}, Real{1.0}, 4};
-        (void)malha;
-    } catch (const std::invalid_argument&) {
-        rejeitou_intervalo_invertido = true;
-    }
+    const Malha1D malha{Real{0.0}, Real{1.0}, 4};
+    const std::string referencia = ler_arquivo(nome_arquivo);
+    const std::string atual = saida_integracao(malha);
 
-    const bool passou = rejeitou_intervalo_nulo && rejeitou_intervalo_invertido;
+    registrar(placar, "saida atual coincide com a referencia salva",
+              atual == referencia,
+              "mudanca acidental de valores, precisao textual ou formato de saida");
 
-    imprimir_resultado(
-        "xmax <= xmin deve ser rejeitado",
-        passou,
-        "malha com comprimento nulo ou negativo"
-    );
-
-    return passou;
-}
-
-[[nodiscard]] bool testar_indice_fora_do_intervalo()
-{
-    bool lancou = false;
-
-    try {
-        const Malha1D malha{Real{0.0}, Real{1.0}, 4};
-        (void)malha.centro(4);
-    } catch (const std::out_of_range&) {
-        lancou = true;
-    }
-
-    imprimir_resultado(
-        "centro(N) deve ser rejeitado",
-        lancou,
-        "acesso fora do intervalo valido [0, N)"
-    );
-
-    return lancou;
+    std::cout << "         detecta: uma alteracao futura que continue compilando, mas\n";
+    std::cout << "                  mude a saida usada como base de comparacao.\n\n";
 }
 
 } // namespace
 
 int main()
 {
-    try {
-        std::cout << "Exercicio Computacional 2.4\n";
-        std::cout << "Plano minimo de testes para a Malha1D\n";
-        std::cout << "=====================================\n\n";
+    std::cout << "Exercicio Computacional 2.4\n";
+    std::cout << "Testes unitarios, de integracao e de regressao\n";
+    std::cout << "================================================\n\n";
 
-        unsigned testes_aprovados = 0;
-        unsigned testes_total = 0;
+    Placar placar;
+    executar_testes_unitarios(placar);
+    executar_teste_integracao(placar);
+    executar_teste_regressao(placar);
 
-        ++testes_total;
-        testes_aprovados += testar_malha_valida();
+    std::cout << "Resumo: " << placar.aprovados << " de " << placar.total
+              << " verificacoes aprovadas.\n";
 
-        ++testes_total;
-        testes_aprovados += testar_rejeicao_n_zero();
-
-        ++testes_total;
-        testes_aprovados += testar_rejeicao_intervalo_invalido();
-
-        ++testes_total;
-        testes_aprovados += testar_indice_fora_do_intervalo();
-
-        std::cout << "\nResumo\n";
-        std::cout << "======\n";
-        std::cout << "Testes aprovados: "
-                  << testes_aprovados << " de " << testes_total << '\n';
-
-        std::cout << "\nAplicacoes e recomendacoes\n";
-        std::cout << "--------------------------\n";
-        std::cout << "1. Cada teste declara qual erro de implementacao ele apanha.\n";
-        std::cout << "2. Os testes manuais sao suficientes para proteger o contrato minimo.\n";
-        std::cout << "3. Um framework de testes pode reaproveitar exatamente os mesmos casos.\n";
-
-        return (testes_aprovados == testes_total) ? 0 : 1;
-    } catch (const std::exception& erro) {
-        std::cerr << "Erro inesperado: " << erro.what() << '\n';
-        return 1;
-    }
+    return (placar.aprovados == placar.total) ? 0 : 1;
 }

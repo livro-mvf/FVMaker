@@ -1,22 +1,38 @@
-Gera números pseudoaleatórios, calcula a média e registra tamanho, semente e resultado.
+# Exercicio 25 - Design orientado a dados em um laco simples
 
-## O que o programa faz
+Este diretorio corresponde ao exercicio **"Design orientado a dados em um laco simples"** do Capitulo 02. O programa compara duas organizacoes de memoria para `N = 10^6` volumes:
 
-- duas execuções com a mesma semente;
-- uma execução com semente diferente;
-- comparação direta e com tolerância;
-- gravação dos três arquivos de resultados;
+- **AoS** (*array of structures*): `std::vector<Volume>`, com `x`, `phi` e `fonte` juntos em cada volume;
+- **SoA** (*structure of arrays*): vetores separados para `x`, `phi` e `fonte`.
 
-## Pré-requisitos
+O laco medido atualiza `phi` a partir de `fonte`. Como `x` nao participa desse laco, a organizacao SoA tende a carregar menos dado inutil para perto da CPU.
 
-Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+## Protocolo de medicao
 
-## Execução
+Para evitar uma comparacao enganosa, o programa:
+
+- compila e deve ser executado em modo otimizado;
+- repete o laco principal muitas vezes;
+- mede cada repeticao separadamente;
+- imprime minimo, media, maximo e desvio padrao;
+- acumula uma soma de controle para impedir que o compilador descarte o trabalho como inutil;
+- verifica que AoS e SoA produzem resultados numericamente equivalentes.
+
+## Compilacao e execucao
+
+Pelo CMake do projeto:
 
 ```bash
 cmake --build build --target run_cap_exercicio_25
 ```
 
-## Saída esperada
+Como programa autocontido:
 
-Confirma a repetição com a mesma semente e evidencia a mudança causada por outra.
+```bash
+g++ -std=c++20 -O3 -DNDEBUG -Wall -Wextra exercicio_25.cpp -o exercicio_25
+./exercicio_25
+```
+
+## Interpretacao
+
+Os tempos absolutos dependem da maquina, do compilador e do estado do sistema. O ponto central nao e obter sempre o mesmo numero, mas comparar duas organizacoes sob o mesmo protocolo e interpretar a diferenca em termos de localidade de memoria. Medir e o que separa otimizacao de supersticao.
