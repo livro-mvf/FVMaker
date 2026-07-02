@@ -24,7 +24,10 @@
 // LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
+#include <iomanip>
 #include <memory>
+#include <ostream>
+#include <string>
 #include <utility>
 
 // ----------------------------------------------------------------------------
@@ -245,6 +248,39 @@ DenseVector operator*(
     const DenseVector& x
 ) {
     return multiply(system, x);
+}
+
+std::ostream& operator<<(std::ostream& os, const TridiagonalSystem1D& system) {
+    const auto old_flags = os.flags();
+    const auto old_precision = os.precision();
+
+    os << "TridiagonalSystem1D\n";
+    os << "size : " << system.size() << "\n\n";
+
+    os << std::fixed << std::setprecision(6);
+
+    os << std::setw(6) << "P"
+       << std::setw(16) << "A_W"
+       << std::setw(16) << "A_P"
+       << std::setw(16) << "A_E"
+       << std::setw(16) << "B_P" << '\n';
+    os << std::string(70, '-') << '\n';
+
+    for (Size row = 0; row < system.size(); ++row) {
+        const Real aw = row > 0 ? system.lower()[row - 1] : Real{};
+        const Real ae = row + 1 < system.size() ? system.upper()[row] : Real{};
+
+        os << std::setw(6) << row
+           << std::setw(16) << aw
+           << std::setw(16) << -system.diagonal()[row]
+           << std::setw(16) << ae
+           << std::setw(16) << -system.rhs()[row] << '\n';
+    }
+
+    os.flags(old_flags);
+    os.precision(old_precision);
+
+    return os;
 }
 
 }  // namespace fvm

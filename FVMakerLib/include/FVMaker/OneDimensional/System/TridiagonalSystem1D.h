@@ -29,6 +29,7 @@
 // ----------------------------------------------------------------------------
 // C++ standard library includes
 // ----------------------------------------------------------------------------
+#include <iosfwd>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -148,5 +149,15 @@ void multiply_transpose(
     const TridiagonalSystem1D& system,
     const DenseVector& x
 );
+
+// Imprime o sistema na convencao do livro: A_P phi_P = A_W phi_W + A_E phi_E + B_P.
+//
+// Internamente o sistema fica guardado na forma algebrica A x = b, com a
+// diagonal principal negativa (essa forma e a usada para o residuo A x - b).
+// Este operador desfaz esse sinal ao imprimir: A_P e a diagonal trocada de
+// sinal, e B_P e o lado direito trocado de sinal. A_W e A_E saem exatamente
+// como estao guardados, pois lower/upper ja tem o sinal do livro. Volume a
+// volume, a linha impressa satisfaz A_P phi_P = A_W phi_W + A_E phi_E + B_P.
+std::ostream& operator<<(std::ostream& os, const TridiagonalSystem1D& system);
 
 }  // namespace fvm

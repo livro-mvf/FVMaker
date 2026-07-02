@@ -74,23 +74,6 @@ struct DadosEntrada {
         <= tol * std::max({Real{1}, std::abs(a), std::abs(b)});
 }
 
-void imprimir_sistema(const fvm::TridiagonalSystem1D& sistema) {
-    std::cout << std::setw(6) << "P"
-              << std::setw(16) << "A_W"
-              << std::setw(16) << "A_P"
-              << std::setw(16) << "A_E"
-              << std::setw(16) << "B_P" << '\n';
-    for (Size p = 0; p < sistema.size(); ++p) {
-        const Real aw = p > 0 ? sistema.lower()[p - 1] : 0.0;
-        const Real ae = p + 1 < sistema.size() ? sistema.upper()[p] : 0.0;
-        std::cout << std::setw(6) << p
-                  << std::setw(16) << aw
-                  << std::setw(16) << -sistema.diagonal()[p]
-                  << std::setw(16) << ae
-                  << std::setw(16) << -sistema.rhs()[p] << '\n';
-    }
-}
-
 [[nodiscard]] std::vector<std::vector<Real>> matriz_densa(
     const fvm::TridiagonalSystem1D& sistema
 ) {
@@ -132,7 +115,6 @@ int main(int argc, char** argv) {
         fvm::function_source_1d(malha, [](Real x) { return -x * x; }),
         contornos
     };
-    const fvm::TridiagonalSystem1D sistema = fvm::assemble_steady_1d(equacao);
 
     std::cout << "Exercicio 6.1 - montar os coeficientes\n\n";
     std::cout << "Uso opcional: exercicio_61 L N xI aw bw gw ae be ge\n\n";
@@ -143,7 +125,9 @@ int main(int argc, char** argv) {
               << "leste: alpha=" << dados.alpha_e << ", beta=" << dados.beta_e
               << ", gamma=" << dados.gamma_e << "\n\n";
     std::cout << "3. Coeficientes montados pela FVMaker\n";
-    imprimir_sistema(sistema);
+    std::cout << equacao << '\n';
+
+    const fvm::TridiagonalSystem1D sistema = fvm::assemble_steady_1d(equacao);
 
     if (dados.n != 5 || !perto(dados.comprimento, 5.0)
         || !perto(dados.x_inicial, 0.0)) {

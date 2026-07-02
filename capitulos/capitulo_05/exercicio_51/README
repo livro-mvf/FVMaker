@@ -1,16 +1,27 @@
-Gera a malha uniforme face centrada do exemplo e monta `A_W`, `A_P`, `A_E` e `B_P`.
+Gera a malha uniforme face centrada do exemplo e monta `A_W`, `A_P`, `A_E` e `B_P`
+usando a API pública da FVMaker (`Equation1D` + `Laplacian1D` + `BoundarySet1D`
++ `assemble_steady_1d`).
 
 ## O que o programa faz
 
-- monta volumes internos e contornos;
-- imprime `EquationContribution1D`;
-- converte para `TridiagonalSystem1D`;
-- reconstrói matriz e lado direito;
-- verifica valores e estrutura tridiagonal;
+- gera a malha com `fvgrid::Uniform1D` e adapta com `fvm::GridView1D`;
+- monta a equação `d2phi/dx2 = f(x)` com `fvm::Equation1D`, `fvm::Laplacian1D`
+  e `fvm::function_source_1d` (o termo fonte armazenado é `-f(x)`, pois
+  `Equation1D` monta `-laplacian(phi) == source(q)`);
+- imprime `A_W`, `A_P`, `A_E` e `B_P` na convenção do livro com
+  `std::cout << equacao`, via `operator<<(std::ostream&, const Equation1D&)`
+  da própria FVMaker (que monta o sistema e desfaz o sinal da diagonal e do
+  lado direito armazenados internamente);
+- monta o `fvm::TridiagonalSystem1D` com `fvm::assemble_steady_1d` para a
+  verificação abaixo;
+- reconstrói a matriz densa e o lado direito a partir do sistema;
+- verifica a matriz, o lado direito e a estrutura tridiagonal contra a
+  Eq. do Exemplo 5.2 (os mesmos valores de referência do exercício antigo
+  `antigos/capitulos/Capitulo_205/Exercicio_53`, Eq. 5.65).
 
 ## Pré-requisitos
 
-Requer C++17 e, quando aplicável, FVMaker e FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
+Requer C++20 e FVMaker + FVGridMaker. Configure o projeto com `BUILD_BOOK=ON`.
 
 ## Execução
 

@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include <iosfwd>
+
 #include <FVMaker/OneDimensional/Equation/Equation1D.h>
 #include <FVMaker/OneDimensional/System/TridiagonalSystem1D.h>
 
@@ -44,5 +46,16 @@ namespace fvm {
     const Equation1D& equation,
     Real time = Real{}
 );
+
+// Monta a equacao com assemble_steady_1d e imprime A_W, A_P, A_E e B_P na
+// convencao do livro (ver operator<<(std::ostream&, const
+// TridiagonalSystem1D&)). Equivale a `os << assemble_steady_1d(equation)`,
+// mas permite escrever diretamente `std::cout << equation`.
+//
+// A montagem tem custo O(N); nao ha problema em chamar este operador varias
+// vezes para inspecionar a mesma equacao, mas para reaproveitar o sistema
+// montado (por exemplo, para tambem resolve-lo) prefira montar uma vez com
+// assemble_steady_1d e imprimir o TridiagonalSystem1D resultante.
+std::ostream& operator<<(std::ostream& os, const Equation1D& equation);
 
 }  // namespace fvm

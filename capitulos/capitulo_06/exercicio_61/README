@@ -14,8 +14,9 @@ e executa:
 4. impressao de `A_W`, `A_P`, `A_E` e `B_P` na convencao do livro;
 5. verificacao da matriz da equacao de referencia.
 
-A FVMaker armazena internamente a matriz na forma algebrica. A impressao troca
-os sinais necessarios para reproduzir
+A FVMaker armazena internamente a matriz na forma algebrica. A impressao (feita
+com `std::cout << equacao`, via `operator<<(std::ostream&, const Equation1D&)`
+da propria FVMaker) troca os sinais necessarios para reproduzir
 `A_P phi_P = A_W phi_W + A_E phi_E + B_P`.
 
 ## Execucao

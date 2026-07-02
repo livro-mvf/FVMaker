@@ -24,6 +24,8 @@
 // LICENSE.md, na raiz do repositório, para o texto completo da licença.
 // ============================================================================
 
+#include <ostream>
+
 #include <FVMaker/ErrorHandling/ErrorCatalog.h>
 #include <FVMaker/ErrorHandling/ThrowError.h>
 #include <FVMaker/OneDimensional/Assembly/Assembler1D.h>
@@ -123,6 +125,10 @@ TridiagonalSystem1D assemble_steady_1d(
     apply_source_to_system(system, equation.source());
 
     return system;
+}
+
+std::ostream& operator<<(std::ostream& os, const Equation1D& equation) {
+    return os << assemble_steady_1d(equation);
 }
 
 }  // namespace fvm
